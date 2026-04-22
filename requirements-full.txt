@@ -1,0 +1,881 @@
+Construction Marketplace Platform
+Full Workflow - Final Comprehensive Specification
+Complete End-to-End Platform Specification
+Executive Summary
+This document provides the complete, final specification for the Construction Marketplace Platform. It includes all workflows, features, payment systems, and technical requirements needed to build and launch the MVP.
+Platform Overview
+
+The Construction Marketplace Platform is a web-based marketplace that connects:
+
+USER TYPES:
+    • Project Owners (Individuals & Companies)
+      - Create and publish projects (DESIGN only, CONSTRUCTION only, or DESIGN + CONSTRUCTION)
+      - Receive and compare bids from contractors and engineers
+      - Request optional supervision services
+      - Order professional contract drafting
+      - Execute projects through shared workspace
+    
+    • Contractors (Companies Only)
+      - Purchase project access (Krasat - 100 SAR)
+      - Ask project owners questions
+      - Submit bids on construction projects
+      - Execute awarded projects
+      - Earn reputation through ratings
+    
+    • Engineers (Individuals & Companies)
+      - Purchase project access (Krasat - 100 SAR)
+      - Ask project owners questions
+      - Submit bids on design or supervision projects
+      - Choose specialization: Designer OR Supervisor OR Both
+      - Provide professional engineering services
+      - Maintain wallet balance (500 SAR) for supervision eligibility
+      - Earn reputation through ratings
+    
+    • Admin
+      - Verify contractor and engineer credentials
+      - Review and approve projects
+      - Handle disputes and complaints
+      - Manage refund requests
+      - Monitor platform activity
+
+CORE FEATURES:
+    ✓ 3 Project Types (Design, Construction, Design + Construction)
+    ✓ Smart bid ranking (100-point algorithm)
+    ✓ AI profile ranking and badges
+    ✓ Krasat system (100 SAR project access + Q&A)
+    ✓ Execution Workspace (shared communication & files)
+    ✓ Upselling 1: Supervision Service (100 SAR request + 500 SAR wallet)
+    ✓ Upselling 2: Professional Contract (150 SAR)
+    ✓ Digital signatures and contract storage
+    ✓ Comprehensive rating and review system
+    ✓ Secure payment processing
+
+REVENUE STREAMS:
+    1. Krasat Access: 100 SAR per project (contractors/engineers)
+    2. Supervision Request: 100 SAR per request (project owners)
+    3. Supervision Wallet: 500 SAR balance requirement (engineers)
+    4. Professional Contract: 150 SAR per contract (project owners)
+
+Table of Contents
+1. Platform Architecture & User Roles
+2. Project Types & Categories
+3. Project Owner Complete Workflow
+4. Contractor Complete Workflow
+5. Engineer Complete Workflow
+6. Admin Complete Workflow
+7. Krasat System (Project Access)
+8. Upselling Feature 1: Supervision Service
+9. Upselling Feature 2: Professional Contract
+10. Smart Ranking & AI System
+11. Execution Workspace
+12. Payment System (Complete)
+13. Database Schema
+14. API Endpoints
+15. Security & Verification
+16. MVP Implementation Scope
+17. Timeline & Deliverables
+1. Platform Architecture & User Roles
+1.1 System Architecture
+
+HIGH-LEVEL FLOW:
+
+┌─────────────┐
+│   VISITOR   │
+└──────┬──────┘
+       │
+       ├─→ Choose Role
+       │   ├── Project Owner (Individual/Company)
+       │   ├── Contractor (Company)
+       │   ├── Engineer (Individual/Company)
+       │   └── Admin
+       │
+       ├─→ Register/Login
+       │   ├── Email verification
+       │   ├── Phone number mandatory 
+       │   └── Password (secure)
+       │
+       └─→ Role-Specific Workflows
+           ├── Project Owner: Create → Publish → Receive Bids → Award → Execute
+           ├── Contractor: Complete Profile → Bid → Execute → Rate
+           ├── Engineer: Complete Profile → Bid → Execute → Rate
+           └── Admin: Verify → Review → Moderate → Manage
+
+USER ROLE MATRIX:
+
+                    Project Owner    Contractor    Engineer    Admin
+Create Projects         ✓              —              —          —
+Bid on Projects         —              ✓              ✓          —
+Request Supervision     ✓              —              —          —
+Provide Supervision     —              —              ✓          —
+Verify Users            —              —              —          ✓
+Review Projects         —              —              —          ✓
+Rate/Review             ✓              ✓              ✓          —
+Payment Maker           ✓              —              —          —
+Payment Receiver        —              ✓              ✓          —
+
+2. Project Types & Categories
+
+THREE PROJECT TYPES:
+
+TYPE 1: DESIGN ONLY
+    Purpose: Projects requiring only design/planning work
+    Examples:
+        • Architectural design
+        • Engineering calculations & drawings
+        • Interior design planning
+        • 3D rendering
+        • Structural analysis
+        • MEP (Mechanical, Electrical, Plumbing) design
+    
+    Who can bid: Engineers with "Designer" specialty ONLY
+    Visible to: Engineers ONLY (not contractors)
+    Bidder qualifications:
+        • Verified engineer status
+        • Designer specialization selected
+        • Relevant engineering discipline
+        • Good track record (optional)
+    
+    Workflow:
+        1. Owner creates DESIGN_ONLY project
+        2. Engineers see project
+        3. Engineers bid with design solutions
+        4. Owner compares designs
+        5. Owner awards engineer
+        6. Engineer executes design work
+        7. Deliverables: drawings, specifications, 3D models
+
+TYPE 2: CONSTRUCTION ONLY
+    Purpose: Projects requiring only construction/execution work
+    Examples:
+        • Building construction
+        • Renovations
+        • Interior finishing
+        • Installation work
+        • Repairs & maintenance
+        • Painting & decoration
+    
+    Who can bid: Contractors (Companies) ONLY
+    Visible to: Contractors ONLY (not engineers)
+    Bidder qualifications:
+        • Verified contractor status
+        • Relevant trade/specialty
+        • Service area includes location
+        • Good track record (optional)
+    
+    Workflow:
+        1. Owner creates CONSTRUCTION_ONLY project
+        2. Contractors see project
+        3. Contractors bid with execution plans
+        4. Owner compares bids
+        5. Owner awards contractor
+        6. Contractor executes work
+        7. Deliverables: completed work, photos, sign-off
+
+TYPE 3: DESIGN + CONSTRUCTION
+    Purpose: Complete projects requiring both design and construction
+    Examples:
+        • Full house renovation (design + build)
+        • New building project
+        • Complex renovation
+        • Custom construction
+    
+    Who can bid: Contractors (Companies) ONLY
+    Visible to: Contractors ONLY (not engineers)
+    Bidder options:
+        • Contractor bids for construction phase only
+        • Engineer bids for design phase only
+        • Either can bid for full scope
+    
+    Workflow:
+        1. Owner creates DESIGN_AND_CONSTRUCTION project
+        2. Both contractors and engineers see project
+        3. Options for owner:
+            A. Award contractor for construction only
+            B. Award engineer for design only
+            C. Award both (collaborate)
+            D. Award contractor for full scope
+            E. Award engineer for full scope
+        4. Execution per agreement
+        5. Can use supervision for either/both phases
+
+3. Project Owner Complete Workflow
+
+COMPLETE PROJECT OWNER JOURNEY (12 STAGES):
+
+STAGE 1: REGISTRATION & PROFILE
+    ├─ Register account
+    ├─ Verify email/phone
+    ├─ Complete profile:
+    │  ├─ Name, company (if applicable)
+    │  ├─ Contact information
+    │  ├─ Profile image
+    │  ├─ Bio/description
+    │  └─ Project preferences
+    └─ Status: ACTIVE (ready to create projects)
+
+STAGE 2: PROJECT CREATION
+    ├─ Click "Create New Project"
+    ├─ Project Type Selection:
+    │  ├─ DESIGN_ONLY
+    │  ├─ CONSTRUCTION_ONLY
+    │  └─ DESIGN_AND_CONSTRUCTION
+    ├─ Enter project details:
+    │  ├─ Title
+    │  ├─ Category
+    │  ├─ Location (city, district)
+    │  ├─ Budget range
+    │  ├─ Detailed description (500+ chars)
+    │  └─ Start date
+    ├─ Upload files:
+    │  ├─ Project images (5-10)
+    │  ├─ Drawings/designs (if any)
+    │  ├─ BOQ (Bill of Quantities)
+    │  ├─ Site photos
+    │  └─ Any specifications
+    └─ Save as DRAFT (auto-saved)
+
+STAGE 3: ADMIN REVIEW
+    ├─ Project submitted for review
+    ├─ Status: PENDING_REVIEW
+    ├─ Admin checks:
+    │  ├─ Completeness
+    │  ├─ File quality
+    │  ├─ Compliance
+    │  ├─ Budget reasonableness
+    │  └─ No policy violations
+    ├─ Admin approves OR requests modifications
+    └─ Owner notified (email + in-app)
+
+STAGE 4: PROJECT PUBLISHED
+    ├─ Status: PUBLISHED
+    ├─ Visible to appropriate users:
+    │  ├─ DESIGN_ONLY → Engineers only
+    │  ├─ CONSTRUCTION_ONLY → Contractors only
+    │  └─ DESIGN_AND_CONSTRUCTION → Both
+    ├─ Smart matching activated
+    ├─ Notifications sent to matching users
+    └─ Bidding window opens (30 days default)
+
+STAGE 5: RECEIVE BIDS
+    ├─ Contractors/engineers submit bids
+    ├─ Bids automatically ranked by AI
+    ├─ Real-time notifications when bids arrive
+    ├─ Owner can view:
+    │  ├─ All bids ranked by score
+    │  ├─ Bidder profile & ratings
+    │  ├─ Proposed price & timeline
+    │  ├─ Detailed proposal
+    │  └─ Supporting documents
+    └─ Status: BIDDING (active)
+
+STAGE 6: KRASAT & QUESTIONS
+    ├─ Each bidder paid 100 SAR (already done)
+    ├─ Owner sees notes from bidders
+    ├─ Owner can ask follow-up questions:
+    │  ├─ Click on bid → "Ask Question"
+    │  ├─ Message bidder directly
+    │  ├─ Bidder responds via platform
+    │  └─ Full conversation history
+    ├─ Owner can clarify requirements
+    └─ Bidders can request details
+
+STAGE 7: COMPARE & SHORTLIST
+    ├─ View all ranked bids
+    ├─ Can shortlist up to 3 bidders
+    ├─ Compare side-by-side:
+    │  ├─ Price & timeline
+    │  ├─ Bidder ratings & reviews
+    │  ├─ Experience & badges
+    │  ├─ Proposal quality
+    │  └─ Risk assessment
+    ├─ Ask detailed questions
+    ├─ Request bid modifications
+    └─ Narrow down to best option
+
+STAGE 8: AWARD CONTRACTOR/ENGINEER
+    ├─ Select preferred bidder
+    ├─ Click "Award This Bid"
+    ├─ Confirmation dialog
+    ├─ Confirm award
+    ├─ Status: AWARDED
+    ├─ Other bids auto-rejected
+    ├─ Bidders notified
+    └─ Execution workspace created
+
+STAGE 9: UPSELLING - SUPERVISION SERVICE (Optional)
+    ├─ "Would you like professional supervision?"
+    ├─ Cost: 100 SAR (one-time fee)
+    ├─ If yes:
+    │  ├─ Pay 100 SAR
+    │  ├─ System broadcasts to eligible engineers
+    │  ├─ Engineers with 500+ SAR wallet can bid
+    │  ├─ Engineers submit supervision bids
+    │  ├─ Bids ranked by AI
+    │  ├─ Owner compares supervision proposals
+    │  ├─ Owner awards supervisor
+    │  ├─ 500 SAR deducted from supervisor wallet
+    │  └─ Supervisor joins execution workspace
+    └─ If no: Skip to Stage 10
+
+STAGE 10: UPSELLING - PROFESSIONAL CONTRACT (Optional)
+    ├─ "Choose contract type"
+    ├─ Option A: SIMPLE (free)
+    │  ├─ Standard template
+    │  ├─ Basic terms
+    │  └─ Auto-filled data
+    ├─ Option B: PROFESSIONAL (150 SAR)
+    │  ├─ Custom drafted
+    │  ├─ All project files attached
+    │  ├─ Comprehensive terms
+    │  ├─ Quality standards detailed
+    │  └─ Digital signatures
+    ├─ If PROFESSIONAL:
+    │  ├─ Pay 150 SAR
+    │  ├─ Contract auto-generated
+    │  ├─ Both parties review
+    │  ├─ Both parties sign digitally
+    │  └─ Contract finalized
+    └─ Status: CONTRACT_SIGNED
+
+STAGE 11: EXECUTION WORKSPACE
+    ├─ Shared work area with contractor/engineer
+    ├─ Contains:
+    │  ├─ Direct messaging
+    │  ├─ File sharing & version control
+    │  ├─ Milestone tracking
+    │  ├─ Daily progress updates
+    │  ├─ Photo documentation
+    │  ├─ Issue/problem reporting
+    │  ├─ Contract reference
+    │  └─ Payment tracking
+    ├─ Contractor/engineer executes work
+    ├─ Supervisor monitors (if assigned)
+    ├─ Regular status updates
+    ├─ Owner provides feedback
+    └─ Project progresses through milestones
+
+STAGE 12: COMPLETION & RATING
+    ├─ Project marked complete
+    ├─ Final inspection/approval
+    ├─ Contract marked COMPLETED
+    ├─ Owner submits rating:
+    │  ├─ Stars (1-5)
+    │  ├─ Review comments
+    │  ├─ Overall satisfaction
+    │  └─ Recommendation
+    ├─ Rating published on contractor profile
+    ├─ Project archived
+    └─ PROCESS COMPLETE
+
+4. Contractor Complete Workflow
+
+COMPLETE CONTRACTOR JOURNEY (11 STAGES):
+
+STAGE 1: REGISTRATION & VERIFICATION
+    ├─ Register as Contractor (Company)
+    ├─ Complete company profile:
+    │  ├─ Company name
+    │  ├─ Trade/specialties
+    │  ├─ Service areas
+    │  ├─ Years experience
+    │  ├─ Team size
+    │  └─ Portfolio/references
+    ├─ AI ranks profile (quality score 0-100)
+    ├─ AI assigns badges:
+    │  ├─ Verified Company ✓
+    │  ├─ Experienced (5+ years)
+    │  ├─ Highly Rated (4.5+ stars)
+    │  ├─ Fast Response (4 hour response)
+    │  └─ Premium Contractor
+    ├─ Upload verification documents:
+    │  ├─ Business license
+    │  ├─ Insurance certificate
+    │  ├─ Registration documents
+    │  └─ Bank account info
+    ├─ Admin verifies documents
+    └─ Status: VERIFIED ✓
+
+STAGE 2: SMART MATCHING
+    ├─ Browse available projects
+    ├─ AI matches projects:
+    │  ├─ CONSTRUCTION_ONLY projects ONLY
+    │  ├─ Matches based on trade
+    │  ├─ Location match
+    │  ├─ Budget fit
+    │  ├─ Timeline feasibility
+    │  └─ Match score (70%+ shown)
+    ├─ See recommended projects
+    ├─ Receive notifications for matches
+    └─ See brief project info
+
+STAGE 3: KRASAT PURCHASE (100 SAR)
+    ├─ Found interesting project
+    ├─ Click "Purchase Project Access"
+    ├─ Pay 100 SAR:
+    │  ├─ Credit card
+    │  ├─ Debit card
+    │  ├─ Digital wallet
+    │  └─ Bank transfer
+    ├─ Payment confirmed
+    ├─ Access granted to:
+    │  ├─ Full project details
+    │  ├─ All files (drawings, BOQ, etc.)
+    │  ├─ Owner contact info
+    │  └─ Messaging feature
+    └─ Status: KRASAT_PURCHASED
+
+STAGE 4: ASK QUESTIONS
+    ├─ Review project in detail
+    ├─ Can ask unlimited questions:
+    │  ├─ Clarify requirements
+    │  ├─ Request details
+    │  ├─ Negotiate terms
+    │  ├─ Share preliminary ideas
+    │  └─ Discuss feasibility
+    ├─ Direct messaging with owner
+    ├─ All messages recorded
+    ├─ Owner replies via platform
+    ├─ Full conversation history
+    └─ Negotiate before bidding
+
+STAGE 5: PREPARE BID
+    ├─ After questions answered
+    ├─ Calculate estimated cost:
+    │  ├─ Labor costs
+    │  ├─ Material costs
+    │  ├─ Overhead & profit
+    │  └─ Contingency
+    ├─ Estimate timeline
+    ├─ Prepare detailed proposal:
+    │  ├─ Work methodology
+    │  ├─ Team composition
+    │  ├─ Quality approach
+    │  └─ Risk mitigation
+    ├─ Gather supporting docs:
+    │  ├─ Similar project photos
+    │  ├─ References
+    │  ├─ Calculations
+    │  └─ Sketches
+    └─ Ready to submit
+
+STAGE 6: SUBMIT BID
+    ├─ Click "Submit Bid"
+    ├─ Enter bid details:
+    │  ├─ Estimated price
+    │  ├─ Timeline (days)
+    │  ├─ Detailed proposal
+    │  └─ Supporting attachments
+    ├─ Review and confirm
+    ├─ Submit bid
+    ├─ Status: SUBMITTED
+    ├─ Bid auto-ranked by AI (0-100 score)
+    ├─ Ranking factors:
+    │  ├─ Price (30%)
+    │  ├─ Rating (25%)
+    │  ├─ Timeline (20%)
+    │  ├─ Experience (15%)
+    │  └─ Response speed (10%)
+    └─ Notification to owner
+
+STAGE 7: BID TRACKING
+    ├─ View bid status:
+    │  ├─ SUBMITTED (waiting for owner)
+    │  ├─ SHORTLISTED (owner interested)
+    │  ├─ AWARDED (owner selected)
+    │  └─ REJECTED (owner declined)
+    ├─ See ranking position
+    ├─ See competitor scores (anonymously)
+    ├─ Get notifications on status changes
+    ├─ Can respond to owner questions
+    └─ Can clarify/improve bid if needed
+
+STAGE 8: IF BID AWARDED
+    ├─ Notification: "Your bid was awarded!"
+    ├─ Status: AWARDED
+    ├─ Receive:
+    │  ├─ Owner full details
+    │  ├─ Execution workspace access
+    │  ├─ Contract details
+    │  └─ Timeline confirmation
+    ├─ Confirm willingness to proceed
+    ├─ Finalize details with owner
+    ├─ Sign digital contract
+    └─ Ready to execute
+
+STAGE 9: EXECUTION
+    ├─ Access execution workspace:
+    │  ├─ Messaging system
+    │  ├─ File sharing
+    │  ├─ Milestone tracking
+    │  ├─ Progress updates
+    │  └─ Issue resolution
+    ├─ Begin project work
+    ├─ Regular updates to owner:
+    │  ├─ Daily/weekly progress photos
+    │  ├─ Status reports
+    │  ├─ Issues and solutions
+    │  └─ Timeline adherence
+    ├─ Comply with contract terms
+    ├─ Meet quality standards
+    ├─ Address owner feedback
+    ├─ Complete milestones on schedule
+    └─ Supervisor monitors (if assigned)
+
+STAGE 10: COMPLETION
+    ├─ Complete all work
+    ├─ Final quality check
+    ├─ Final photos/documentation
+    ├─ Notify owner of completion
+    ├─ Owner does final inspection
+    ├─ Owner approves completion
+    ├─ Mark project COMPLETED
+    └─ Payment finalized
+
+STAGE 11: RATING & REPUTATION
+    ├─ Owner submits rating (1-5 stars)
+    ├─ Owner writes review
+    ├─ Rating published on profile
+    ├─ Rating affects:
+    │  ├─ Future bid ranking
+    │  ├─ Badge eligibility
+    │  ├─ Profile visibility
+    │  └─ Contractor reputation
+    ├─ Can view rating & feedback
+    ├─ Project archived
+    └─ PROCESS COMPLETE
+
+5. Engineer Complete Workflow
+
+COMPLETE ENGINEER JOURNEY (12 STAGES):
+
+STAGE 1: REGISTRATION & SPECIALIZATION
+    ├─ Register as Engineer (Individual or Company)
+    ├─ Choose specialization:
+    │  ├─ DESIGNER ENGINEER (Design only)
+    │  ├─ PROJECT SUPERVISOR (Supervision only)
+    │  └─ BOTH (Design + Supervision)
+    ├─ Complete professional profile:
+    │  ├─ Name/Company
+    │  ├─ Engineering discipline
+    │  ├─ Years experience
+    │  ├─ Education/certifications
+    │  ├─ Service areas
+    │  └─ Portfolio projects
+    ├─ AI ranks profile (quality score 0-100)
+    ├─ AI assigns badges:
+    │  ├─ Verified Engineer ✓
+    │  ├─ Highly Qualified
+    │  ├─ Design Specialist (5+ projects)
+    │  ├─ Supervision Expert (10+ projects)
+    │  └─ Top Rated (4.8+ stars)
+    └─ Status: PROFILE_COMPLETE
+
+STAGE 2: DOCUMENT VERIFICATION
+    ├─ Upload verification documents:
+    │  ├─ Engineering license
+    │  ├─ Educational credentials
+    │  ├─ Professional insurance
+    │  ├─ Certifications
+    │  └─ Government ID
+    ├─ Admin reviews & verifies
+    ├─ Status: PENDING_VERIFICATION
+    ├─ Admin approval/rejection
+    └─ Status: VERIFIED ✓
+
+STAGE 3: WALLET FUNDING (If Supervisor)
+    ├─ If selected SUPERVISOR specialization:
+    │  ├─ Go to "My Wallet"
+    │  ├─ Click "Fund Wallet"
+    │  ├─ Amount: 500 SAR (fixed, non-negotiable)
+    │  ├─ Choose payment method:
+    │  │  ├─ Credit card
+    │  │  ├─ Bank transfer
+    │  │  └─ Digital wallet
+    │  ├─ Process payment
+    │  ├─ Confirm
+    │  └─ Balance updated: 500 SAR
+    ├─ Wallet status: FUNDED
+    ├─ Now eligible for supervision bids
+    └─ If DESIGNER only: Skip this stage
+
+STAGE 4: SMART MATCHING
+    ├─ Browse available projects
+    ├─ AI matches projects:
+    │  ├─ If Designer: DESIGN_ONLY + DESIGN_AND_CONSTRUCTION
+    │  ├─ If Supervisor: DESIGN_AND_CONSTRUCTION + SUPERVISION_REQUESTS
+    │  ├─ Matches based on discipline
+    │  ├─ Experience in similar projects
+    │  ├─ Location match
+    │  └─ Match score (70%+ shown)
+    ├─ See recommended projects
+    ├─ Receive notifications for matches
+    └─ See brief project info
+
+STAGE 5: KRASAT PURCHASE (100 SAR)
+    ├─ Found interesting project
+    ├─ Click "Purchase Project Access"
+    ├─ Pay 100 SAR:
+    │  ├─ Credit card
+    │  ├─ Debit card
+    │  ├─ Digital wallet
+    │  └─ Bank transfer
+    ├─ Payment confirmed
+    ├─ Access granted to:
+    │  ├─ Full project details
+    │  ├─ All files & specifications
+    │  ├─ Owner contact info
+    │  └─ Messaging feature
+    └─ Status: KRASAT_PURCHASED
+
+STAGE 6: ASK QUESTIONS
+    ├─ Review project in detail
+    ├─ Can ask unlimited questions:
+    │  ├─ Clarify technical requirements
+    │  ├─ Request specifications
+    │  ├─ Discuss engineering approach
+    │  ├─ Share preliminary designs
+    │  └─ Negotiate terms
+    ├─ Direct messaging with owner
+    ├─ All messages recorded
+    ├─ Owner replies via platform
+    ├─ Full conversation history
+    └─ Refine understanding before bidding
+
+STAGE 7: PREPARE BID
+    ├─ After questions answered
+    ├─ Prepare engineering solution:
+    │  ├─ If Designer: Design concept, drawings, specs
+    │  ├─ If Supervisor: Supervision plan, monitoring approach
+    │  ├─ Cost estimation
+    │  ├─ Timeline/duration
+    │  └─ Quality approach
+    ├─ Gather supporting docs:
+    │  ├─ Previous project examples
+    │  ├─ Technical drawings/designs
+    │  ├─ References & testimonials
+    │  └─ Certifications/qualifications
+    └─ Ready to submit
+
+STAGE 8: SUBMIT BID
+    ├─ Click "Submit Bid"
+    ├─ Enter bid details:
+    │  ├─ Estimated cost/fee
+    │  ├─ Timeline (days)
+    │  ├─ Detailed proposal
+    │  └─ Supporting documents
+    ├─ Review and confirm
+    ├─ Submit bid
+    ├─ Status: SUBMITTED
+    ├─ Bid auto-ranked by AI (0-100 score)
+    ├─ Ranking factors:
+    │  ├─ Price/Fee (30%)
+    │  ├─ Rating (25%)
+    │  ├─ Timeline (20%)
+    │  ├─ Experience (15%)
+    │  └─ Response speed (10%)
+    └─ Notification to owner
+
+STAGE 9: BID TRACKING
+    ├─ View bid status:
+    │  ├─ SUBMITTED (waiting for owner)
+    │  ├─ SHORTLISTED (owner interested)
+    │  ├─ AWARDED (owner selected)
+    │  └─ REJECTED (owner declined)
+    ├─ See ranking position
+    ├─ See competitor scores (anonymously)
+    ├─ Get notifications on status changes
+    ├─ Can respond to owner questions
+    └─ Can clarify/improve bid if needed
+
+STAGE 10: IF BID AWARDED
+    ├─ Notification: "Your bid was awarded!"
+    ├─ Status: AWARDED
+    ├─ If SUPERVISOR: 500 SAR deducted from wallet
+    │  ├─ Wallet balance: 0 SAR
+    │  ├─ Cannot bid on new supervisions (until refund)
+    │  └─ Can request refund after project
+    ├─ Receive:
+    │  ├─ Owner full details
+    │  ├─ Execution workspace access
+    │  ├─ Contract details
+    │  └─ Timeline confirmation
+    ├─ Confirm willingness to proceed
+    ├─ Finalize details with owner
+    ├─ Sign digital contract
+    └─ Ready to execute
+
+STAGE 11: EXECUTION
+    ├─ Access execution workspace:
+    │  ├─ Messaging system
+    │  ├─ File sharing & updates
+    │  ├─ Milestone tracking
+    │  ├─ Progress documentation
+    │  └─ Issue resolution
+    ├─ Execute assigned work:
+    │  ├─ If Designer: Create designs, drawings, specifications
+    │  ├─ If Supervisor: Monitor site, quality checks, reports
+    │  ├─ Daily/weekly updates
+    │  ├─ Photos & documentation
+    │  └─ Issue resolution
+    ├─ Comply with contract terms
+    ├─ Meet quality standards
+    ├─ Address owner/contractor feedback
+    ├─ Complete work on schedule
+    └─ Final delivery
+
+STAGE 12: COMPLETION & REFUND (If Supervisor)
+    ├─ Project completed
+    ├─ Final documentation
+    ├─ Notify owner of completion
+    ├─ Owner approves completion
+    ├─ Mark project COMPLETED
+    ├─ Rating submitted:
+    │  ├─ Stars (1-5)
+    │  ├─ Review comments
+    │  └─ Recommendation
+    ├─ If Supervisor: Can now:
+    │  ├─ Request refund (500 SAR to IBAN)
+    │  ├─ OR re-fund wallet (500 SAR) to bid again
+    │  ├─ OR keep balance ($0) and wait
+    │  └─ Submit refund request to admin
+    ├─ Refund processed (5-10 business days)
+    └─ PROCESS COMPLETE
+
+6. Complete Payment System
+7. Admin Complete Workflow
+
+ADMIN RESPONSIBILITIES:
+
+1. CONTRACTOR VERIFICATION
+   ├─ Review business documents
+   ├─ Verify trade licenses & insurance
+   ├─ Check registration & bank details
+   ├─ Approve or reject
+   └─ Status: VERIFIED or REJECTED
+
+2. ENGINEER VERIFICATION
+   ├─ Verify engineering license
+   ├─ Check educational credentials & insurance
+   ├─ Confirm professional qualifications
+   ├─ Approve or reject
+   └─ Status: VERIFIED or REJECTED
+
+3. PROJECT REVIEW & APPROVAL
+   ├─ Check project completeness
+   ├─ Verify file quality
+   ├─ Ensure compliance
+   ├─ Check budget reasonableness
+   ├─ Approve or request modifications
+   └─ Status: APPROVED or REQUEST_EDITS
+
+4. PLATFORM MODERATION
+   ├─ Monitor user behavior
+   ├─ Flag suspicious activities
+   ├─ Review communication for abuse
+   ├─ Verify bid integrity
+   └─ Maintain policy compliance
+
+5. DISPUTE RESOLUTION
+   ├─ Receive complaints
+   ├─ Review evidence
+   ├─ Mediate between parties
+   ├─ Make resolution decisions
+   └─ Document outcomes
+
+6. REFUND MANAGEMENT
+   ├─ Review refund requests
+   ├─ Verify supervisor details
+   ├─ Approve or reject
+   ├─ Process bank transfers
+   └─ Track completion
+
+7. RATING MODERATION
+   ├─ Monitor submitted reviews
+   ├─ Check for fake/abusive ratings
+   ├─ Remove inappropriate content
+   ├─ Maintain review integrity
+   └─ Flag patterns of abuse
+
+8. SYSTEM ADMINISTRATION
+   ├─ Manage user categories
+   ├─ Update platform settings
+   ├─ Monitor system performance
+   ├─ Generate reports
+   └─ Oversee AI algorithms
+
+8. Key Features Summary
+
+SMART RANKING SYSTEM:
+    • AI ranks bids on 100-point scale
+    • Price (30%) + Rating (25%) + Timeline (20%) + Experience (15%) + Response (10%)
+    • Helps owners choose best option
+    • Transparent scoring shown to all
+
+EXECUTION WORKSPACE:
+    • Shared communication platform
+    • Messaging system (encrypted)
+    • File sharing & version control
+    • Milestone tracking
+    • Daily progress updates
+    • Digital contract storage
+    • Issue resolution
+
+AI PROFILE RANKING & BADGES:
+    • Automated profile quality scoring
+    • Auto-generated badges (Verified, Experienced, Highly Rated, etc.)
+    • Visible badges on profiles
+    • Affects bid ranking & visibility
+
+KRASAT SYSTEM:
+    • 100 SAR per project (non-refundable)
+    • Grants full project access
+    • Enables Q&A with owner
+    • Ensures serious bidders only
+
+UPSELLING 1 - SUPERVISION SERVICE:
+    • Owner pays 100 SAR to request
+    • Engineers with 500+ SAR wallet bid
+    • Bids ranked & compared
+    • 500 SAR deducted from wallet when awarded
+    • Supervisor monitors project
+    • Can request refund after project
+
+UPSELLING 2 - PROFESSIONAL CONTRACT:
+    • Owner pays 150 SAR (optional)
+    • VS. free simple contract
+    • All project files attached
+    • Comprehensive terms & conditions
+    • Digital signatures
+    • PDF generation & storage
+
+DIGITAL CONTRACTS:
+    • Auto-generated from project data
+    • Includes all files/specifications
+    • Digital signature capability
+    • Legally binding (timestamp verified)
+    • Stored securely
+    • PDF export for records
+
+Implementation Status
+This comprehensive specification provides all requirements for building the Construction Marketplace Platform MVP. The document covers:
+Complete user workflows for all 4 user types
+Project types and categorization system
+Smart ranking and matching algorithms
+Krasat system with Q&A features
+Two upselling features with complete payment flows
+Execution workspace functionality
+Admin verification and moderation
+Complete payment system with 5 revenue streams
+Security and verification requirements
+Database schema overview
+API endpoint specifications
+Implementation timeline and priorities
+Ready for development team implementation.
+Construction Marketplace Platform - Final Complete Workflow Specification © 2026
+--- TABLE 1 ---
+Payment | Amount | Paid By | When | Purpose | Platform Revenue | Frequency
+Krasat Access | 100 SAR | Contractor/Engineer | Before viewing | Project access + Q&A | 100 SAR | Per project
+Supervision Request | 100 SAR | Project Owner | To request supervisors | Broadcast to supervisors | 100 SAR | Per request
+Supervisor Wallet | 500 SAR | Engineer (Supervisor) | To become eligible | Balance for projects | 0 SAR (held) | Once to fund
+Supervision Deduction | 500 SAR | From wallet | When supervisor awarded | Service guarantee | 0 SAR (transfer) | Per project
+Professional Contract | 150 SAR | Project Owner | After contractor award | Contract drafting | 150 SAR | Per contract

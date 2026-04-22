@@ -1,0 +1,73 @@
+import { NextResponse } from "next/server";
+import { getCurrentUser } from "@/lib/auth";
+import { db } from "@/lib/db";
+
+// Gap 7: Profile update API
+export async function PUT(request: Request) {
+  try {
+    const user = await getCurrentUser();
+    if (!user) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+
+    const data = await request.json();
+
+    if (user.role === "OWNER") {
+      await db.ownerProfile.update({
+        where: { userId: user.id },
+        data: {
+          fullName: data.fullName || undefined,
+          fullNameAr: data.fullNameAr || undefined,
+          phone: data.phone || undefined,
+          city: data.city || undefined,
+          region: data.region || undefined,
+          bio: data.bio || undefined,
+          bioAr: data.bioAr || undefined,
+          companyName: data.companyName || undefined,
+          companyNameAr: data.companyNameAr || undefined,
+          profileComplete: true,
+        },
+      });
+    } else if (user.role === "CONTRACTOR") {
+      await db.contractorProfile.update({
+        where: { userId: user.id },
+        data: {
+          companyName: data.companyName || data.fullName || undefined,
+          companyNameAr: data.companyNameAr || data.fullNameAr || undefined,
+          description: data.bio || undefined,
+          descriptionAr: data.bioAr || undefined,
+          phone: data.phone || undefined,
+          city: data.city || undefined,
+          region: data.region || undefined,
+          website: data.website || undefined,
+          yearsInBusiness: data.yearsInBusiness ? parseInt(data.yearsInBusiness) : undefined,
+          teamSize: data.teamSize ? parseInt(data.teamSize) : undefined,
+          profileComplete: true,
+        },
+      });
+    } else if (user.role === "ENGINEER") {
+      await db.engineerProfile.update({
+        where: { userId: user.id },
+        data: {
+          fullName: data.fullName || undefined,
+          fullNameAr: data.fullNameAr || undefined,
+          description: data.bio || undefined,
+          descriptionAr: data.bioAr || undefined,
+          phone: data.phone || undefined,
+          city: data.city || undefined,
+          region: data.region || undefined,
+          website: data.website || undefined,
+          specialization: data.specialization || undefined,
+          discipline: data.discipline || undefined,
+          education: data.education || undefined,
+          certifications: data.certifications || undefined,
+          yearsExperience: data.yearsInBusiness ? parseInt(data.yearsInBusiness) : undefined,
+          profileComplete: true,
+        },
+      });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error("Profile update error:", error);
+    return NextResponse.json({ success: false, error: "Profile update failed" }, { status: 500 });
+  }
+}

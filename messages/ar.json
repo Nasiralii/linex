@@ -1,0 +1,278 @@
+{
+  "common": {
+    "appName": "لاينكس فرصة",
+    "tagline": "منصة المقاولات الموثوقة",
+    "loading": "جاري التحميل...",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "view": "عرض",
+    "search": "بحث",
+    "filter": "تصفية",
+    "sort": "ترتيب",
+    "submit": "إرسال",
+    "confirm": "تأكيد",
+    "back": "رجوع",
+    "next": "التالي",
+    "previous": "السابق",
+    "close": "إغلاق",
+    "yes": "نعم",
+    "no": "لا",
+    "all": "الكل",
+    "none": "لا شيء",
+    "actions": "إجراءات",
+    "status": "الحالة",
+    "details": "التفاصيل",
+    "noResults": "لا توجد نتائج",
+    "showMore": "عرض المزيد",
+    "showLess": "عرض أقل",
+    "required": "مطلوب",
+    "optional": "اختياري",
+    "sar": "ر.س",
+    "currency": "ريال سعودي",
+    "arabicNameSupport": "يمكنك إدخال اسمك بالعربية، سيتم تحويله تلقائياً"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "marketplace": "سوق المشاريع",
+    "dashboard": "لوحة التحكم",
+    "projects": "المشاريع",
+    "bids": "العروض",
+    "profile": "الملف الشخصي",
+    "settings": "الإعدادات",
+    "notifications": "الإشعارات",
+    "admin": "الإدارة",
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "language": "English"
+  },
+  "auth": {
+    "login": {
+      "title": "تسجيل الدخول",
+      "subtitle": "أدخل بياناتك للوصول إلى حسابك",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "rememberMe": "تذكرني",
+      "forgotPassword": "نسيت كلمة المرور؟",
+      "submitButton": "تسجيل الدخول",
+      "noAccount": "ليس لديك حساب؟",
+      "registerLink": "إنشاء حساب جديد",
+      "error": "البريد الإلكتروني أو كلمة المرور غير صحيحة"
+    },
+    "register": {
+      "title": "إنشاء حساب جديد",
+      "subtitle": "انضم إلى منصة لاينكس فرصة",
+      "fullName": "الاسم الكامل",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "role": "نوع الحساب",
+      "roleOwner": "مالك مشروع",
+      "roleOwnerDesc": "أبحث عن مقاولين لمشاريعي",
+      "roleContractor": "مقاول / مورد",
+      "roleContractorDesc": "أبحث عن فرص مشاريع",
+      "agreeTerms": "أوافق على الشروط والأحكام",
+      "submitButton": "إنشاء الحساب",
+      "hasAccount": "لديك حساب بالفعل؟",
+      "loginLink": "تسجيل الدخول",
+      "success": "تم إنشاء حسابك بنجاح"
+    },
+    "forgotPassword": {
+      "title": "استعادة كلمة المرور",
+      "subtitle": "أدخل بريدك الإلكتروني وسنرسل لك رابط استعادة كلمة المرور",
+      "email": "البريد الإلكتروني",
+      "submitButton": "إرسال رابط الاستعادة",
+      "backToLogin": "العودة لتسجيل الدخول",
+      "success": "تم إرسال رابط استعادة كلمة المرور إلى بريدك الإلكتروني"
+    },
+    "verifyEmail": {
+      "title": "تأكيد البريد الإلكتروني",
+      "message": "تم إرسال رابط التأكيد إلى بريدك الإلكتروني. يرجى التحقق من بريدك.",
+      "resend": "إعادة إرسال رابط التأكيد"
+    }
+  },
+  "roles": {
+    "owner": "مالك مشروع",
+    "contractor": "مقاول",
+    "admin": "مدير النظام",
+    "supplier": "مورد"
+  },
+  "project": {
+    "create": "إنشاء مشروع جديد",
+    "edit": "تعديل المشروع",
+    "title": "عنوان المشروع",
+    "description": "وصف المشروع",
+    "category": "التصنيف",
+    "location": "الموقع",
+    "budget": "الميزانية",
+    "budgetMin": "الحد الأدنى",
+    "budgetMax": "الحد الأعلى",
+    "timeline": "الجدول الزمني",
+    "startDate": "تاريخ البدء المطلوب",
+    "deadline": "الموعد النهائي",
+    "propertyType": "نوع العقار",
+    "scope": "نطاق العمل",
+    "attachments": "المرفقات",
+    "trades": "التخصصات المطلوبة",
+    "submitForReview": "إرسال للمراجعة",
+    "saveDraft": "حفظ كمسودة",
+    "viewBids": "عرض العروض",
+    "noBids": "لا توجد عروض بعد",
+    "bidCount": "{count} عرض",
+    "status": {
+      "draft": "مسودة",
+      "pending_review": "قيد المراجعة",
+      "changes_requested": "مطلوب تعديلات",
+      "published": "منشور",
+      "bidding": "مفتوح للعروض",
+      "awarded": "تم الترسية",
+      "in_progress": "قيد التنفيذ",
+      "completed": "مكتمل",
+      "archived": "مؤرشف",
+      "cancelled": "ملغى"
+    }
+  },
+  "bid": {
+    "submit": "تقديم عرض",
+    "edit": "تعديل العرض",
+    "withdraw": "سحب العرض",
+    "amount": "قيمة العرض",
+    "duration": "المدة المقدرة (أيام)",
+    "startDate": "تاريخ البدء المتاح",
+    "proposal": "تفاصيل العرض",
+    "attachments": "مرفقات العرض",
+    "status": {
+      "draft": "مسودة",
+      "submitted": "مُقدم",
+      "shortlisted": "في القائمة المختصرة",
+      "rejected": "مرفوض",
+      "awarded": "فائز",
+      "withdrawn": "مسحوب"
+    }
+  },
+  "contractor": {
+    "profile": "ملف الشركة",
+    "companyName": "اسم الشركة",
+    "description": "نبذة عن الشركة",
+    "yearsInBusiness": "سنوات الخبرة",
+    "teamSize": "حجم الفريق",
+    "serviceRadius": "نطاق الخدمة (كم)",
+    "categories": "التخصصات",
+    "locations": "مناطق العمل",
+    "verification": "التحقق",
+    "documents": "وثائق التحقق",
+    "uploadDocuments": "رفع الوثائق",
+    "verificationStatus": {
+      "draft": "لم يبدأ",
+      "pending": "قيد المراجعة",
+      "verified": "موثق",
+      "rejected": "مرفوض",
+      "suspended": "معلق"
+    }
+  },
+  "admin": {
+    "dashboard": "لوحة تحكم الإدارة",
+    "projectQueue": "مراجعة المشاريع",
+    "verificationQueue": "مراجعة التحقق",
+    "users": "المستخدمين",
+    "categories": "التصنيفات",
+    "locations": "المواقع",
+    "fees": "الرسوم",
+    "reviews": "التقييمات",
+    "disputes": "النزاعات",
+    "auditLog": "سجل العمليات",
+    "settings": "إعدادات المنصة",
+    "approve": "موافقة",
+    "reject": "رفض",
+    "requestChanges": "طلب تعديلات",
+    "suspend": "تعليق",
+    "activate": "تفعيل"
+  },
+  "marketplace": {
+    "title": "سوق المشاريع",
+    "subtitle": "اكتشف فرص المشاريع الإنشائية",
+    "searchPlaceholder": "ابحث عن مشاريع...",
+    "filters": {
+      "title": "تصفية النتائج",
+      "category": "التصنيف",
+      "location": "الموقع",
+      "budget": "الميزانية",
+      "status": "الحالة",
+      "deadline": "الموعد النهائي",
+      "verifiedOnly": "المشاريع الموثقة فقط",
+      "clearAll": "مسح الكل",
+      "apply": "تطبيق"
+    },
+    "sort": {
+      "newest": "الأحدث",
+      "budgetHigh": "الأعلى ميزانية",
+      "budgetLow": "الأقل ميزانية",
+      "deadline": "الأقرب موعداً"
+    },
+    "results": "{count} مشروع",
+    "noProjects": "لا توجد مشاريع مطابقة لبحثك"
+  },
+  "home": {
+    "hero": {
+      "title": "منصة المقاولات الإنشائية الموثوقة",
+      "subtitle": "اربط مشاريعك بأفضل المقاولين الموثقين في المملكة العربية السعودية",
+      "ownerCta": "أنشر مشروعك",
+      "contractorCta": "ابحث عن فرص"
+    },
+    "stats": {
+      "projects": "مشروع",
+      "contractors": "مقاول موثق",
+      "bids": "عرض مقدم",
+      "awards": "ترسية ناجحة"
+    },
+    "howItWorks": {
+      "title": "كيف تعمل المنصة",
+      "step1Title": "أنشر مشروعك",
+      "step1Desc": "أضف تفاصيل مشروعك الإنشائي وحدد متطلباتك",
+      "step2Title": "استلم العروض",
+      "step2Desc": "مقاولون موثقون يقدمون عروضهم على مشروعك",
+      "step3Title": "قارن واختر",
+      "step3Desc": "قارن العروض واختر المقاول الأنسب لمشروعك",
+      "step4Title": "ابدأ التنفيذ",
+      "step4Desc": "تابع تنفيذ مشروعك عبر منصة العمل المشتركة"
+    },
+    "trust": {
+      "title": "منصة موثوقة وآمنة",
+      "verification": "مقاولون موثقون",
+      "verificationDesc": "جميع المقاولين يمرون بعملية تحقق شاملة",
+      "structured": "عروض منظمة",
+      "structuredDesc": "مقارنة سهلة وشفافة بين العروض",
+      "support": "دعم متواصل",
+      "supportDesc": "فريق دعم متخصص لمساعدتك في كل خطوة"
+    }
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "markAllRead": "تحديد الكل كمقروء",
+    "noNotifications": "لا توجد إشعارات",
+    "viewAll": "عرض جميع الإشعارات"
+  },
+  "errors": {
+    "generic": "حدث خطأ. يرجى المحاولة مرة أخرى.",
+    "notFound": "الصفحة غير موجودة",
+    "unauthorized": "غير مصرح لك بالوصول",
+    "forbidden": "ليس لديك صلاحية للوصول إلى هذه الصفحة",
+    "serverError": "خطأ في الخادم. يرجى المحاولة لاحقاً."
+  },
+  "footer": {
+    "homepage": "الرئيسية",
+    "about": "من نحن",
+    "services": "الخدمات",
+    "owners": "لأصحاب المشاريع",
+    "contractors": "للمقاولين والمهندسين",
+    "howItWorks": "كيف تعمل المنصة",
+    "advantages": "المزايا التنافسية",
+    "verification": "التحقق والتأهيل",
+    "faq": "الأسئلة الشائعة",
+    "partners": "الشركاء",
+    "contact": "اتصل بنا",
+    "copyright": "© {year} لاينكس فرصة. جميع الحقوق محفوظة."
+  }
+}

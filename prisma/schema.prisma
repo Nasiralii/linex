@@ -1,0 +1,974 @@
+// ============================================================================
+// LineX-Forsa Construction Marketplace — Database Schema
+// ============================================================================
+// This is the complete database schema for the construction marketplace.
+// All 25+ core tables are defined here with proper relationships.
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================================
+// AUTH & USERS
+// ============================================================================
+
+enum UserRole {
+  OWNER
+  CONTRACTOR
+  ENGINEER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DEACTIVATED
+}
+
+model User {
+  id            String     @id @default(cuid())
+  email         String     @unique
+  passwordHash  String     @map("password_hash")
+  role          UserRole
+  status        UserStatus @default(ACTIVE)
+  emailVerified Boolean    @default(false) @map("email_verified")
+  avatarUrl     String?    @map("avatar_url")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+  lastLoginAt   DateTime?  @map("last_login_at")
+
+  // Relations
+  ownerProfile      OwnerProfile?
+  contractorProfile ContractorProfile?
+  engineerProfile   EngineerProfile?
+  sessions          Session[]
+  notifications     Notification[]
+  auditLogs         AuditLog[]        @relation("AuditActor")
+  adminNotes        AdminNote[]       @relation("AdminNoteAuthor")
+  sentMessages      Message[]         @relation("MessageSender")
+  receivedMessages  Message[]         @relation("MessageReceiver")
+  walletTransactions WalletTransaction[]
+  badges            UserBadge[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// ============================================================================
+// OWNER PROFILE
+// ============================================================================
+
+model OwnerProfile {
+  id              String  @id @default(cuid())
+  userId          String  @unique @map("user_id")
+  fullName        String  @map("full_name")
+  fullNameAr      String? @map("full_name_ar")
+  legalName       String  @map("legal_name")
+  legalNameAr     String? @map("legal_name_ar")
+  companyCr       String? @map("company_cr")
+  companyName     String? @map("company_name")
+  companyNameAr   String? @map("company_name_ar")
+  companyType     String? @map("company_type")
+  phone           String?
+  city            String?
+  region          String?
+  bio             String?
+  bioAr           String? @map("bio_ar")
+  projectPreferences String? @map("project_preferences")
+  verificationStatus VerificationStatus @default(PENDING) @map("verification_status")
+  verifiedAt      DateTime? @map("verified_at")
+  rejectionReason String? @map("rejection_reason")
+  profileComplete Boolean @default(false) @map("profile_complete")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projects Project[]
+  reviews  Review[]  @relation("ReviewAuthor")
+
+  @@map("owner_profiles")
+}
+
+// ============================================================================
+// CONTRACTOR PROFILE & VERIFICATION
+// ============================================================================
+
+enum VerificationStatus {
+  DRAFT
+  PENDING
+  VERIFIED
+  REJECTED
+  SUSPENDED
+}
+
+model ContractorProfile {
+  id                 String             @id @default(cuid())
+  userId             String             @unique @map("user_id")
+  companyName        String             @map("company_name")
+  companyNameAr      String?            @map("company_name_ar")
+  legalName       String  @map("legal_name")
+  legalNameAr     String? @map("legal_name_ar")
+  companyCr       String? @map("company_cr")
+  discipline      String?
+  education       String?
+  certifications  String?
+  description        String?
+  descriptionAr      String?            @map("description_ar")
+  yearsInBusiness    Int?               @map("years_in_business")
+  teamSize           Int?               @map("team_size")
+  serviceRadiusKm    Int?               @map("service_radius_km")
+  phone              String?
+  website            String?
+  city               String?
+  region             String?
+  serviceArea        String?            @map("service_area")
+  verificationStatus VerificationStatus @default(DRAFT) @map("verification_status")
+  verifiedAt         DateTime?          @map("verified_at")
+  rejectionReason    String?            @map("rejection_reason")
+  ratingAverage      Float              @default(0) @map("rating_average")
+  reviewCount        Int                @default(0) @map("review_count")
+  profileComplete    Boolean            @default(false) @map("profile_complete")
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  user       User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documents  ContractorDocument[]
+  portfolioItems PortfolioItem[]
+  categories ContractorCategory[]
+  locations  ContractorLocation[]
+  bids       Bid[]
+  awards     Award[]                @relation("AwardContractor")
+  reviews    Review[]               @relation("ReviewSubject")
+
+  @@map("contractor_profiles")
+}
+
+model ContractorDocument {
+  id           String   @id @default(cuid())
+  contractorId String   @map("contractor_id")
+  documentType String   @map("document_type")
+  fileName     String   @map("file_name")
+  fileUrl      String   @map("file_url")
+  fileSize     Int?     @map("file_size")
+  mimeType     String?  @map("mime_type")
+  status       String   @default("pending")
+  adminNotes   String?  @map("admin_notes")
+  uploadedAt   DateTime @default(now()) @map("uploaded_at")
+
+  contractor ContractorProfile @relation(fields: [contractorId], references: [id], onDelete: Cascade)
+
+  @@map("contractor_documents")
+}
+
+model ContractorCategory {
+  id           String @id @default(cuid())
+  contractorId String @map("contractor_id")
+  categoryId   String @map("category_id")
+
+  contractor ContractorProfile @relation(fields: [contractorId], references: [id], onDelete: Cascade)
+  category   Category          @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([contractorId, categoryId])
+  @@map("contractor_categories")
+}
+
+model ContractorLocation {
+  id           String @id @default(cuid())
+  contractorId String @map("contractor_id")
+  locationId   String @map("location_id")
+
+  contractor ContractorProfile @relation(fields: [contractorId], references: [id], onDelete: Cascade)
+  location   Location          @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@unique([contractorId, locationId])
+  @@map("contractor_locations")
+}
+
+// ============================================================================
+// TAXONOMY (Categories & Locations)
+// ============================================================================
+
+model Category {
+  id        String  @id @default(cuid())
+  name      String
+  nameAr    String  @map("name_ar")
+  slug      String  @unique
+  parentId  String? @map("parent_id")
+  icon      String?
+  sortOrder Int     @default(0) @map("sort_order")
+  isActive  Boolean @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  parent               Category?            @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children             Category[]           @relation("CategoryHierarchy")
+  projects             Project[]
+  contractorCategories ContractorCategory[]
+
+  @@map("categories")
+}
+
+model Location {
+  id        String  @id @default(cuid())
+  name      String
+  nameAr    String  @map("name_ar")
+  slug      String  @unique
+  type      String  // country, region, city
+  parentId  String? @map("parent_id")
+  sortOrder Int     @default(0) @map("sort_order")
+  isActive  Boolean @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  parent              Location?            @relation("LocationHierarchy", fields: [parentId], references: [id])
+  children            Location[]           @relation("LocationHierarchy")
+  projects            Project[]
+  contractorLocations ContractorLocation[]
+
+  @@map("locations")
+}
+
+// ============================================================================
+// PROJECTS
+// ============================================================================
+
+enum ProjectStatus {
+  DRAFT
+  PENDING_REVIEW
+  CHANGES_REQUESTED
+  PUBLISHED
+  BIDDING
+  AWARDED
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+  CANCELLED
+}
+
+enum ProjectVisibility {
+  PUBLIC
+  VERIFIED_ONLY
+  INVITE_ONLY
+}
+
+model Project {
+  id                String            @id @default(cuid())
+  ownerId           String            @map("owner_id")
+  title             String
+  titleAr           String?           @map("title_ar")
+  slug              String            @unique
+  categoryId        String?           @map("category_id")
+  locationId        String?           @map("location_id")
+  description       String
+  descriptionAr     String?           @map("description_ar")
+  scopeSummary      String?           @map("scope_summary")
+  scopeSummaryAr    String?           @map("scope_summary_ar")
+  budgetMin         Float?            @map("budget_min")
+  budgetMax         Float?            @map("budget_max")
+  currency          String            @default("SAR")
+  requiredStartDate DateTime?         @map("required_start_date")
+  deadline          DateTime?
+  projectType       String            @default("CONSTRUCTION_ONLY") @map("project_type") // DESIGN_ONLY, CONSTRUCTION_ONLY, DESIGN_AND_CONSTRUCTION
+  propertyType      String?           @map("property_type")
+  status            ProjectStatus     @default(DRAFT)
+  visibility        ProjectVisibility @default(PUBLIC)
+  biddingWindowEnd  DateTime?         @map("bidding_window_end") // 30-day default
+  adminNotes        String?           @map("admin_notes")
+  rejectionReason   String?           @map("rejection_reason")
+  publishedAt       DateTime?         @map("published_at")
+  awardedAt         DateTime?         @map("awarded_at")
+  completedAt       DateTime?         @map("completed_at")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  owner          OwnerProfile           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  category       Category?              @relation(fields: [categoryId], references: [id])
+  location       Location?              @relation(fields: [locationId], references: [id])
+  attachments    ProjectAttachment[]
+  statusHistory  ProjectStatusHistory[]
+  bids           Bid[]
+  award          Award?
+  reviews        Review[]
+  disputes       Dispute[]
+  requiredTrades ProjectTrade[]
+  supervisionRequests SupervisionRequest[]
+
+  @@index([status])
+  @@index([categoryId])
+  @@index([locationId])
+  @@index([ownerId])
+  @@map("projects")
+}
+
+model ProjectAttachment {
+  id        String   @id @default(cuid())
+  projectId String   @map("project_id")
+  fileName  String   @map("file_name")
+  fileUrl   String   @map("file_url")
+  fileSize  Int?     @map("file_size")
+  mimeType  String?  @map("mime_type")
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_attachments")
+}
+
+model ProjectStatusHistory {
+  id        String   @id @default(cuid())
+  projectId String   @map("project_id")
+  fromStatus String? @map("from_status")
+  toStatus  String   @map("to_status")
+  changedBy String?  @map("changed_by")
+  reason    String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_status_history")
+}
+
+model ProjectTrade {
+  id        String @id @default(cuid())
+  projectId String @map("project_id")
+  tradeName String @map("trade_name")
+  tradeNameAr String? @map("trade_name_ar")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_trades")
+}
+
+// ============================================================================
+// BIDS
+// ============================================================================
+
+enum BidStatus {
+  DRAFT
+  SUBMITTED
+  SHORTLISTED
+  REJECTED
+  AWARDED
+  WITHDRAWN
+}
+
+model Bid {
+  id                String    @id @default(cuid())
+  projectId         String    @map("project_id")
+  contractorId      String?   @map("contractor_id")
+  engineerId        String?   @map("engineer_id")
+  amount            Float
+  currency          String    @default("SAR")
+  estimatedDuration Int?      @map("estimated_duration_days")
+  startDate         DateTime? @map("start_date")
+  proposalText      String?   @map("proposal_text")
+  proposalTextAr    String?   @map("proposal_text_ar")
+  status            BidStatus @default(DRAFT)
+  submittedAt       DateTime? @map("submitted_at")
+  shortlistedAt     DateTime? @map("shortlisted_at")
+  rejectedAt        DateTime? @map("rejected_at")
+  aiScore           Float?    @map("ai_score") // 0-100 AI ranking score
+  rejectionReason   String?   @map("rejection_reason")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  project       Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  contractor    ContractorProfile? @relation(fields: [contractorId], references: [id], onDelete: Cascade)
+  engineer      EngineerProfile?   @relation(fields: [engineerId], references: [id], onDelete: Cascade)
+  attachments   BidAttachment[]
+  statusHistory BidStatusHistory[]
+  award         Award?
+
+  @@unique([projectId, contractorId])
+  @@unique([projectId, engineerId])
+  @@index([projectId])
+  @@index([contractorId])
+  @@index([engineerId])
+  @@index([status])
+  @@map("bids")
+}
+
+model BidAttachment {
+  id        String   @id @default(cuid())
+  bidId     String   @map("bid_id")
+  fileName  String   @map("file_name")
+  fileUrl   String   @map("file_url")
+  fileSize  Int?     @map("file_size")
+  mimeType  String?  @map("mime_type")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  bid Bid @relation(fields: [bidId], references: [id], onDelete: Cascade)
+
+  @@map("bid_attachments")
+}
+
+model BidStatusHistory {
+  id         String   @id @default(cuid())
+  bidId      String   @map("bid_id")
+  fromStatus String?  @map("from_status")
+  toStatus   String   @map("to_status")
+  changedBy  String?  @map("changed_by")
+  reason     String?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  bid Bid @relation(fields: [bidId], references: [id], onDelete: Cascade)
+
+  @@map("bid_status_history")
+}
+
+// ============================================================================
+// AWARDS & FEES
+// ============================================================================
+
+model Award {
+  id             String   @id @default(cuid())
+  projectId      String   @unique @map("project_id")
+  bidId          String   @unique @map("bid_id")
+  ownerId        String   @map("owner_id")
+  contractorId   String?  @map("contractor_id")
+  engineerId     String?  @map("engineer_id")
+  awardedAmount  Float    @map("awarded_amount")
+  currency       String   @default("SAR")
+  awardedAt      DateTime @default(now()) @map("awarded_at")
+
+  // Relations
+  project    Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  bid        Bid               @relation(fields: [bidId], references: [id], onDelete: Cascade)
+  contractor ContractorProfile? @relation("AwardContractor", fields: [contractorId], references: [id])
+  engineer   EngineerProfile?   @relation("AwardEngineer", fields: [engineerId], references: [id])
+  feeEvent   FeeEvent?
+
+  @@map("awards")
+}
+
+// ============================================================================
+// FEE ENGINE
+// ============================================================================
+
+enum FeeType {
+  FLAT
+  PERCENTAGE
+  HYBRID
+}
+
+enum FeePayer {
+  OWNER
+  CONTRACTOR
+  SPLIT
+}
+
+enum FeeStatus {
+  PENDING
+  INVOICED
+  PAID
+  FAILED
+  WAIVED
+  REFUNDED
+}
+
+model FeeRule {
+  id          String   @id @default(cuid())
+  name        String
+  nameAr      String?  @map("name_ar")
+  feeType     FeeType  @map("fee_type")
+  payer       FeePayer
+  flatAmount  Float?   @map("flat_amount")
+  percentage  Float?
+  minAmount   Float?   @map("min_amount")
+  maxAmount   Float?   @map("max_amount")
+  currency    String   @default("SAR")
+  isActive    Boolean  @default(true) @map("is_active")
+  isDefault   Boolean  @default(false) @map("is_default")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  feeEvents FeeEvent[]
+
+  @@map("fee_rules")
+}
+
+model FeeEvent {
+  id          String    @id @default(cuid())
+  awardId     String    @unique @map("award_id")
+  feeRuleId   String?   @map("fee_rule_id")
+  feeType     FeeType   @map("fee_type")
+  payerType   FeePayer  @map("payer_type")
+  baseAmount  Float     @map("base_amount")
+  feeAmount   Float     @map("fee_amount")
+  currency    String    @default("SAR")
+  status      FeeStatus @default(PENDING)
+  dueDate     DateTime? @map("due_date")
+  paidAt      DateTime? @map("paid_at")
+  stripePaymentId String? @map("stripe_payment_id")
+  notes       String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  award   Award    @relation(fields: [awardId], references: [id], onDelete: Cascade)
+  feeRule FeeRule? @relation(fields: [feeRuleId], references: [id])
+  invoice Invoice?
+
+  @@map("fee_events")
+}
+
+model Invoice {
+  id           String   @id @default(cuid())
+  feeEventId   String   @unique @map("fee_event_id")
+  invoiceNumber String  @unique @map("invoice_number")
+  amount       Float
+  currency     String   @default("SAR")
+  status       String   @default("draft")
+  issuedAt     DateTime? @map("issued_at")
+  dueDate      DateTime? @map("due_date")
+  paidAt       DateTime? @map("paid_at")
+  pdfUrl       String?  @map("pdf_url")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  feeEvent FeeEvent @relation(fields: [feeEventId], references: [id], onDelete: Cascade)
+
+  @@map("invoices")
+}
+
+// ============================================================================
+// REVIEWS
+// ============================================================================
+
+model Review {
+  id           String   @id @default(cuid())
+  projectId    String   @map("project_id")
+  authorId     String   @map("author_id")
+  subjectId    String   @map("subject_id")
+  rating       Int      // 1-5
+  comment      String?
+  commentAr    String?  @map("comment_ar")
+  isVisible    Boolean  @default(true) @map("is_visible")
+  moderationStatus String @default("approved") @map("moderation_status")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  project Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  author  OwnerProfile      @relation("ReviewAuthor", fields: [authorId], references: [id])
+  subject ContractorProfile @relation("ReviewSubject", fields: [subjectId], references: [id])
+
+  @@unique([projectId, authorId])
+  @@map("reviews")
+}
+
+// ============================================================================
+// NOTIFICATIONS
+// ============================================================================
+
+enum NotificationType {
+  PROJECT_SUBMITTED
+  PROJECT_APPROVED
+  PROJECT_REJECTED
+  PROJECT_CHANGES_REQUESTED
+  BID_RECEIVED
+  BID_SHORTLISTED
+  BID_REJECTED
+  BID_AWARDED
+  VERIFICATION_APPROVED
+  VERIFICATION_REJECTED
+  FEE_INVOICE_CREATED
+  REVIEW_SUBMITTED
+  DISPUTE_OPENED
+  DISPUTE_RESOLVED
+  GENERAL
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String           @map("user_id")
+  type      NotificationType
+  title     String
+  titleAr   String?          @map("title_ar")
+  message   String
+  messageAr String?          @map("message_ar")
+  link      String?
+  isRead    Boolean          @default(false) @map("is_read")
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+// ============================================================================
+// DISPUTES
+// ============================================================================
+
+enum DisputeStatus {
+  OPEN
+  UNDER_REVIEW
+  AWAITING_RESPONSE
+  RESOLVED
+  CLOSED
+}
+
+model Dispute {
+  id          String        @id @default(cuid())
+  projectId   String        @map("project_id")
+  filedBy     String        @map("filed_by")
+  againstUser String        @map("against_user")
+  reason      String
+  reasonAr    String?       @map("reason_ar")
+  description String?
+  status      DisputeStatus @default(OPEN)
+  resolution  String?
+  resolvedAt  DateTime?     @map("resolved_at")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("disputes")
+}
+
+// ============================================================================
+// AUDIT LOGS
+// ============================================================================
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?  @map("actor_id")
+  action     String
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id")
+  before     Json?
+  after      Json?
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  metadata   Json?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  actor User? @relation("AuditActor", fields: [actorId], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([actorId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ============================================================================
+// ADMIN NOTES
+// ============================================================================
+
+model AdminNote {
+  id         String   @id @default(cuid())
+  authorId   String   @map("author_id")
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id")
+  note       String
+  isInternal Boolean  @default(true) @map("is_internal")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  author User @relation("AdminNoteAuthor", fields: [authorId], references: [id])
+
+  @@index([entityType, entityId])
+  @@map("admin_notes")
+}
+
+// ============================================================================
+// ENGINEER PROFILE (NEW — Designer/Supervisor/Both)
+// ============================================================================
+
+model EngineerProfile {
+  id                 String             @id @default(cuid())
+  userId             String             @unique @map("user_id")
+  fullName           String             @map("full_name")
+  fullNameAr         String?            @map("full_name_ar")
+  companyName        String?            @map("company_name")
+  companyNameAr      String?            @map("company_name_ar")
+  legalName       String  @map("legal_name")
+  legalNameAr     String? @map("legal_name_ar")
+  companyCr       String? @map("company_cr")
+  specialization     String             @default("DESIGNER") // DESIGNER, SUPERVISOR, BOTH
+  discipline         String?            // Civil, Architectural, Electrical, Mechanical, etc.
+  description        String?
+  descriptionAr      String?            @map("description_ar")
+  yearsExperience    Int?               @map("years_experience")
+  education          String?
+  certifications     String?
+  phone              String?
+  website            String?
+  city               String?
+  region             String?
+  serviceArea        String?            @map("service_area")
+  verificationStatus VerificationStatus @default(DRAFT) @map("verification_status")
+  verifiedAt         DateTime?          @map("verified_at")
+  rejectionReason    String?            @map("rejection_reason")
+  ratingAverage      Float              @default(0) @map("rating_average")
+  reviewCount        Int                @default(0) @map("review_count")
+  profileScore       Int                @default(0) @map("profile_score") // AI 0-100 score
+  walletBalance      Float              @default(0) @map("wallet_balance") // SAR for supervision
+  supervisionBidCredits Int             @default(0) @map("supervision_bid_credits")
+  profileComplete    Boolean            @default(false) @map("profile_complete")
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documents EngineerDocument[]
+  portfolioItems PortfolioItem[]
+  bids Bid[]
+  awards Award[] @relation("AwardEngineer")
+  supervisionBids SupervisionBid[]
+
+  @@map("engineer_profiles")
+}
+
+model EngineerDocument {
+  id           String   @id @default(cuid())
+  engineerId    String   @map("engineer_id")
+  documentType String   @map("document_type")
+  fileName     String   @map("file_name")
+  fileUrl      String   @map("file_url")
+  fileSize     Int?     @map("file_size")
+  mimeType     String?  @map("mime_type")
+  status       String   @default("pending")
+  adminNotes   String?  @map("admin_notes")
+  uploadedAt   DateTime @default(now()) @map("uploaded_at")
+
+  engineer EngineerProfile @relation(fields: [engineerId], references: [id], onDelete: Cascade)
+
+  @@map("engineer_documents")
+}
+
+model PortfolioItem {
+  id           String   @id @default(cuid())
+  contractorId String?  @map("contractor_id")
+  engineerId   String?  @map("engineer_id")
+  fileName     String   @map("file_name")
+  fileUrl      String   @map("file_url")
+  fileSize     Int?     @map("file_size")
+  mimeType     String?  @map("mime_type")
+  sortOrder    Int      @default(0) @map("sort_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  contractor ContractorProfile? @relation(fields: [contractorId], references: [id], onDelete: Cascade)
+  engineer   EngineerProfile?   @relation(fields: [engineerId], references: [id], onDelete: Cascade)
+
+  @@map("portfolio_items")
+}
+
+// ============================================================================
+// MESSAGING / Q&A SYSTEM
+// ============================================================================
+
+model Message {
+  id         String   @id @default(cuid())
+  senderId   String   @map("sender_id")
+  receiverId String   @map("receiver_id")
+  projectId  String?  @map("project_id") // Optional: tied to a project
+  bidId      String?  @map("bid_id")     // Optional: tied to a bid
+  content    String
+  isRead     Boolean  @default(false) @map("is_read")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  sender   User @relation("MessageSender", fields: [senderId], references: [id])
+  receiver User @relation("MessageReceiver", fields: [receiverId], references: [id])
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([projectId])
+  @@map("messages")
+}
+
+// ============================================================================
+// WALLET TRANSACTIONS
+// ============================================================================
+
+model WalletTransaction {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  type        String   // FUND, DEDUCT, REFUND
+  amount      Float
+  currency    String   @default("SAR")
+  purpose     String   // SUPERVISION_DEPOSIT, SUPERVISION_DEDUCTION, KRASAT, CONTRACT_FEE, REFUND
+  referenceId String?  @map("reference_id") // Project or service ID
+  status      String   @default("completed") // pending, completed, failed
+  stripePaymentId String? @map("stripe_payment_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("wallet_transactions")
+}
+
+// ============================================================================
+// KRASAT SYSTEM (Project Unlock Purchase — 100 SAR)
+// ============================================================================
+
+model KrasatPurchase {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  projectId   String   @map("project_id")
+  amount      Float    @default(100) // 100 SAR fixed
+  currency    String   @default("SAR")
+  status      String   @default("completed") // pending, completed, refunded
+  stripePaymentId String? @map("stripe_payment_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, projectId])
+  @@index([userId])
+  @@index([projectId])
+  @@map("krasat_purchases")
+}
+
+// ============================================================================
+// CONTRACTS
+// ============================================================================
+
+model Contract {
+  id            String   @id @default(cuid())
+  projectId     String   @map("project_id")
+  awardId       String?  @map("award_id")
+  contractType  String   @default("SIMPLE") // SIMPLE (free), PROFESSIONAL (150 SAR)
+  status        String   @default("DRAFT") // DRAFT, PENDING_SIGNATURE, SIGNED, EXPIRED
+  terms         String?
+  customTerms   String?  @map("custom_terms")
+  ownerSignedAt DateTime? @map("owner_signed_at")
+  contractorSignedAt DateTime? @map("contractor_signed_at")
+  pdfUrl        String?  @map("pdf_url")
+  amount        Float    @default(0) // 0 for simple, 150 for professional
+  currency      String   @default("SAR")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([projectId])
+  @@map("contracts")
+}
+
+// ============================================================================
+// BADGES SYSTEM
+// ============================================================================
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  badge     String   // VERIFIED, EXPERIENCED, HIGHLY_RATED, FAST_RESPONSE, PREMIUM
+  awardedAt DateTime @default(now()) @map("awarded_at")
+  expiresAt DateTime? @map("expires_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, badge])
+  @@map("user_badges")
+}
+
+// ============================================================================
+// SUPERVISION REQUESTS
+// ============================================================================
+
+model SupervisionRequest {
+  id             String   @id @default(cuid())
+  projectId      String   @map("project_id")
+  requestedBy    String   @map("requested_by") // Owner user ID
+  assignedTo     String?  @map("assigned_to")  // Engineer user ID
+  requestFee     Float    @default(150) // 150 SAR owner fee
+  walletDeduction Float   @default(500) // 500 SAR winner fee from engineer wallet
+  status         String   @default("OPEN") // OPEN, ASSIGNED, COMPLETED, CANCELLED
+  awardedBidId   String?  @unique @map("awarded_bid_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  bids           SupervisionBid[]
+
+  @@index([projectId])
+  @@map("supervision_requests")
+}
+
+model SupervisionBid {
+  id                   String   @id @default(cuid())
+  supervisionRequestId String   @map("supervision_request_id")
+  engineerId           String   @map("engineer_id")
+  proposedFee          Float    @map("proposed_fee")
+  estimatedDuration    Int?     @map("estimated_duration_days")
+  proposalText         String?  @map("proposal_text")
+  status               String   @default("SUBMITTED") // SUBMITTED, REJECTED, AWARDED, WITHDRAWN
+  creditsUsed          Int      @default(1) @map("credits_used")
+  submittedAt          DateTime @default(now()) @map("submitted_at")
+  awardedAt            DateTime? @map("awarded_at")
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  request              SupervisionRequest @relation(fields: [supervisionRequestId], references: [id], onDelete: Cascade)
+  engineer             EngineerProfile    @relation(fields: [engineerId], references: [id], onDelete: Cascade)
+
+  @@unique([supervisionRequestId, engineerId])
+  @@index([engineerId])
+  @@index([status])
+  @@map("supervision_bids")
+}
+
+// ============================================================================
+// PLATFORM SETTINGS
+// ============================================================================
+
+model PlatformSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  type      String   @default("string") // string, number, boolean, json
+  label     String?
+  labelAr   String?  @map("label_ar")
+  group     String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("platform_settings")
+}
+
+// ============================================================================
+// CMS CONTENT PAGES
+// ============================================================================
+
+model ContentPage {
+  id               String   @id @default(cuid())
+  key              String   @unique
+  slug             String   @unique
+  title            String
+  titleAr          String   @map("title_ar")
+  excerpt          String? 
+  excerptAr        String?  @map("excerpt_ar")
+  content          String
+  contentAr        String   @map("content_ar")
+  seoTitle         String?  @map("seo_title")
+  seoTitleAr       String?  @map("seo_title_ar")
+  seoDescription   String?  @map("seo_description")
+  seoDescriptionAr String?  @map("seo_description_ar")
+  isPublished      Boolean  @default(true) @map("is_published")
+  updatedBy        String?  @map("updated_by")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@map("content_pages")
+}

@@ -1,0 +1,104 @@
+"use client";
+
+import { useTranslations, useLocale } from "next-intl";
+import { Link } from "@/i18n/routing";
+import { Building2, Mail, MapPin } from "lucide-react";
+import { PUBLIC_CONTENT_PAGES } from "@/lib/content-pages";
+
+export function Footer() {
+  const t = useTranslations("footer");
+  const tCommon = useTranslations("common");
+  const locale = useLocale();
+  const isRtl = locale === "ar";
+  const year = new Date().getFullYear();
+
+  return (
+    <footer style={{
+      background: "#1a2332",
+      borderTop: "1px solid rgba(255,255,255,0.08)",
+    }}>
+      <div className="container-app" style={{ padding: "3rem 1.5rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "2rem" }}>
+          {/* Brand */}
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
+              <div style={{
+                width: "36px", height: "36px", borderRadius: "var(--radius-lg)",
+                background: "linear-gradient(135deg, var(--primary), var(--primary-dark))",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <Building2 style={{ width: "18px", height: "18px", color: "white" }} />
+              </div>
+              <span style={{ fontSize: "1.125rem", fontWeight: 700, color: "white" }}>
+                {isRtl ? "لاينكس فرصة" : "LineX Forsa"}
+              </span>
+            </div>
+            <p style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.5)", maxWidth: "320px", lineHeight: 1.7, marginBottom: "1rem" }}>
+              {tCommon("tagline")}
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              <span style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.8125rem", color: "rgba(255,255,255,0.4)" }}>
+                <Mail style={{ width: "14px", height: "14px" }} /> info@linexforsa.com
+              </span>
+              <span style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.8125rem", color: "rgba(255,255,255,0.4)" }}>
+                <MapPin style={{ width: "14px", height: "14px" }} /> {isRtl ? "المملكة العربية السعودية" : "Saudi Arabia"}
+              </span>
+            </div>
+          </div>
+
+          {/* Content Links */}
+          <div>
+            <h4 style={{ fontSize: "0.875rem", fontWeight: 700, color: "rgba(255,255,255,0.8)", marginBottom: "1rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              {isRtl ? "صفحات الموقع" : "Site Pages"}
+            </h4>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>
+              <Link href="/" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", textDecoration: "none", transition: "color 150ms ease" }}>
+                {t("homepage")}
+              </Link>
+              {PUBLIC_CONTENT_PAGES.map((page) => (
+                <Link key={page.key} href={`/${page.slug}` as never} style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", textDecoration: "none", transition: "color 150ms ease" }}>
+                  {page.key === "about-us" ? t("about") :
+                    page.key === "services" ? t("services") :
+                    page.key === "for-project-owners" ? t("owners") :
+                    page.key === "for-contractors-engineers" ? t("contractors") :
+                    page.key === "how-it-works" ? t("howItWorks") :
+                    page.key === "competitive-advantages" ? t("advantages") :
+                    page.key === "verification-qualification" ? t("verification") :
+                    page.key === "faq" ? t("faq") :
+                    page.key === "partners" ? t("partners") :
+                    t("contact")}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h4 style={{ fontSize: "0.875rem", fontWeight: 700, color: "rgba(255,255,255,0.8)", marginBottom: "1rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              {t("contact")}
+            </h4>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>
+              <Link href="/marketplace" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", textDecoration: "none" }}>
+                {isRtl ? "سوق المشاريع" : "Marketplace"}
+              </Link>
+              <Link href="/auth/register" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", textDecoration: "none" }}>
+                {isRtl ? "إنشاء حساب" : "Register"}
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom */}
+        <div style={{
+          marginTop: "2.5rem", paddingTop: "1.5rem",
+          borderTop: "1px solid rgba(255,255,255,0.08)",
+          textAlign: "center",
+        }}>
+          <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.3)" }}>
+            {t("copyright", { year: year.toString() })}
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}
