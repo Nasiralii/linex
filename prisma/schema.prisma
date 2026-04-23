@@ -28,6 +28,7 @@ enum UserStatus {
   ACTIVE
   SUSPENDED
   DEACTIVATED
+  
 }
 
 model User {
