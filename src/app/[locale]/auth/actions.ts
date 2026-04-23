@@ -2,7 +2,13 @@
 
 import { db } from "@/lib/db";
 import { rateLimits } from "@/lib/rate-limit";
-import { hashPassword, verifyPassword, createSession, deleteSession, getCurrentUser } from "@/lib/auth";
+import {
+  hashPassword,
+  verifyPassword,
+  createSession,
+  deleteSession,
+  getCurrentUser,
+} from "@/lib/auth";
 import { loginSchema, registerSchema } from "@/lib/validations/auth";
 import { sendVerificationEmail } from "@/lib/email";
 import { logger } from "@/lib/logger";
@@ -18,7 +24,10 @@ export interface AuthResult {
   redirectTo?: string;
 }
 
-export async function aiTranslateProfileTextAction(text: string, fromLang: "ar" | "en") {
+export async function aiTranslateProfileTextAction(
+  text: string,
+  fromLang: "ar" | "en",
+) {
   try {
     const user = await getCurrentUser();
     if (!user) return { success: false, error: "Unauthorized" };
@@ -42,7 +51,10 @@ export async function aiTranslateProfileTextAction(text: string, fromLang: "ar" 
       temperature: 0.3,
     });
 
-    return { success: true, translated: response.choices[0]?.message?.content?.trim() || "" };
+    return {
+      success: true,
+      translated: response.choices[0]?.message?.content?.trim() || "",
+    };
   } catch (error) {
     console.error("Profile translate error:", error);
     return { success: false, error: "Translation failed" };
@@ -60,9 +72,9 @@ export async function registerAction(formData: FormData): Promise<AuthResult> {
       role: formData.get("role") as string,
     };
     // Gap 12: Phone number
-    const phone = formData.get("phone") as string || "";
+    const phone = (formData.get("phone") as string) || "";
     // Arabic name (if provided)
-    const fullNameAr = formData.get("fullNameAr") as string || "";
+    const fullNameAr = (formData.get("fullNameAr") as string) || "";
 
     // Validate input
     const result = registerSchema.safeParse(rawData);
@@ -76,10 +88,52 @@ export async function registerAction(formData: FormData): Promise<AuthResult> {
     // Check if user already exists
     const existingUser = await db.user.findUnique({
       where: { email: email.toLowerCase() },
+      include: {
+        ownerProfile: {
+          select: { verificationStatus: true },
+        },
+        contractorProfile: {
+          select: { verificationStatus: true },
+        },
+        engineerProfile: {
+          select: { verificationStatus: true },
+        },
+      },
     });
 
     if (existingUser) {
-      return { success: false, error: "An account with this email already exists" };
+      // Check if user has a rejected profile - if so, allow creating new account
+      const profileStatus =
+        existingUser.ownerProfile?.verificationStatus ||
+        existingUser.contractorProfile?.verificationStatus ||
+        existingUser.engineerProfile?.verificationStatus;
+
+      if (profileStatus === "REJECTED") {
+        // Delete the old rejected user to allow creating new account with same email
+        logger.info("Deleting rejected user to allow new registration", {
+          email: email.toLowerCase(),
+          existingUserId: existingUser.id,
+          action: "delete_rejected_user",
+        });
+
+        await db.user.delete({
+          where: { id: existingUser.id },
+        });
+
+        logger.info(
+          "Allowing rejected user to create new account with same email",
+          {
+            email: email.toLowerCase(),
+            oldUserId: existingUser.id,
+            action: "register_rejected_user",
+          },
+        );
+      } else {
+        return {
+          success: false,
+          error: "An account with this email already exists",
+        };
+      }
     }
 
     // Hash password
@@ -90,11 +144,13 @@ export async function registerAction(formData: FormData): Promise<AuthResult> {
     const userStatus = "ACTIVE";
 
     // G4: Owner type (Individual/Company)
-    const ownerType = formData.get("ownerType") as string || "individual";
-    const website = (formData.get("website") as string || "").trim();
-    const publicName = (formData.get("publicName") as string || "").trim();
-    const companyCr = (formData.get("companyCr") as string || "").trim();
-    const ownerProjectPreferences = (formData.get("ownerProjectPreferences") as string || "").trim();
+    const ownerType = (formData.get("ownerType") as string) || "individual";
+    const website = ((formData.get("website") as string) || "").trim();
+    const publicName = ((formData.get("publicName") as string) || "").trim();
+    const companyCr = ((formData.get("companyCr") as string) || "").trim();
+    const ownerProjectPreferences = (
+      (formData.get("ownerProjectPreferences") as string) || ""
+    ).trim();
 
     // Create user
     const user = await db.user.create({
@@ -110,13 +166,13 @@ export async function registerAction(formData: FormData): Promise<AuthResult> {
     // Create role-specific profile
     if (role === "OWNER") {
       await db.ownerProfile.create({
-        data: { 
-          userId: user.id, 
-          fullName, 
+        data: {
+          userId: user.id,
+          fullName,
           fullNameAr: fullNameAr || null,
           legalName: fullName,
           legalNameAr: fullNameAr || null,
-          phone: phone || null, 
+          phone: phone || null,
           companyName: publicName || null,
           companyType: ownerType,
           projectPreferences: ownerProjectPreferences || null,
@@ -125,40 +181,46 @@ export async function registerAction(formData: FormData): Promise<AuthResult> {
       });
     } else if (role === "CONTRACTOR") {
       await db.contractorProfile.create({
-        data: { 
-          userId: user.id, 
+        data: {
+          userId: user.id,
           companyName: fullName,
           companyNameAr: fullNameAr || null,
           legalName: fullName,
           legalNameAr: fullNameAr || null,
           companyCr: companyCr || null,
-          phone: phone || null, 
-          verificationStatus: "DRAFT" 
-          , website: website || null
+          phone: phone || null,
+          verificationStatus: "DRAFT",
+          website: website || null,
         },
       });
     } else if (role === "ENGINEER") {
-      const specialization = formData.get("specialization")?.toString() || "DESIGNER";
+      const specialization =
+        formData.get("specialization")?.toString() || "DESIGNER";
       await db.engineerProfile.create({
-        data: { 
-          userId: user.id, 
-          fullName, 
+        data: {
+          userId: user.id,
+          fullName,
           fullNameAr: fullNameAr || null,
           legalName: fullName,
           legalNameAr: fullNameAr || null,
-          phone: phone || null, 
+          phone: phone || null,
           companyName: publicName || null,
-          verificationStatus: "DRAFT", 
+          verificationStatus: "DRAFT",
           specialization,
-          website: website || null
+          website: website || null,
         },
       });
     }
 
     // Send verification email (non-blocking)
     const verificationToken = crypto.randomUUID();
-    sendVerificationEmail(email.toLowerCase(), verificationToken, "ar").catch(e => 
-      logger.error("Email send failed", { action: "register", entityType: "email" }, e as Error)
+    sendVerificationEmail(email.toLowerCase(), verificationToken, "ar").catch(
+      (e) =>
+        logger.error(
+          "Email send failed",
+          { action: "register", entityType: "email" },
+          e as Error,
+        ),
     );
 
     // Auto-login after registration — redirect to profile page to fill required info
@@ -169,12 +231,19 @@ export async function registerAction(formData: FormData): Promise<AuthResult> {
 
     return { success: true, redirectTo: "/dashboard/profile" };
   } catch (error: any) {
-    logger.error("Register failed", { action: "register", entityType: "auth" }, error);
-    
+    logger.error(
+      "Register failed",
+      { action: "register", entityType: "auth" },
+      error,
+    );
+
     // Return specific error messages for debugging
     if (error?.code === "P2002") {
       // Prisma unique constraint violation
-      return { success: false, error: "An account with this email already exists" };
+      return {
+        success: false,
+        error: "An account with this email already exists",
+      };
     }
     if (error?.message?.includes("password")) {
       return { success: false, error: "Password does not meet requirements" };
@@ -183,9 +252,12 @@ export async function registerAction(formData: FormData): Promise<AuthResult> {
       return { success: false, error: `Validation error: ${error.message}` };
     }
     if (error?.message?.includes("create")) {
-      return { success: false, error: "Failed to create account. Please try again." };
+      return {
+        success: false,
+        error: "Failed to create account. Please try again.",
+      };
     }
-    
+
     // Log the actual error for server-side debugging
     console.error("[registerAction] Detailed error:", {
       message: error?.message,
@@ -193,8 +265,11 @@ export async function registerAction(formData: FormData): Promise<AuthResult> {
       meta: error?.meta,
       stack: error?.stack?.split("\n").slice(0, 3).join("\n"),
     });
-    
-    return { success: false, error: "An unexpected error occurred. Please try again." };
+
+    return {
+      success: false,
+      error: "An unexpected error occurred. Please try again.",
+    };
   }
 }
 
@@ -209,8 +284,14 @@ export async function loginAction(formData: FormData): Promise<AuthResult> {
     const ip = "server-action"; // Server actions dont expose IP easily
     const rl = rateLimits.auth(ip);
     if (!rl.allowed) {
-      logger.security("rate_limit_exceeded", undefined, { action: "login", ip });
-      return { success: false, error: "Too many login attempts. Please try again later." };
+      logger.security("rate_limit_exceeded", undefined, {
+        action: "login",
+        ip,
+      });
+      return {
+        success: false,
+        error: "Too many login attempts. Please try again later.",
+      };
     }
     const rawData = {
       email: formData.get("email") as string,
@@ -243,7 +324,10 @@ export async function loginAction(formData: FormData): Promise<AuthResult> {
     // Verify password
     const isValid = await verifyPassword(password, user.passwordHash);
     if (!isValid) {
-      logger.security("login_failed", undefined, { email: email.toLowerCase(), reason: "invalid_password" });
+      logger.security("login_failed", undefined, {
+        email: email.toLowerCase(),
+        reason: "invalid_password",
+      });
       return { success: false, error: "Invalid email or password" };
     }
 
@@ -261,13 +345,22 @@ export async function loginAction(formData: FormData): Promise<AuthResult> {
 
     if (user.role !== "ADMIN") {
       if (user.role === "OWNER") {
-        const profile = await db.ownerProfile.findUnique({ where: { userId: user.id }, select: { profileComplete: true } });
+        const profile = await db.ownerProfile.findUnique({
+          where: { userId: user.id },
+          select: { profileComplete: true },
+        });
         if (!profile?.profileComplete) redirectTo = "/dashboard/profile";
       } else if (user.role === "CONTRACTOR") {
-        const profile = await db.contractorProfile.findUnique({ where: { userId: user.id }, select: { profileComplete: true } });
+        const profile = await db.contractorProfile.findUnique({
+          where: { userId: user.id },
+          select: { profileComplete: true },
+        });
         if (!profile?.profileComplete) redirectTo = "/dashboard/profile";
       } else if (user.role === "ENGINEER") {
-        const profile = await db.engineerProfile.findUnique({ where: { userId: user.id }, select: { profileComplete: true } });
+        const profile = await db.engineerProfile.findUnique({
+          where: { userId: user.id },
+          select: { profileComplete: true },
+        });
         if (!profile?.profileComplete) redirectTo = "/dashboard/profile";
       }
     }
@@ -277,7 +370,11 @@ export async function loginAction(formData: FormData): Promise<AuthResult> {
 
     return { success: true, redirectTo };
   } catch (error: any) {
-    logger.error("Login failed", { action: "login", entityType: "auth" }, error);
+    logger.error(
+      "Login failed",
+      { action: "login", entityType: "auth" },
+      error,
+    );
     return { success: false, error: "Login failed. Please try again." };
   }
 }
@@ -293,7 +390,11 @@ export async function logoutAction(): Promise<AuthResult> {
     logger.auth("logout", user?.id, true);
     return { success: true, redirectTo: "/" };
   } catch (error) {
-    logger.error("Logout failed", { action: "logout", entityType: "auth" }, error as Error);
+    logger.error(
+      "Logout failed",
+      { action: "logout", entityType: "auth" },
+      error as Error,
+    );
     return { success: false, error: "Failed to log out" };
   }
 }
