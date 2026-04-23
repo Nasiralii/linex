@@ -261,8 +261,18 @@ export default function NewProjectPage() {
     setSpecifications(draftPreview.meta?.specifications || "");
     setPropertyType(draftPreview.propertyType || "");
     setEstimatedBudget(draftPreview.meta?.estimatedBudget ? String(draftPreview.meta.estimatedBudget) : draftPreview.budgetMax ? String(draftPreview.budgetMax) : "");
-    setStartDate(draftPreview.requiredStartDate ? String(draftPreview.requiredStartDate).slice(0, 10) : "");
-    setDeadline(draftPreview.deadline ? String(draftPreview.deadline).slice(0, 10) : "");
+    // setStartDate(draftPreview.requiredStartDate ? String(draftPreview.requiredStartDate).slice(0, 10) : "");
+    setStartDate(
+  draftPreview.requiredStartDate
+    ? new Date(draftPreview.requiredStartDate).toISOString().slice(0, 10)
+    : ""
+);
+    // setDeadline(draftPreview.deadline ? String(draftPreview.deadline).slice(0, 10) : "");
+    setDeadline(
+  draftPreview.deadline
+    ? new Date(draftPreview.deadline).toISOString().slice(0, 10)
+    : ""
+);
     setContacts(draftPreview.meta?.contacts?.length ? draftPreview.meta.contacts : [createEmptyContact()]);
     setExistingAttachments(draftPreview.attachments || []);
     setShowDraftPrompt(false);
@@ -567,10 +577,10 @@ export default function NewProjectPage() {
         {/* ================================================================ */}
         {/* STEP 1: Project Title (fixed Arabic input bug) */}
         {/* ================================================================ */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-12 mb-12">
           <div>
             <div style={{ fontSize: "0.8125rem", color: "var(--text-muted)", marginBottom: "0.5rem" }}>{isRtl ? "الخطوة 1" : "Step 1"}</div>
-            <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "var(--text)", lineHeight: 1.3, marginBottom: "0.75rem" }}>
+            <h2 className="md:!text-2xl !text-xl mb-2" style={{ fontWeight: 800, color: "var(--text)" }}>
               {isRtl ? "لنبدأ بعنوان قوي." : "Let's start with a strong title."}
             </h2>
             <p style={{ fontSize: "0.9375rem", color: "var(--text-muted)", lineHeight: 1.6 }}>
@@ -607,11 +617,11 @@ export default function NewProjectPage() {
         {/* STEP 2: Project Type (3 cards, bilingual) */}
         {/* ================================================================ */}
         {currentStep >= 2 && (
-          <div style={{ marginBottom: "3rem", animation: "fadeIn 400ms ease" }}>
+          <div className="md:!my-8 !mb-3" style={{animation: "fadeIn 400ms ease" }}>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
               <div>
                 <div style={{ fontSize: "0.8125rem", color: "var(--text-muted)", marginBottom: "0.5rem" }}>{isRtl ? "الخطوة 2" : "Step 2"}</div>
-                <h2 style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--text)", lineHeight: 1.3, marginBottom: "0.75rem" }}>
+                <h2 className="md:!text-2xl !text-xl" style={{ fontWeight: 800, color: "var(--text)"}}>
                   {isRtl ? "ما نوع مشروعك؟" : "What is your project?"}
                 </h2>
               </div>
@@ -650,11 +660,11 @@ export default function NewProjectPage() {
         {/* STEP 3: Category Tree (hierarchical, multi-select) */}
         {/* ================================================================ */}
         {currentStep >= 3 && projectType && (
-          <div style={{ marginBottom: "3rem", animation: "fadeIn 400ms ease" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "3rem" }}>
+          <div className=" md:!my-8 !mb-3" style={{ animation: "fadeIn 400ms ease" }}>
+            <div className="grid md:grid-cols-2 md:gap-3 gap-1">
               <div>
                 <div style={{ fontSize: "0.8125rem", color: "var(--text-muted)", marginBottom: "0.5rem" }}>{isRtl ? "الخطوة 3" : "Step 3"}</div>
-                <h2 style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--text)", lineHeight: 1.3, marginBottom: "0.75rem" }}>
+                <h2 className="md:!text-2xl !text-xl mb-2" style={{fontWeight: 800, color: "var(--text)"}}>
                   {isRtl ? "ما تصنيف مشروعك؟" : "What's your project category?"}
                 </h2>
                 <p style={{ fontSize: "0.875rem", color: "var(--text-muted)" }}>{isRtl ? "اختر التصنيفات الفرعية المطلوبة" : "Select the required sub-categories"}</p>
@@ -719,8 +729,8 @@ export default function NewProjectPage() {
         {/* STEP 4: Location — Riyadh + Neighborhoods + Map placeholder */}
         {/* ================================================================ */}
         {currentStep >= 4 && (
-          <div style={{ marginBottom: "3rem", animation: "fadeIn 400ms ease" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "3rem" }}>
+          <div className="md:!my-8 !mb-3" style={{animation: "fadeIn 400ms ease" }}>
+            <div className="grid md:grid-cols-2 md:gap-0 gap-4">
               <div>
                 <div style={{ fontSize: "0.8125rem", color: "var(--text-muted)", marginBottom: "0.5rem" }}>{isRtl ? "الخطوة 4" : "Step 4"}</div>
                 <h2 style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--text)", lineHeight: 1.3, marginBottom: "0.75rem" }}>
@@ -732,7 +742,7 @@ export default function NewProjectPage() {
                     : "You can continue either by selecting a neighborhood or by entering the address manually. Only one of these is required to reveal step 5 and the submit button."}
                 </p>
               </div>
-              <div>
+              <div className="card" style={{ padding: "1rem", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)" }}>
                 <label htmlFor={FIELD_IDS.neighborhoodSearch} style={{ fontSize: "0.875rem", fontWeight: 700, marginBottom: "0.5rem" }}>
                   {isRtl ? "الحي (اختياري إذا أدخلت العنوان يدوياً)" : "Neighborhood (optional if manual address is entered)"}
                 </label>
@@ -793,7 +803,7 @@ export default function NewProjectPage() {
                 <div style={{ fontSize: "0.9375rem", fontWeight: 700, color: "var(--text)", marginBottom: "0.75rem" }}>
                   {isRtl ? "وصف الموقع" : "Location Description"}
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                <div className="grid md:grid-cols-2 gap-2">
                   {/* Google Maps placeholder */}
                   <div style={{ background: "var(--surface-2)", border: "2px dashed var(--border)", borderRadius: "var(--radius-lg)", minHeight: "220px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
                     <MapPin style={{ width: "32px", height: "32px", marginBottom: "0.5rem" }} />
@@ -843,10 +853,10 @@ export default function NewProjectPage() {
         {/* ================================================================ */}
         {currentStep >= 5 && (
           <div ref={step5Ref} style={{ animation: "fadeIn 400ms ease" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "3rem", marginBottom: "2rem" }}>
+            <div className="md:grid md:grid-cols-2 md:gap-0 gap-4" style={{ marginBottom: "2rem" }}>
               <div>
                 <div style={{ fontSize: "0.8125rem", color: "var(--text-muted)", marginBottom: "0.5rem" }}>{isRtl ? "الخطوة 5" : "Step 5"}</div>
-                <h2 style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--text)", lineHeight: 1.3, marginBottom: "0.75rem" }}>
+                <h2 className="md:!text-2xl !text-xl" style={{fontWeight: 800, color: "var(--text)", lineHeight: 1.3, marginBottom: "0.75rem" }}>
                   {isRtl ? "أضف تفاصيل مشروعك" : "Add your project details"}
                 </h2>
               </div>
@@ -892,7 +902,7 @@ export default function NewProjectPage() {
                 {/* Dates */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                   <div>
-                    <label htmlFor={FIELD_IDS.startDate}>{isRtl ? "تاريخ البدء المتوقع" : "Expected Start Date"}</label>
+                    <label className="md:!text-sm !text-xs" htmlFor={FIELD_IDS.startDate}>{isRtl ? "تاريخ البدء المتوقع" : "Expected Start Date"}</label>
                     {/* BUG-03: Start date must be today or future */}
                     <input id={FIELD_IDS.startDate} name="requiredStartDate" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} dir="ltr" min={new Date().toISOString().slice(0, 10)} />
                     <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
@@ -900,7 +910,7 @@ export default function NewProjectPage() {
                     </p>
                   </div>
                   <div>
-                    <label htmlFor={FIELD_IDS.deadline}>{isRtl ? "آخر موعد لاستقبال العروض" : "Last Date to Accept Offers"}</label>
+                    <label className="md:!text-sm !text-xs" htmlFor={FIELD_IDS.deadline}>{isRtl ? "آخر موعد لاستقبال العروض" : "Last Date to Accept Offers"}</label>
                     {/* BUG-03: Deadline must be >= start date */}
                     <input id={FIELD_IDS.deadline} name="deadline" type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} dir="ltr" min={startDate || new Date().toISOString().slice(0, 10)} />
                     <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
@@ -911,7 +921,7 @@ export default function NewProjectPage() {
 
                 {/* ===== SECTION 6: Contact Persons ===== */}
                 <div style={{ borderTop: "1px solid var(--border-light)", paddingTop: "1.25rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                  <div className="grid grid-cols-2" style={{ alignItems: "center", justifyContent: "space-between", marginBottom: "0.5rem" }}>
                     <div>
                       <label style={{ fontSize: "0.9375rem", fontWeight: 700, marginBottom: 0 }}>{isRtl ? "إضافة جهة اتصال" : "Add Contact"}</label>
                       <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", margin: 0 }}>{isRtl ? "الشخص المسئول للتواصل معه" : "Person responsible for communication"}</p>
@@ -935,14 +945,14 @@ export default function NewProjectPage() {
                             </button>
                           )}
                         </div>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem", alignItems: "end" }}>
+                        <div className="grid md:grid-cols-3 gap-2 mb-2">
                           <div>
                             <label htmlFor={`contact-${i}-name`} style={{ fontSize: "0.75rem" }}>{isRtl ? "الاسم" : "Name"} *</label>
                             <input id={`contact-${i}-name`} name={`contacts.${i}.name`} type="text" value={contact.name} onChange={(e) => updateContact(i, "name", e.target.value)} placeholder={isRtl ? "الاسم" : "Name"} required />
                           </div>
                           <div>
                             <label htmlFor={`contact-${i}-phone`} style={{ fontSize: "0.75rem" }}>{isRtl ? "الجوال" : "Phone"} *</label>
-                            <input id={`contact-${i}-phone`} name={`contacts.${i}.phone`} type="tel" value={contact.phone} onChange={(e) => updateContact(i, "phone", sanitizePhoneInput(e.target.value))} dir="ltr" placeholder="05XXXXXXXX" required />
+                            <input id={`contact-${i}-phone`} maxLength={10} name={`contacts.${i}.phone`} type="tel" value={contact.phone} onChange={(e) => updateContact(i, "phone", sanitizePhoneInput(e.target.value))} dir="ltr" placeholder="05XXXXXXXX" required />
                             {contact.phone && !validateSaudiPhone(contact.phone) && (
                               <div style={{ fontSize: "0.625rem", color: "var(--error)", marginTop: "0.125rem" }}>
                                 {isRtl ? "رقم غير صحيح. يجب أن يبدأ بـ 05 ويتكون من 10 أرقام" : "Invalid number. Must start with 05 and be 10 digits"}
@@ -993,13 +1003,16 @@ export default function NewProjectPage() {
             </div>
 
             {/* Submit */}
-            <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end", paddingTop: "1rem", borderTop: "1px solid var(--border-light)" }}>
-              <button onClick={() => handleSubmit("draft")} disabled={loading} className="btn-secondary" style={{ padding: "0.875rem 2rem", fontSize: "0.9375rem" }}>
+            <div className="grid md:grid-cols-4 items-baseline w-full" style={{  gap: "0.75rem", paddingTop: "1rem", borderTop: "1px solid var(--border-light)" }}>
+             <div className="md:flex hidden"></div><div className="md:flex hidden"></div>
+             <div className="w-full">
+               <button onClick={() => handleSubmit("draft")} disabled={loading} className="btn-secondary w-full" style={{ padding: "0.875rem 2rem", fontSize: "0.9375rem" }}>
                 <Save style={{ width: "16px", height: "16px" }} /> {isRtl ? "حفظ كمسودة" : "Save Draft"}
               </button>
               <div style={{ alignSelf: "center", fontSize: "0.75rem", color: "var(--text-muted)" }}>
                 {isRtl ? "ستجد المسودات لاحقاً في صفحة: مشاريعي" : "Drafts will appear in your My Projects page."}
               </div>
+             </div>
               <button onClick={() => handleSubmit("submit")} disabled={loading || (!title && !titleAr) || !description || (projectImages.length + drawings.length + boqFiles.length + sitePhotos.length) < 1} className="btn-primary" style={{ padding: "0.875rem 2rem", fontSize: "0.9375rem" }}>
                 {loading ? <Loader2 className="animate-spin" style={{ width: "16px", height: "16px" }} /> : <Send style={{ width: "16px", height: "16px" }} />}
                 {isRtl ? "إرسال للمراجعة" : "Submit for Review"}

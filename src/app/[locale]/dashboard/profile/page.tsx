@@ -571,7 +571,7 @@ export default function ProfilePage() {
             <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "white" }}>
               {isRtl ? "الملف الشخصي" : "My Profile"}
             </h1>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.25rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.25rem",flexWrap: "wrap" }}>
               <span style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)" }}>{profile?.email}</span>
               <span style={{ padding: "0.125rem 0.5rem", borderRadius: "var(--radius-full)", background: "rgba(255,255,255,0.15)", fontSize: "0.6875rem", color: "white" }}>
                 {isOwner ? (isRtl ? "مالك مشروع" : "Owner") : isContractor ? (isRtl ? "مقاول" : "Contractor") : (isRtl ? "مهندس" : "Engineer")}
@@ -600,7 +600,7 @@ export default function ProfilePage() {
         const scoreColor = score >= 70 ? "var(--primary)" : score >= 40 ? "var(--accent)" : "var(--error)";
         return (
           <div style={{ background: "var(--surface)", borderBottom: "1px solid var(--border-light)", padding: "1rem 0" }}>
-            <div className="container-app" style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+            <div className="container-app flex items-center gap-3 flex-wrap">
               {/* Score circle */}
               <div style={{ position: "relative", width: "60px", height: "60px", flexShrink: 0 }}>
                 <svg width="60" height="60" viewBox="0 0 60 60">
@@ -614,7 +614,7 @@ export default function ProfilePage() {
                 </div>
               </div>
               {/* Score info */}
-              <div style={{ flex: 1 }}>
+              <div style={{ flex: 1}}>
                 <div style={{ fontSize: "0.875rem", fontWeight: 700, color: "var(--text)", marginBottom: "0.25rem" }}>
                   {isRtl ? "تصنيف الملف الشخصي" : "Profile Quality Score"}
                 </div>
@@ -656,7 +656,7 @@ export default function ProfilePage() {
 
       {/* Wizard Steps */}
       <div style={{ background: "var(--surface)", borderBottom: "1px solid var(--border-light)" }}>
-        <div className="container-app" style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", padding: "1rem 0" }}>
+        <div className="container-app md:!p-6 !p-2 flex gap-4 flex-wrap">
           {tabs.map((tab, index) => {
             const isActive = activeTab === tab.id;
             const isCompleted = index < activeStepIndex;
@@ -684,8 +684,8 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <div className="container-app" style={{ padding: "2rem 1.5rem", maxWidth: "800px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem", gap: "1rem", flexWrap: "wrap" }}>
+      <div className="container-app md:p-4 !pt-8 p-2" style={{maxWidth:"800px"}} >
+        <div className="flex" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem", gap: "1rem", flexWrap: "wrap" }}>
           <div>
             <div style={{ fontSize: "0.8125rem", color: "var(--text-muted)", fontWeight: 700 }}>
               {isRtl ? `الخطوة ${activeStepIndex + 1} من ${tabs.length}` : `Step ${activeStepIndex + 1} of ${tabs.length}`}
@@ -694,11 +694,24 @@ export default function ProfilePage() {
               {tabs[activeStepIndex]?.label}
             </div>
           </div>
-          <div style={{ minWidth: "180px", flex: 1, maxWidth: "280px" }}>
+          {/* <div className="" style={{ minWidth: "180px", flex: 1, maxWidth: "280px" }}>
             <div style={{ width: "100%", height: "8px", background: "var(--surface-2)", borderRadius: "999px", overflow: "hidden" }}>
               <div style={{ width: `${((activeStepIndex + 1) / tabs.length) * 100}%`, height: "100%", background: "linear-gradient(90deg, #0a4e41, #0f6b57)", borderRadius: "999px", transition: "width 0.25s ease" }} />
             </div>
-          </div>
+          </div> */}
+          <div className="min-w-[180px] flex-1 max-w-[280px]">
+  <div className="flex w-full h-2 rounded-full overflow-hidden">
+    {/* Completed - Green */}
+    <div 
+      className="h-full bg-[#0f6b57] transition-all duration-300"
+      style={{ width: `${((activeStepIndex + 1) / tabs.length) * 100}%` }}
+    />
+    <div 
+      className="h-full bg-gray-200"
+      style={{ width: `${100 - ((activeStepIndex + 1) / tabs.length) * 100}%` }}
+    />
+  </div>
+</div>
         </div>
 
         {!profileComplete && (
@@ -721,7 +734,7 @@ export default function ProfilePage() {
 
         {/* TAB: Basic Info */}
         {activeTab === "info" && (
-          <div className="card" style={{ padding: "2rem" }}>
+          <div className="card" style={{ padding: "1rem" }}>
             <div style={{ display: "grid", gap: "1.25rem" }}>
               {/* Owner type */}
               {isOwner && (
@@ -741,7 +754,7 @@ export default function ProfilePage() {
                 </div>
               )}
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div className="grid md:grid-cols-2 gap-2">
                 <div>
                   <label>
                     {isOwner
@@ -751,10 +764,10 @@ export default function ProfilePage() {
                       : (isRtl ? "الاسم كما في السجل التجاري (English)" : "Name as in Commercial Registration (English)")}
                     <span style={{ color: "var(--error)" }}>*</span>
                   </label>
-                  <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>
+                  <input type="text" value={form.legalName} onChange={(e) => setForm((p: any) => ({ ...p, legalName: e.target.value, fullName: e.target.value }))} dir="ltr" />
+               <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>
                     {isRtl ? "اكتب الاسم بالإنجليزية كما هو رسميًا، بدون ترجمة آلية" : "Type the official legal name in English manually"}
                   </div>
-                  <input type="text" value={form.legalName} onChange={(e) => setForm((p: any) => ({ ...p, legalName: e.target.value, fullName: e.target.value }))} dir="ltr" />
                 </div>
                 <div>
                   <label>
@@ -765,19 +778,17 @@ export default function ProfilePage() {
                       : (isRtl ? "الاسم كما في السجل التجاري (Arabic)" : "Name as in Commercial Registration (Arabic)")}
                     <span style={{ color: "var(--error)" }}>*</span>
                   </label>
-                  <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>
+                  <input type="text" value={form.legalNameAr} onChange={(e) => setForm((p: any) => ({ ...p, legalNameAr: e.target.value, fullNameAr: e.target.value }))} dir="rtl" />
+                 <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>
                     {isRtl ? "اكتب الاسم بالعربية كما هو رسميًا، بدون ترجمة آلية" : "Type the official legal name in Arabic manually"}
                   </div>
-                  <input type="text" value={form.legalNameAr} onChange={(e) => setForm((p: any) => ({ ...p, legalNameAr: e.target.value, fullNameAr: e.target.value }))} dir="rtl" />
                 </div>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div className="grid md:grid-cols-2 gap-2">
                 <div>
                   <label><Phone style={{ width: "14px", height: "14px", display: "inline" }} /> {isRtl ? "رقم الجوال" : "Phone"} <span style={{ color: "var(--error)" }}>*</span></label>
-                  <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>
-                    {isRtl ? "أرقام سعودية فقط (مثال: 05xxxxxxxx)" : "Saudi numbers only (example: 05xxxxxxxx)"}
-                  </div>
+                  
                   <input 
                     type="tel" 
                     value={form.phone} 
@@ -798,6 +809,9 @@ export default function ProfilePage() {
                     placeholder="05XXXXXXXX" 
                     maxLength={10}
                   />
+                  <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>
+                    {isRtl ? "أرقام سعودية فقط (مثال: 05xxxxxxxx)" : "Saudi numbers only (example: 05xxxxxxxx)"}
+                  </div>
                 </div>
                 <div>
                   <label><MapPin style={{ width: "14px", height: "14px", display: "inline" }} /> {isRtl ? "المدينة" : "City"} <span style={{ color: "var(--error)" }}>*</span></label>
@@ -859,7 +873,8 @@ export default function ProfilePage() {
                       <Building2 style={{ width: "18px", height: "18px" }} /> {isRtl ? "معلومات الشركة" : "Company Info"}
                     </h3>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                               <div className="grid md:grid-cols-2 gap-2">
+
                     <div><label>{isRtl ? "اسم الشركة" : "Company Name"}</label><input type="text" value={form.companyName} onChange={(e) => setForm((p: any) => ({ ...p, companyName: e.target.value }))} /></div>
                     <div><label>{isRtl ? "اسم الشركة (عربي)" : "Company (Arabic)"}</label><input type="text" value={form.companyNameAr} onChange={(e) => setForm((p: any) => ({ ...p, companyNameAr: e.target.value }))} dir="rtl" /></div>
                   </div>
@@ -894,12 +909,14 @@ export default function ProfilePage() {
                       </div>
                     </div>
                   )}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                                <div className="grid md:grid-cols-2 gap-2">
+
                     <div><label>{isRtl ? "سنوات الخبرة" : "Years in Business"}</label><input type="number" value={form.yearsInBusiness} onChange={(e) => setForm((p: any) => ({ ...p, yearsInBusiness: e.target.value }))} dir="ltr" /></div>
                     <div><label>{isRtl ? "حجم الفريق" : "Team Size"}</label><input type="number" value={form.teamSize} onChange={(e) => setForm((p: any) => ({ ...p, teamSize: e.target.value }))} dir="ltr" /></div>
                   </div>
                   {/* BUG-C05: Add discipline, education, certifications to contractor */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                                <div className="grid md:grid-cols-2 gap-2">
+
                     <div>
                       <label>{isRtl ? "التخصص الهندسي" : "Discipline"}</label>
                       <select value={form.discipline} onChange={(e) => setForm((p: any) => ({ ...p, discipline: e.target.value }))}>
@@ -922,10 +939,10 @@ export default function ProfilePage() {
                   </div>
                   <div>
                     <label>{isRtl ? "الموقع الإلكتروني" : "Website"}</label>
-                    <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>
+                    <input type="url" value={form.website} onChange={(e) => setForm((p: any) => ({ ...p, website: e.target.value }))} onBlur={(e) => setForm((p: any) => ({ ...p, website: normalizeWebsiteInput(e.target.value) }))} dir="ltr" />
+                   <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>
                       {isRtl ? "يمكنك كتابة www.test.com وسنحوّله تلقائيًا إلى رابط صالح" : "You can enter www.test.com and it will be converted automatically into a valid URL"}
                     </div>
-                    <input type="url" value={form.website} onChange={(e) => setForm((p: any) => ({ ...p, website: e.target.value }))} onBlur={(e) => setForm((p: any) => ({ ...p, website: normalizeWebsiteInput(e.target.value) }))} dir="ltr" />
                   </div>
                 </>
               )}
@@ -938,7 +955,8 @@ export default function ProfilePage() {
                       <Award style={{ width: "18px", height: "18px" }} /> {isRtl ? "معلومات المهندس" : "Engineer Info"}
                     </h3>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                                <div className="grid md:grid-cols-2 gap-2">
+
                     <div>
                       <label>{isRtl ? "التخصص" : "Specialization"}</label>
                       <select value={form.specialization} onChange={(e) => setForm((p: any) => ({ ...p, specialization: e.target.value }))}>
@@ -974,11 +992,12 @@ export default function ProfilePage() {
               {/* Bio */}
               <div>
                 <label>{isRtl ? "نبذة" : "Bio / Description"}</label>
-                <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>
-                  {isRtl ? "أعطنا تفاصيل أكثر عن طبيعة عملك وخبراتك والمشاريع التي تميزك" : "Give us more details about your work, experience, and the projects that make you stand out"}
-                </div>
+               
                 <textarea value={isRtl ? form.bioAr : form.bio} onChange={(e) => setForm((p: any) => isRtl ? ({ ...p, bioAr: e.target.value, bio: e.target.value }) : ({ ...p, bio: e.target.value }))} onBlur={handleBioBlur} style={{ minHeight: "80px", resize: "vertical" }} dir={isRtl ? "rtl" : "ltr"} />
                 {translatingBio && <div style={{ fontSize: "0.75rem", color: "var(--accent)", marginTop: "0.25rem" }}>{isRtl ? "جاري إنشاء الترجمة..." : "Generating translation..."}</div>}
+             <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>
+                  {isRtl ? "أعطنا تفاصيل أكثر عن طبيعة عملك وخبراتك والمشاريع التي تميزك" : "Give us more details about your work, experience, and the projects that make you stand out"}
+                </div>
               </div>
 
               {isOwner && (
@@ -1100,7 +1119,7 @@ export default function ProfilePage() {
             ))}
 
             {/* Submit documents button */}
-            <button onClick={() => handleSave(true)} disabled={saving} className="btn-primary" style={{ width: "100%", padding: "0.875rem", fontSize: "0.9375rem", marginTop: "0.5rem" }}>
+            <button onClick={() => handleSave(true)} disabled={saving} className="btn-primary !mb-4" style={{ width: "100%", padding: "0.875rem", fontSize: "0.9375rem", marginTop: "0.5rem" }}>
               <Upload style={{ width: "18px", height: "18px" }} />
               {saving ? (isRtl ? "جارٍ الحفظ..." : "Saving...") : (isRtl ? "حفظ ومتابعة" : "Save and Continue")}
             </button>
@@ -1111,7 +1130,7 @@ export default function ProfilePage() {
         {activeTab === "portfolio" && (
           <div>
             <div className="card" style={{ padding: "1.5rem", marginBottom: "1rem" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+              <div style={{ display: "flex",flexWrap:"wrap", alignItems: "center", justifyContent: "space-between", marginBottom: "0.5rem" }}>
                 <div>
                   <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                     <Briefcase style={{ width: "18px", height: "18px", color: "var(--accent)" }} />
@@ -1173,7 +1192,7 @@ export default function ProfilePage() {
               </div>
             )}
             <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
-              <button onClick={() => handleSave(true)} disabled={saving} className="btn-primary" style={{ padding: "0.875rem 1.5rem", fontSize: "0.9375rem" }}>
+              <button onClick={() => handleSave(true)} disabled={saving} className="btn-primary !mb-4" style={{ padding: "0.875rem 1.5rem", fontSize: "0.9375rem" }}>
                 {saving ? <Loader2 className="animate-spin" style={{ width: "16px", height: "16px" }} /> : <Save style={{ width: "16px", height: "16px" }} />}
                 {isRtl ? "حفظ وإرسال" : "Save and Submit"}
               </button>

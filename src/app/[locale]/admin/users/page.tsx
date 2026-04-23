@@ -283,7 +283,7 @@ export default async function AdminUsersPage({
 
               return (
                 <details key={u.id} className="card" style={{ padding: "1.5rem" }}>
-                  <summary style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem", cursor: "pointer", listStyle: "none" }}>
+                  <summary className="flex flex-wrap" style={{justifyContent: "space-between", marginBottom: "0.75rem", cursor: "pointer", listStyle: "none" }}>
                     <div>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.25rem" }}>
                         {u.avatarUrl ? <img src={u.avatarUrl} alt={name} style={{ width: "44px", height: "44px", borderRadius: "50%", objectFit: "cover", border: "2px solid var(--border-light)" }} /> : null}
@@ -390,7 +390,7 @@ export default async function AdminUsersPage({
                   </div>
 
                   {/* 3 Actions: Approve / Request Info / Reject */}
-                  <div style={{ display: "flex", gap: "0.5rem", alignItems: "end", borderTop: "1px solid var(--border-light)", paddingTop: "0.75rem" }}>
+                  {/* <div style={{ display: "flex", gap: "0.5rem", alignItems: "end", borderTop: "1px solid var(--border-light)", paddingTop: "0.75rem" }}>
                     <form action={adminUserAction} style={{ display: "inline" }}>
                       <input type="hidden" name="userId" value={u.id} />
                       <input type="hidden" name="action" value="approve" />
@@ -423,7 +423,48 @@ export default async function AdminUsersPage({
                         <XCircle style={{ width: "14px", height: "14px" }} /> {isRtl ? "رفض" : "Reject"}
                       </button>
                     </form>
-                  </div>
+                  </div> */}
+                  {/* 3 Actions: Approve / Request Info / Reject - hide if status is DRAFT */}
+{profile?.verificationStatus !== "DRAFT" ? (
+  <div className="flex gap-2 md:flex-row md:w-auto w-full flex-col items-end border-t md:items-center items-start border-border-light !pt-3 flex-wrap">
+    <form action={adminUserAction} className="md:w-auto w-full" style={{ display: "inline" }}>
+      <input type="hidden" name="userId" value={u.id} />
+      <input type="hidden" name="action" value="approve" />
+      <button type="submit" className="btn-primary md:w-auto w-full border border-black" style={{ padding: "0.5rem 1rem", fontSize: "0.8125rem" }}>
+        <CheckCircle style={{ width: "22px", height: "22px" }} /> {isRtl ? "موافقة" : "Approve"}
+      </button>
+    </form>
+    <form action={adminUserAction} className="md:w-auto w-full">
+      <input type="hidden" name="userId" value={u.id} />
+      <input type="hidden" name="action" value="reject" />
+      <button type="submit" className="md:w-auto w-full text-center justify-center" style={{
+        padding: "0.5rem 1rem", fontSize: "0.8125rem", borderRadius: "var(--radius-md)",
+        border: "1px solid var(--error)", background: "var(--error-light)", color: "var(--error)",
+        cursor: "pointer", fontFamily: "inherit", fontWeight: 600, display: "flex", alignItems: "center", gap: "0.25rem",
+      }}>
+        <XCircle style={{ width: "20px", height: "20px" }} /> {isRtl ? "رفض" : "Reject"}
+      </button>
+    </form>
+    <form action={adminUserAction} className="grid md:w-auto w-full grid-cols-1 md:grid-cols-2 flex gap-2 flex-wrap">
+      <input type="hidden" name="userId" value={u.id} />
+      <input type="hidden" name="action" value="request_info" />
+      <input type="text" name="adminNotes" className="md:!py-0" placeholder={isRtl ? "ما المعلومات المطلوبة؟..." : "What information is needed?..."} style={{ flex: 1, fontSize: "0.8125rem" }} />
+      <button className="text-center md:w-auto w-full justify-center" type="submit" style={{
+        padding: "0.5rem 0.75rem", fontSize: "0.8125rem", borderRadius: "var(--radius-md)",
+        border: "1px solid var(--accent)", background: "var(--accent-light)", color: "var(--accent)",
+        cursor: "pointer", fontFamily: "inherit", fontWeight: 600, display: "flex", alignItems: "center", gap: "0.25rem", whiteSpace: "nowrap",
+      }}>
+        <MessageSquare style={{ width: "20px", height: "20px" }} /> {isRtl ? "طلب معلومات" : "Request Info"}
+      </button>
+    </form>
+
+   
+  </div>
+) : (
+  <div style={{ marginTop: "0.75rem", padding: "0.5rem 0.75rem", borderRadius: "var(--radius-md)", background: "var(--surface-2)", fontSize: "0.75rem", color: "var(--text-muted)", textAlign: "center" }}>
+    {isRtl ? "هذا المستخدم لم يرسل ملفه للمراجعة بعد (حالة مسودة)." : "This user has not submitted their profile for review yet (Draft status)."}
+  </div>
+)}
                 </details>
               );
             })}

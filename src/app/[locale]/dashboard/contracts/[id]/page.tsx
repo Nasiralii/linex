@@ -109,7 +109,7 @@ export default async function ContractPage({ params }: { params: Promise<{ id: s
           <h3 style={{ fontSize: "1rem", fontWeight: 700, marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <PenTool style={{ width: "18px", height: "18px", color: "var(--primary)" }} /> {isRtl ? "التوقيعات الرقمية" : "Digital Signatures"}
           </h3>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+          <div className="grid md:grid-cols-2 gap-2">
             <SignatureBox label={isRtl ? "مالك المشروع" : "Project Owner"} name={project.owner.fullName} signed={ownerSigned} date={contract.ownerSignedAt} canSign={canSign && isOwner} contractId={contract.id} role="owner" isRtl={isRtl} />
             <SignatureBox label={isRtl ? "المقاول" : "Contractor"} name={project.award?.bid?.contractor?.companyName || "—"} signed={contractorSigned} date={contract.contractorSignedAt} canSign={canSign && isContractor} contractId={contract.id} role="contractor" isRtl={isRtl} />
           </div>

@@ -193,7 +193,7 @@ export default async function WalletPage({
         </div>
       </div>
 
-      <div className="container-app" style={{ padding: "2rem 1.5rem", maxWidth: "800px" }}>
+      <div className="container-app" style={{ padding: "2rem 1rem", maxWidth: "800px" }}>
         {params.paymentError && (
           <div className="card" style={{ padding: "1rem 1.25rem", marginBottom: "1rem", border: "1px solid #fecaca", background: "#fef2f2", color: "#b91c1c" }}>
             <div style={{ fontSize: "0.875rem", fontWeight: 700, marginBottom: "0.25rem" }}>
@@ -262,7 +262,7 @@ export default async function WalletPage({
           </p>
 
           {/* Preset amounts */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0.75rem", marginBottom: "1rem" }}>
+          <div className="grid md:grid-cols-4 grid-cols-2 gap-3 !mb-4">
             {topUpAmounts.map(amount => (
               <form key={amount} action={topUpWalletAction}>
                 <input type="hidden" name="amount" value={amount} />
@@ -303,7 +303,7 @@ export default async function WalletPage({
             {isRtl ? "هذا الشحن التجريبي يضيف رصيد مباشرة إلى محفظتك للاختبار. لا يتطلب دفع حقيقي." : "This test top-up adds funds directly to your wallet for testing. No real payment required."}
           </p>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0.75rem", marginBottom: "1rem" }}>
+          <div className="grid md:grid-cols-4 grid-cols-2 gap-3 !mb-4" >
             {[100, 500, 1000, 5000].map(amount => (
               <form key={amount} action={testTopUpAction}>
                 <input type="hidden" name="amount" value={amount} />

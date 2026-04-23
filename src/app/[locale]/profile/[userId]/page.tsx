@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { User, Building2, Phone, MapPin, Star, Award, Shield, ArrowLeft, Briefcase, Mail } from "lucide-react";
 import { getUserBadges } from "@/lib/badges";
 import { BadgeDisplay } from "@/components/badge-display";
+import Image from "next/image";
 
 function formatDocumentLabel(documentType: string, isRtl: boolean) {
   const labels: Record<string, { ar: string; en: string }> = {
@@ -82,9 +83,23 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
             <ArrowLeft style={{ width: "14px", height: "14px", display: "inline" }} /> {isRtl ? "رجوع" : "Back"}
           </Link>
           <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", marginTop: "1rem" }}>
-            <div style={{ width: "80px", height: "80px", borderRadius: "50%", background: "rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", border: "3px solid rgba(255,255,255,0.3)" }}>
-              <User style={{ width: "36px", height: "36px", color: "rgba(255,255,255,0.7)" }} />
-            </div>
+            {profileUser.avatarUrl ? (
+              <Image
+                src={profileUser.avatarUrl}
+                alt={isRtl ? "صورة الملف الشخصي" : "Profile Picture"}
+                width={80}
+                height={80}
+                style={{
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  border: "3px solid rgba(255,255,255,0.3)"
+                }}
+              />
+            ) : (
+              <div style={{ width: "80px", height: "80px", borderRadius: "50%", background: "rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", border: "3px solid rgba(255,255,255,0.3)" }}>
+                <User style={{ width: "36px", height: "36px", color: "rgba(255,255,255,0.7)" }} />
+              </div>
+            )}
             <div>
               <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "white" }}>{isRtl ? (nameAr || name) : name}</h1>
               <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.25rem" }}>
@@ -106,7 +121,7 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
 
       <div className="container-app" style={{ padding: "2rem 1.5rem", maxWidth: "800px" }}>
         {/* Stats */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", marginBottom: "2rem" }}>
+        <div className="grid md:grid-cols-4 grid-cols-2" style={{ gap: "1rem", marginBottom: "2rem" }}>
           <div className="card" style={{ padding: "1rem", textAlign: "center" }}>
             <div style={{ display: "flex", justifyContent: "center", gap: "2px", marginBottom: "0.25rem" }}>
               {[1,2,3,4,5].map(s => <Star key={s} style={{ width: "14px", height: "14px", fill: s <= Math.round(rating) ? "var(--accent)" : "none", color: s <= Math.round(rating) ? "var(--accent)" : "var(--border)" }} />)}

@@ -18,7 +18,7 @@ export function Footer() {
       borderTop: "1px solid rgba(255,255,255,0.08)",
     }}>
       <div className="container-app" style={{ padding: "3rem 1.5rem" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "2rem" }}>
+        <div className="grid md:grid-cols-3 grid-cols-2 gap-4">
           {/* Brand */}
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>

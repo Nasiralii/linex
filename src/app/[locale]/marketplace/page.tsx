@@ -40,8 +40,23 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
     if (requestedTypeAllowed) where.projectType = validType;
     else if (allowed) where.projectType = { in: allowed };
 
-    const validCategoryId = params.category && categories.some((c: any) => c.id === params.category) ? params.category : undefined;
-    if (validCategoryId) where.categoryId = validCategoryId;
+    const validCategory = params.category ? categories.find((c: any) => c.id === params.category) : undefined;
+    if (validCategory) {
+      where.OR = [
+        ...(where.OR || []),
+        { categoryId: validCategory.id },
+        {
+          requiredTrades: {
+            some: {
+              OR: [
+                { tradeName: validCategory.name },
+                { tradeNameAr: validCategory.nameAr },
+              ],
+            },
+          },
+        },
+      ];
+    }
 
     if (params.search) {
       where.OR = [

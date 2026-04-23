@@ -130,7 +130,7 @@ export function Navbar({ initialUser }: NavbarProps) {
     ...(effectiveUser && effectiveUser.role !== "ADMIN" ? [{ href: "/dashboard" as const, label: t("dashboard") }] : []),
     ...(effectiveUser && effectiveUser.role !== "ADMIN" ? [{ href: "/dashboard/profile" as const, label: locale === "ar" ? "الملف الشخصي" : "Profile" }] : []),
     ...(effectiveUser?.role === "OWNER" ? [{ href: "/dashboard/projects" as const, label: isRtl ? "مشاريعي" : "My Projects" }] : []),
-    ...(effectiveUser && effectiveUser.role !== "ADMIN" ? [{ href: "/dashboard/supervision" as const, label: isRtl ? "طلبات الإشراف" : "Supervision Requests" }] : []),
+    ...(effectiveUser && effectiveUser.role !== "ADMIN" && effectiveUser.role !=="CONTRACTOR" ? [{ href: "/dashboard/supervision" as const, label: isRtl ? "طلبات الإشراف" : "Supervision Requests" }] : []),
     ...(effectiveUser && effectiveUser.role !== "ADMIN" ? [{ href: "/dashboard/wallet" as const, label: isRtl ? "المحفظة" : "Wallet" }] : []),
     ...(effectiveUser?.role === "ADMIN" ? [{ href: "/admin" as const, label: t("dashboard") }] : []),
     ...(effectiveUser?.role === "ADMIN" ? [{ href: "/admin/reports" as const, label: locale === "ar" ? "التقارير" : "Reports" }] : []),
@@ -163,9 +163,9 @@ export function Navbar({ initialUser }: NavbarProps) {
 
           <nav className="hidden lg:flex items-center" style={{ gap: "4px" }}>
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} style={{
-                padding: "0.5rem 1rem", borderRadius: "var(--radius-lg)",
-                fontSize: "0.875rem", fontWeight: 500, textDecoration: "none",
+              <Link className="xl:text-sm text-sm 2xl:gap-x-2 gap-x-1" key={link.href} href={link.href} style={{
+                padding: "0.5rem", borderRadius: "var(--radius-lg)",
+                fontWeight: 500, textDecoration: "none",
                 color: pathname === link.href ? "var(--primary)" : "var(--text-secondary)",
                 background: pathname === link.href ? "var(--primary-light)" : "transparent",
               }}>
@@ -314,7 +314,7 @@ export function Navbar({ initialUser }: NavbarProps) {
           background: profileIncomplete ? "#fff7ed" : "#eff6ff",
           color: profileIncomplete ? "#9a3412" : "#1d4ed8",
         }}>
-          <div className="container-app" style={{
+          <div className="container-app !p-2" style={{
             display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem",
             padding: "0.75rem 0",
             fontSize: "0.8125rem", fontWeight: 600,
@@ -334,7 +334,7 @@ export function Navbar({ initialUser }: NavbarProps) {
           </div>
         </div>
       )}
-      {authSyncIssue && (
+      {/* {authSyncIssue && (
         <div style={{ borderTop: "1px solid var(--border-light)", background: "#fff7ed", color: "#9a3412" }}>
           <div className="container-app" style={{ padding: "0.6rem 0", fontSize: "0.8125rem", fontWeight: 600 }}>
             {isRtl
@@ -342,7 +342,7 @@ export function Navbar({ initialUser }: NavbarProps) {
               : "There is a temporary delay syncing your sign-in state. Please try again in a moment."}
           </div>
         </div>
-      )}
+      )} */}
     </header>
   );
 }

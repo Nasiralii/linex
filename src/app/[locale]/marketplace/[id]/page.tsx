@@ -735,7 +735,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
       </div>
 
       <div className="container-app" style={{ padding: "2rem 1.5rem" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "2rem", maxWidth: "1200px", margin: "0 auto" }}>
+        <div className="md:grid md:grid-cols-2" style={{gap: "2rem", maxWidth: "1200px", margin: "0 auto" }}>
           {/* Main Content */}
           <div>
             {/* Meta */}
@@ -795,69 +795,75 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                           {isRtl ? "ادفع 100 ريال سعودي لعرض الوصف الكامل والمواصفات" : "Pay 100 SAR to view full description & specifications"}
                         </p>
 
-                        {/* Wallet Balance Display */}
-                        <div style={{
-                          display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem",
-                          padding: "0.75rem 1rem", borderRadius: "var(--radius-lg)",
-                          background: walletBalance >= 100 ? "var(--primary-light)" : "var(--surface-2)",
-                          marginBottom: "1rem",
-                        }}>
-                          <Wallet style={{ width: "18px", height: "18px", color: "var(--primary)" }} />
-                          <span style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--text)" }}>
-                            {isRtl ? "رصيد المحفظة:" : "Wallet Balance:"}
-                          </span>
-                          <span style={{
-                            fontSize: "1rem", fontWeight: 800,
-                            color: walletBalance >= 100 ? "var(--primary)" : "var(--error)",
-                          }}>
-                            {walletBalance.toLocaleString()} {isRtl ? "ر.س" : "SAR"}
-                          </span>
-                        </div>
-
-                        {walletBalance >= 100 ? (
-                          // Sufficient balance — pay from wallet
-                          <form action={purchaseKrasatFromWalletAction}>
-                            <input type="hidden" name="projectId" value={project.id} />
-                            <button type="submit" className="btn-primary" style={{ padding: "0.75rem 2rem", fontSize: "0.875rem", width: "100%" }}>
-                              <Wallet style={{ width: "16px", height: "16px" }} />
-                              {isRtl ? "ادفع من المحفظة — 100 ر.س" : "Pay from Wallet — 100 SAR"}
-                            </button>
-                          </form>
+                        {user.role === "OWNER" ? (
+                          <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", fontWeight: 600, margin: 0 }}>
+                            {isRtl ? "لا يمكنك رؤية التفاصيل." : "You cannot see the details."}
+                          </p>
                         ) : (
-                          // Insufficient balance — show top up + card payment
-                          <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                            <p style={{ fontSize: "0.75rem", color: "var(--error)", fontWeight: 600, margin: 0 }}>
-                              {isRtl
-                                ? `رصيدك الحالي (${walletBalance.toLocaleString()} ر.س) غير كافٍ. اشحن محفظتك أو ادفع بالبطاقة.`
-                                : `Your current balance (${walletBalance.toLocaleString()} SAR) is insufficient. Top up your wallet or pay by card.`}
-                            </p>
-                            <div style={{ display: "flex", gap: "0.5rem" }}>
-                              <Link
-                                href="/dashboard/wallet"
-                                style={{
-                                  flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem",
-                                  padding: "0.75rem 1rem", borderRadius: "var(--radius-lg)",
-                                  border: "2px solid var(--primary)", background: "var(--surface)",
-                                  color: "var(--primary)", fontSize: "0.8125rem", fontWeight: 600,
-                                  textDecoration: "none", cursor: "pointer",
-                                }}
-                              >
-                                <Wallet style={{ width: "14px", height: "14px" }} />
-                                {isRtl ? "شحن المحفظة" : "Top Up Wallet"}
-                              </Link>
-                              <form action={purchaseKrasatAction} style={{ flex: 1 }}>
+                          <>
+                            {/* Wallet Balance Display */}
+                            <div style={{
+                              display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem",
+                              padding: "0.75rem 1rem", borderRadius: "var(--radius-lg)",
+                              background: walletBalance >= 100 ? "var(--primary-light)" : "var(--surface-2)",
+                              marginBottom: "1rem",
+                            }}>
+                              <Wallet style={{ width: "18px", height: "18px", color: "var(--primary)" }} />
+                              <span style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--text)" }}>
+                                {isRtl ? "رصيد المحفظة:" : "Wallet Balance:"}
+                              </span>
+                              <span style={{
+                                fontSize: "1rem", fontWeight: 800,
+                                color: walletBalance >= 100 ? "var(--primary)" : "var(--error)",
+                              }}>
+                                {walletBalance.toLocaleString()} {isRtl ? "ر.س" : "SAR"}
+                              </span>
+                            </div>
+
+                            {walletBalance >= 100 ? (
+                              <form action={purchaseKrasatFromWalletAction}>
                                 <input type="hidden" name="projectId" value={project.id} />
-                                <input type="hidden" name="locale" value={locale} />
-                                <button type="submit" className="btn-primary" style={{
-                                  padding: "0.75rem 1rem", fontSize: "0.8125rem", width: "100%",
-                                  display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem",
-                                }}>
-                                  <Eye style={{ width: "14px", height: "14px" }} />
-                                  {isRtl ? "ادفع بالبطاقة" : "Pay with Card"}
+                                <button type="submit" className="btn-primary" style={{ padding: "0.75rem 2rem", fontSize: "0.875rem", width: "100%" }}>
+                                  <Wallet style={{ width: "16px", height: "16px" }} />
+                                  {isRtl ? "ادفع من المحفظة — 100 ر.س" : "Pay from Wallet — 100 SAR"}
                                 </button>
                               </form>
-                            </div>
-                          </div>
+                            ) : (
+                              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                                <p style={{ fontSize: "0.75rem", color: "var(--error)", fontWeight: 600, margin: 0 }}>
+                                  {isRtl
+                                    ? `رصيدك الحالي (${walletBalance.toLocaleString()} ر.س) غير كافٍ. اشحن محفظتك أو ادفع بالبطاقة.`
+                                    : `Your current balance (${walletBalance.toLocaleString()} SAR) is insufficient. Top up your wallet or pay by card.`}
+                                </p>
+                                <div style={{ display: "flex", gap: "0.5rem" }}>
+                                  <Link
+                                    href="/dashboard/wallet"
+                                    style={{
+                                      flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem",
+                                      padding: "0.75rem 1rem", borderRadius: "var(--radius-lg)",
+                                      border: "2px solid var(--primary)", background: "var(--surface)",
+                                      color: "var(--primary)", fontSize: "0.8125rem", fontWeight: 600,
+                                      textDecoration: "none", cursor: "pointer",
+                                    }}
+                                  >
+                                    <Wallet style={{ width: "14px", height: "14px" }} />
+                                    {isRtl ? "شحن المحفظة" : "Top Up Wallet"}
+                                  </Link>
+                                  <form action={purchaseKrasatAction} style={{ flex: 1 }}>
+                                    <input type="hidden" name="projectId" value={project.id} />
+                                    <input type="hidden" name="locale" value={locale} />
+                                    <button type="submit" className="btn-primary" style={{
+                                      padding: "0.75rem 1rem", fontSize: "0.8125rem", width: "100%",
+                                      display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem",
+                                    }}>
+                                      <Eye style={{ width: "14px", height: "14px" }} />
+                                      {isRtl ? "ادفع بالبطاقة" : "Pay with Card"}
+                                    </button>
+                                  </form>
+                                </div>
+                              </div>
+                            )}
+                          </>
                         )}
                   </div>
                 </>
@@ -1037,9 +1043,9 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                     ? "هنا تظهر نتائج نظام التقييم والترتيب لكل عرض: درجة الترتيب والثقة تحت كل عرض."
                     : "This is where the bid scoring system appears: each bid shows its rank score and confidence below the proposal."}
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                <div className="flex flex-col gap-4">
                   {project.bids.map((bid: any) => (
-                    <div key={bid.id} style={{ padding: "1rem", borderRadius: "var(--radius-md)", background: "var(--surface-2)", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "1rem" }}>
+                    <div className="md:flex" key={bid.id} style={{ padding: "1rem", borderRadius: "var(--radius-md)", background: "var(--surface-2)", alignItems: "flex-start", justifyContent: "space-between", gap: "1rem" }}>
                       {(() => {
                         const bidder = getBidderDisplay(bid);
                         return (
