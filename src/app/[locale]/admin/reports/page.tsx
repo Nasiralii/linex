@@ -4,6 +4,7 @@ import { getLocale } from "next-intl/server";
 import { db } from "@/lib/db";
 import { BarChart3 } from "lucide-react";
 import DashboardClient from "./dashboard-client";
+import { isFullAccessAdmin } from "@/lib/admin-config";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,7 @@ export default async function AdminReportsPage({
   const user = await getCurrentUser();
   const locale = await getLocale();
   if (!user || user.role !== "ADMIN") return redirect({ href: "/dashboard", locale });
+  if (!isFullAccessAdmin(user.email)) return redirect({ href: "/admin/users", locale });
   const isRtl = locale === "ar";
   const params = await searchParams;
 

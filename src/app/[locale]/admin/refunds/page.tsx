@@ -4,6 +4,7 @@ import { getLocale } from "next-intl/server";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { DollarSign, ArrowLeft, CheckCircle, Clock, XCircle, RefreshCw } from "lucide-react";
+import { isFullAccessAdmin } from "@/lib/admin-config";
 
 // Gap 14: Refund management (admin)
 
@@ -61,6 +62,7 @@ export default async function RefundManagementPage() {
   const user = await getCurrentUser();
   const locale = await getLocale();
   if (!user || user.role !== "ADMIN") return redirect({ href: "/dashboard", locale });
+  if (!isFullAccessAdmin(user.email)) return redirect({ href: "/admin/users", locale });
   const isRtl = locale === "ar";
 
   // Get all deduction transactions (potential refund candidates)

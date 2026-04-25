@@ -4,6 +4,7 @@ import { getLocale } from "next-intl/server";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { Star, Eye, EyeOff, Trash2, Shield } from "lucide-react";
+import { isFullAccessAdmin } from "@/lib/admin-config";
 
 // G16: Admin rating moderation
 
@@ -36,6 +37,7 @@ export default async function AdminReviewsPage() {
   const user = await getCurrentUser();
   const locale = await getLocale();
   if (!user || user.role !== "ADMIN") return redirect({ href: "/dashboard", locale });
+  if (!isFullAccessAdmin(user.email)) return redirect({ href: "/admin/users", locale });
   const isRtl = locale === "ar";
 
   let reviews: any[] = [];

@@ -5,6 +5,9 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { Users, CheckCircle, XCircle, Clock, ShieldCheck, MessageSquare, Phone, Mail, Briefcase, Award, Globe, FileText, Image as ImageIcon } from "lucide-react";
 import { calculateProfileScore } from "@/lib/ai";
+import { getTranslations } from "next-intl/server";
+import ActionButtons from "./action-buttons";
+import RequestInfoForm from "./request-info-form";
 
 export const dynamic = "force-dynamic";
 
@@ -80,7 +83,7 @@ function getPendingVerificationWhere(roleFilter: string) {
 async function adminUserAction(formData: FormData) {
   "use server";
   const admin = await getCurrentUser();
-  if (!admin || admin.role !== "ADMIN") return;
+  if (!admin || admin.role !== "ADMIN") return { error: "Unauthorized" };
 
   const userId = formData.get("userId") as string;
   const action = formData.get("action") as string;
@@ -88,7 +91,7 @@ async function adminUserAction(formData: FormData) {
 
   try {
     const user = await db.user.findUnique({ where: { id: userId } });
-    if (!user) return;
+    if (!user) return { error: "User not found" };
 
     if (action === "approve") {
       await db.user.update({ where: { id: userId }, data: { status: "ACTIVE" } });
@@ -147,10 +150,11 @@ async function adminUserAction(formData: FormData) {
     await db.auditLog.create({
       data: { actorId: admin.id, action: `USER_${action.toUpperCase()}`, entityType: "user", entityId: userId, metadata: { notes: adminNotes } },
     });
+    return { success: true };
   } catch (error) {
     console.error('[adminUserAction] DB query failed:', error);
+    return { error: "Failed to process action" };
   }
-  revalidatePath("/admin/users");
 }
 
 export default async function AdminUsersPage({
@@ -160,9 +164,9 @@ export default async function AdminUsersPage({
 }) {
   const user = await getCurrentUser();
   const locale = await getLocale();
+  const params = await searchParams;
   if (!user || user.role !== "ADMIN") return redirect({ href: "/dashboard", locale });
   const isRtl = locale === "ar";
-  const params = await searchParams;
   const roleFilter = params.role || "ALL";
 
   // Get pending users (ALL roles with PENDING verification)
@@ -427,38 +431,8 @@ export default async function AdminUsersPage({
                   {/* 3 Actions: Approve / Request Info / Reject - hide if status is DRAFT */}
 {profile?.verificationStatus !== "DRAFT" ? (
   <div className="flex gap-2 md:flex-row md:w-auto w-full flex-col items-end border-t md:items-center items-start border-border-light !pt-3 flex-wrap">
-    <form action={adminUserAction} className="md:w-auto w-full" style={{ display: "inline" }}>
-      <input type="hidden" name="userId" value={u.id} />
-      <input type="hidden" name="action" value="approve" />
-      <button type="submit" className="btn-primary md:w-auto w-full border border-black" style={{ padding: "0.5rem 1rem", fontSize: "0.8125rem" }}>
-        <CheckCircle style={{ width: "22px", height: "22px" }} /> {isRtl ? "موافقة" : "Approve"}
-      </button>
-    </form>
-    <form action={adminUserAction} className="md:w-auto w-full">
-      <input type="hidden" name="userId" value={u.id} />
-      <input type="hidden" name="action" value="reject" />
-      <button type="submit" className="md:w-auto w-full text-center justify-center" style={{
-        padding: "0.5rem 1rem", fontSize: "0.8125rem", borderRadius: "var(--radius-md)",
-        border: "1px solid var(--error)", background: "var(--error-light)", color: "var(--error)",
-        cursor: "pointer", fontFamily: "inherit", fontWeight: 600, display: "flex", alignItems: "center", gap: "0.25rem",
-      }}>
-        <XCircle style={{ width: "20px", height: "20px" }} /> {isRtl ? "رفض" : "Reject"}
-      </button>
-    </form>
-    <form action={adminUserAction} className="grid md:w-auto w-full grid-cols-1 md:grid-cols-2 flex gap-2 flex-wrap">
-      <input type="hidden" name="userId" value={u.id} />
-      <input type="hidden" name="action" value="request_info" />
-      <input type="text" name="adminNotes" className="md:!py-0" placeholder={isRtl ? "ما المعلومات المطلوبة؟..." : "What information is needed?..."} style={{ flex: 1, fontSize: "0.8125rem" }} />
-      <button className="text-center md:w-auto w-full justify-center" type="submit" style={{
-        padding: "0.5rem 0.75rem", fontSize: "0.8125rem", borderRadius: "var(--radius-md)",
-        border: "1px solid var(--accent)", background: "var(--accent-light)", color: "var(--accent)",
-        cursor: "pointer", fontFamily: "inherit", fontWeight: 600, display: "flex", alignItems: "center", gap: "0.25rem", whiteSpace: "nowrap",
-      }}>
-        <MessageSquare style={{ width: "20px", height: "20px" }} /> {isRtl ? "طلب معلومات" : "Request Info"}
-      </button>
-    </form>
-
-   
+    <ActionButtons userId={u.id} isRtl={isRtl} onAction={adminUserAction} />
+    <RequestInfoForm userId={u.id} isRtl={isRtl} onAction={adminUserAction} />
   </div>
 ) : (
   <div style={{ marginTop: "0.75rem", padding: "0.5rem 0.75rem", borderRadius: "var(--radius-md)", background: "var(--surface-2)", fontSize: "0.75rem", color: "var(--text-muted)", textAlign: "center" }}>

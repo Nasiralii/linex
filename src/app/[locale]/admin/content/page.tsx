@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { MANAGED_CONTENT_PAGES, type ManagedContentPageKey } from "@/lib/content-pages";
 import { getManagedContentPages } from "@/lib/content-page-service";
 import { FileText, Save } from "lucide-react";
+import { isFullAccessAdmin } from "@/lib/admin-config";
 
 export const dynamic = "force-dynamic";
 
@@ -86,6 +87,7 @@ export default async function AdminContentPage({ searchParams }: { searchParams:
   const user = await safeGetCurrentAdmin();
   const locale = await getLocale();
   if (!user || user.role !== "ADMIN") return redirect({ href: "/dashboard", locale });
+  if (!isFullAccessAdmin(user.email)) return redirect({ href: "/admin/users", locale });
   const isRtl = locale === "ar";
   const params = await searchParams;
   const showSavedBanner = params.saved === "1";

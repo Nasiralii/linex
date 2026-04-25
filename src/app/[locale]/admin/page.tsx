@@ -4,6 +4,8 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 import { Link } from "@/i18n/routing";
 import { logger } from "@/lib/logger";
+import AdminHeader from "./admin-header";
+import { isFullAccessAdmin } from "@/lib/admin-config";
 
 export const dynamic = "force-dynamic";
 import {
@@ -68,6 +70,7 @@ export default async function AdminDashboardPage() {
 
   const t = await getTranslations("admin");
   const isRtl = locale === "ar";
+  const isFullAccess = isFullAccessAdmin(user.email);
 
   // Fetch stats with error handling
   let totalUsers = 0, totalOwners = 0, totalContractors = 0, totalEngineers = 0, totalProjects = 0;
@@ -81,6 +84,7 @@ export default async function AdminDashboardPage() {
   let awardItems: any[] = [];
   let ownerItems: any[] = [];
   let contractorItems: any[] = [];
+  let engineerItems: any[] = [];
   let publishedProjectItems: any[] = [];
   let bidItems: any[] = [];
   let categoryItems: any[] = [];
@@ -107,6 +111,7 @@ export default async function AdminDashboardPage() {
     awardItems,
     ownerItems,
     contractorItems,
+    engineerItems,
     publishedProjectItems,
     bidItems,
     categoryItems,
@@ -165,6 +170,7 @@ export default async function AdminDashboardPage() {
     safeItems(() => db.award.findMany({ take: 20, orderBy: { awardedAt: "desc" }, select: { id: true, awardedAmount: true, project: { select: { title: true, titleAr: true } } } })),
     safeItems(() => db.user.findMany({ take: 20, where: { role: "OWNER" }, orderBy: { createdAt: "desc" }, select: { id: true, email: true } })),
     safeItems(() => db.user.findMany({ take: 20, where: { role: "CONTRACTOR" }, orderBy: { createdAt: "desc" }, select: { id: true, email: true } })),
+    safeItems(() => db.user.findMany({ take: 20, where: { role: "ENGINEER" }, orderBy: { createdAt: "desc" }, select: { id: true, email: true } })),
     safeItems(() => db.project.findMany({ take: 20, where: { status: "PUBLISHED" }, orderBy: { publishedAt: "desc" }, select: { id: true, title: true, titleAr: true } })),
     safeItems(() => db.bid.findMany({ take: 20, orderBy: { createdAt: "desc" }, select: { id: true, amount: true, project: { select: { title: true, titleAr: true } } } })),
     safeItems(() => db.category.findMany({ take: 20, orderBy: { sortOrder: "asc" }, select: { id: true, name: true, nameAr: true } })),
@@ -185,6 +191,7 @@ export default async function AdminDashboardPage() {
     pendingVerifications: pendingVerificationUsers.map((u) => ({ label: u.email, sublabel: u.role })),
     totalOwners: ownerItems.map((u) => ({ label: u.email, sublabel: isRtl ? "مالك مشروع" : "Owner" })),
     totalContractors: contractorItems.map((u) => ({ label: u.email, sublabel: isRtl ? "مقاول" : "Contractor" })),
+    totalEngineers: engineerItems.map((u) => ({ label: u.email, sublabel: isRtl ? "مهندس" : "Engineer" })),
     publishedProjects: publishedProjectItems.map((p) => ({ label: isRtl ? p.titleAr || p.title : p.title, sublabel: isRtl ? "منشور" : "Published" })),
     totalBids: bidItems.map((b) => ({ label: isRtl ? b.project?.titleAr || b.project?.title : b.project?.title || "—", sublabel: `${b.amount?.toLocaleString() || 0} ${isRtl ? "ر.س" : "SAR"}` })),
     totalCategories: categoryItems.map((c) => ({ label: isRtl ? c.nameAr : c.name, sublabel: isRtl ? "تصنيف" : "Category" })),
@@ -193,71 +200,94 @@ export default async function AdminDashboardPage() {
 
   return (
     <div style={{ background: "var(--bg)", minHeight: "calc(100vh - 64px)" }}>
-      {/* Header */}
-      <div style={{ background: "linear-gradient(135deg, #1a2332, #2d3748)", padding: "2rem 0" }}>
-        <div className="container-app">
-          <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "white", marginBottom: "0.25rem" }}>
-            {t("dashboard")}
-          </h1>
-          <p style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.6)" }}>
-            {isRtl ? "مرحباً بك في لوحة تحكم الإدارة" : "Welcome to the admin control panel"}
-          </p>
-        </div>
-      </div>
+      <AdminHeader
+        title={t("dashboard")}
+        subtitle={isRtl ? "مرحباً بك في لوحة تحكم الإدارة" : "Welcome to the admin control panel"}
+        isRtl={isRtl}
+      />
 
       {/* Admin Navigation */}
       <div style={{ background: "var(--surface)", borderBottom: "1px solid var(--border-light)", padding: "0.75rem 0" }}>
         <div className="container-app" style={{ display: "grid", gap: "0.875rem" }}>
-          {[
-            {
-              title: isRtl ? "الإحصائيات والحوكمة" : "Statistics & Governance",
-              items: [
-                { href: "/admin" as const, icon: BarChart3, label: isRtl ? "الإحصائيات" : "Statistics", color: "#1a2332" },
-                { href: "/admin/reports" as const, icon: BarChart3, label: isRtl ? "التقارير" : "Reports", color: "#059669" },
-                { href: "/admin/audit" as const, icon: FileText, label: isRtl ? "سجل العمليات" : "Audit Log", color: "#c58b2a" },
-                { href: "/admin/audit/auth" as const, icon: ShieldCheck, label: isRtl ? "حوادث المصادقة" : "Auth Incidents", color: "#dc2626" },
-                { href: "/admin/content" as const, icon: FileText, label: isRtl ? "إدارة المحتوى" : "Content Management", color: "#7c3aed" },
-              ],
-            },
-            {
-              title: isRtl ? "المستخدمون" : "Users",
-              items: [
-                { href: "/admin/users" as const, icon: Users, label: isRtl ? "المستخدمون" : "Users", color: "#2563eb" },
-                { href: "/admin/engineers" as const, icon: ShieldCheck, label: isRtl ? "المهندسون" : "Engineers", color: "#0f6b57" },
-              ],
-            },
-            {
-              title: isRtl ? "العمليات والمنصة" : "Operations & Platform",
-              items: [
-                { href: "/admin/projects" as const, icon: FolderOpen, label: isRtl ? "المشاريع" : "Projects", color: "#0f6b57" },
-                { href: "/admin/disputes" as const, icon: AlertTriangle, label: isRtl ? "النزاعات" : "Disputes", color: "#f59e0b" },
-                { href: "/admin/reviews" as const, icon: Eye, label: isRtl ? "التقييمات" : "Reviews", color: "#8b5cf6" },
-                { href: "/admin/refunds" as const, icon: DollarSign, label: isRtl ? "المبالغ المستردة" : "Refunds", color: "#dc2626" },
-                { href: "/admin/agents" as const, icon: Bot, label: isRtl ? "وكلاء AI" : "AI Agents", color: "#7c3aed" },
-                { href: "/admin/ai-hub" as const, icon: Bot, label: isRtl ? "مركز AI" : "AI Hub", color: "#5b21b6" },
-                { href: "/admin/marketing" as const, icon: Megaphone, label: isRtl ? "التسويق" : "Marketing", color: "#e11d48" },
-              ],
-            },
-          ].map((group, gi) => (
-            <div key={gi}>
-              <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-muted)", marginBottom: "0.5rem" }}>{group.title}</div>
-              <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-                {group.items.map((nav, i) => (
-                  <Link key={i} href={nav.href} style={{
-                    display: "flex", alignItems: "center", gap: "0.5rem",
-                    padding: "0.625rem 1rem", borderRadius: "var(--radius-lg)",
-                    fontSize: "0.8125rem", fontWeight: 600, textDecoration: "none",
-                    color: "var(--text-secondary)", background: "var(--surface-2)",
-                    border: "1px solid var(--border-light)", transition: "all 150ms ease",
-                  }}>
-                    <nav.icon style={{ width: "16px", height: "16px", color: nav.color }} />
-                    {nav.label}
-                    <ArrowRight style={{ width: "12px", height: "12px", color: "var(--text-muted)" }} />
-                  </Link>
-                ))}
+          {isFullAccess ? (
+            // Full access admin - show all navigation
+            [
+              {
+                title: isRtl ? "الإحصائيات والحوكمة" : "Statistics & Governance",
+                items: [
+                  { href: "/admin" as const, icon: BarChart3, label: isRtl ? "الإحصائيات" : "Statistics", color: "#1a2332" },
+                  { href: "/admin/reports" as const, icon: BarChart3, label: isRtl ? "التقارير" : "Reports", color: "#059669" },
+                  { href: "/admin/audit" as const, icon: FileText, label: isRtl ? "سجل العمليات" : "Audit Log", color: "#c58b2a" },
+                  { href: "/admin/audit/auth" as const, icon: ShieldCheck, label: isRtl ? "حوادث المصادقة" : "Auth Incidents", color: "#dc2626" },
+                  { href: "/admin/content" as const, icon: FileText, label: isRtl ? "إدارة المحتوى" : "Content Management", color: "#7c3aed" },
+                ],
+              },
+              {
+                title: isRtl ? "المستخدمون" : "Users",
+                items: [
+                  { href: "/admin/users" as const, icon: Users, label: isRtl ? "المستخدمون" : "Users", color: "#2563eb" },
+                  { href: "/admin/engineers" as const, icon: ShieldCheck, label: isRtl ? "المهندسون" : "Engineers", color: "#0f6b57" },
+                ],
+              },
+              {
+                title: isRtl ? "العمليات والمنصة" : "Operations & Platform",
+                items: [
+                  { href: "/admin/projects" as const, icon: FolderOpen, label: isRtl ? "المشاريع" : "Projects", color: "#0f6b57" },
+                  { href: "/admin/disputes" as const, icon: AlertTriangle, label: isRtl ? "النزاعات" : "Disputes", color: "#f59e0b" },
+                  { href: "/admin/reviews" as const, icon: Eye, label: isRtl ? "التقييمات" : "Reviews", color: "#8b5cf6" },
+                  { href: "/admin/refunds" as const, icon: DollarSign, label: isRtl ? "المبالغ المستردة" : "Refunds", color: "#dc2626" },
+                  { href: "/admin/agents" as const, icon: Bot, label: isRtl ? "وكلاء AI" : "AI Agents", color: "#7c3aed" },
+                  { href: "/admin/ai-hub" as const, icon: Bot, label: isRtl ? "مركز AI" : "AI Hub", color: "#5b21b6" },
+                  { href: "/admin/marketing" as const, icon: Megaphone, label: isRtl ? "التسويق" : "Marketing", color: "#e11d48" },
+                ],
+              },
+            ].map((group, gi) => (
+              <div key={gi}>
+                <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-muted)", marginBottom: "0.5rem" }}>{group.title}</div>
+                <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                  {group.items.map((nav, i) => (
+                    <Link key={i} href={nav.href} style={{
+                      display: "flex", alignItems: "center", gap: "0.5rem",
+                      padding: "0.625rem 1rem", borderRadius: "var(--radius-lg)",
+                      fontSize: "0.8125rem", fontWeight: 600, textDecoration: "none",
+                      color: "var(--text-secondary)", background: "var(--surface-2)",
+                      border: "1px solid var(--border-light)", transition: "all 150ms ease",
+                    }}>
+                      <nav.icon style={{ width: "16px", height: "16px", color: nav.color }} />
+                      {nav.label}
+                      <ArrowRight style={{ width: "12px", height: "12px", color: "var(--text-muted)" }} />
+                    </Link>
+                  ))}
+                </div>
               </div>
+            ))
+          ) : (
+            // Regular admin - show only Users and Projects
+            <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+              <Link href="/admin/users" style={{
+                display: "flex", alignItems: "center", gap: "0.5rem",
+                padding: "0.625rem 1rem", borderRadius: "var(--radius-lg)",
+                fontSize: "0.8125rem", fontWeight: 600, textDecoration: "none",
+                color: "var(--text-secondary)", background: "var(--surface-2)",
+                border: "1px solid var(--border-light)", transition: "all 150ms ease",
+              }}>
+                <Users style={{ width: "16px", height: "16px", color: "#2563eb" }} />
+                {isRtl ? "المستخدمون" : "Users"}
+                <ArrowRight style={{ width: "12px", height: "12px", color: "var(--text-muted)" }} />
+              </Link>
+              <Link href="/admin/projects" style={{
+                display: "flex", alignItems: "center", gap: "0.5rem",
+                padding: "0.625rem 1rem", borderRadius: "var(--radius-lg)",
+                fontSize: "0.8125rem", fontWeight: 600, textDecoration: "none",
+                color: "var(--text-secondary)", background: "var(--surface-2)",
+                border: "1px solid var(--border-light)", transition: "all 150ms ease",
+              }}>
+                <FolderOpen style={{ width: "16px", height: "16px", color: "#0f6b57" }} />
+                {isRtl ? "المشاريع" : "Projects"}
+                <ArrowRight style={{ width: "12px", height: "12px", color: "var(--text-muted)" }} />
+              </Link>
             </div>
-          ))}
+          )}
         </div>
       </div>
 
@@ -273,6 +303,7 @@ export default async function AdminDashboardPage() {
             pendingVerifications,
             totalOwners,
             totalContractors,
+            totalEngineers,
             publishedProjects,
             totalBids,
             totalCategories,

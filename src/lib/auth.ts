@@ -1,9 +1,11 @@
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
-import { db } from "./db";
-import type { UserRole } from "@prisma/client";
+import jwt from "jsonwebtoken";
 import { logger } from "./logger";
+import type { UserRole } from "@prisma/client";
+import { isFullAccessAdmin } from "./admin-config";
+import { db } from "./db";
 
 // SECURITY: No fallback secret - fail fast if not configured
 const AUTH_SECRET = process.env.AUTH_SECRET;
@@ -23,7 +25,7 @@ export async function hashPassword(password: string): Promise<string> {
 
 export async function verifyPassword(
   password: string,
-  hash: string
+  hash: string,
 ): Promise<boolean> {
   return bcrypt.compare(password, hash);
 }
@@ -58,9 +60,14 @@ export async function createSession(
   userId: string,
   role: UserRole,
   ipAddress?: string,
-  userAgent?: string
+  userAgent?: string,
 ) {
-  logger.info("Creating auth session", { userId, role, action: "create_session_start", entityType: "auth" });
+  logger.info("Creating auth session", {
+    userId,
+    role,
+    action: "create_session_start",
+    entityType: "auth",
+  });
 
   // Create session in database
   const session = await db.session.create({
@@ -102,11 +109,13 @@ export async function deleteSession() {
   if (token) {
     const payload = verifyToken(token);
     if (payload?.sessionId) {
-      await db.session.delete({
-        where: { id: payload.sessionId },
-      }).catch(() => {
-        // Session might already be deleted
-      });
+      await db.session
+        .delete({
+          where: { id: payload.sessionId },
+        })
+        .catch(() => {
+          // Session might already be deleted
+        });
     }
   }
 
@@ -132,13 +141,19 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     const token = cookieStore.get("auth-token")?.value;
 
     if (!token) {
-      logger.debug("Auth token missing", { action: "get_current_user_no_token", entityType: "auth" });
+      logger.debug("Auth token missing", {
+        action: "get_current_user_no_token",
+        entityType: "auth",
+      });
       return null;
     }
 
     const payload = verifyToken(token);
     if (!payload) {
-      logger.warn("Invalid auth token payload", { action: "get_current_user_invalid_token", entityType: "auth" });
+      logger.warn("Invalid auth token payload", {
+        action: "get_current_user_invalid_token",
+        entityType: "auth",
+      });
       return null;
     }
 
@@ -191,7 +206,11 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
 
     return user;
   } catch (error: any) {
-    logger.error("getCurrentUser failed", { action: "get_current_user_exception", entityType: "auth" }, error);
+    logger.error(
+      "getCurrentUser failed",
+      { action: "get_current_user_exception", entityType: "auth" },
+      error,
+    );
     return null;
   }
 }
@@ -212,6 +231,14 @@ export async function requireRole(allowedRoles: UserRole[]): Promise<AuthUser> {
   const user = await requireAuth();
   if (!allowedRoles.includes(user.role)) {
     throw new Error("FORBIDDEN");
+  }
+  return user;
+}
+
+export async function requireFullAccessAdmin(): Promise<AuthUser> {
+  const user = await requireAuth();
+  if (user.role !== "ADMIN" || !isFullAccessAdmin(user.email)) {
+    throw new Error("FORBIDDEN: Full access admin only");
   }
   return user;
 }

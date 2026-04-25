@@ -4,6 +4,7 @@ import { getLocale } from "next-intl/server";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { Bot, Power, PowerOff, Sparkles, MessageCircle, FileCheck, BarChart3, Send, FileText, PenTool, Shield, DollarSign, Star, Megaphone, Search } from "lucide-react";
+import { isFullAccessAdmin } from "@/lib/admin-config";
 
 // Toggle agent on/off
 async function toggleAgent(formData: FormData) {
@@ -50,6 +51,7 @@ export default async function AdminAgentsPage() {
   const user = await getCurrentUser();
   const locale = await getLocale();
   if (!user || user.role !== "ADMIN") return redirect({ href: "/auth/login", locale });
+  if (!isFullAccessAdmin(user.email)) return redirect({ href: "/admin/users", locale });
   const isRtl = locale === "ar";
 
   // Get all agent settings

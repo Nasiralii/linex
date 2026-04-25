@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { AiChatWidget } from "@/components/ai-chat";
+import { ToastProvider } from "@/components/toast";
 
 export const dynamic = "force-dynamic";
 
@@ -44,10 +45,12 @@ export default async function LocaleLayout({
   return (
     <div lang={locale} dir={dir} style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <NextIntlClientProvider locale={locale} messages={messages}>
-        <Navbar initialUser={authUser} />
-        <main style={{ flex: 1 }}>{children}</main>
-        <Footer />
-        <AiChatWidget />
+        <ToastProvider>
+          <Navbar initialUser={authUser} />
+          <main style={{ flex: 1 }}>{children}</main>
+          <Footer />
+          <AiChatWidget />
+        </ToastProvider>
       </NextIntlClientProvider>
     </div>
   );

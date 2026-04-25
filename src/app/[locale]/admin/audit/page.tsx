@@ -3,11 +3,13 @@ import { redirect } from "@/i18n/routing";
 import { getLocale } from "next-intl/server";
 import { db } from "@/lib/db";
 import { FileText, User, Clock } from "lucide-react";
+import { isFullAccessAdmin } from "@/lib/admin-config";
 
 export default async function AuditLogPage() {
   const user = await getCurrentUser();
   const locale = await getLocale();
   if (!user || user.role !== "ADMIN") return redirect({ href: "/auth/login", locale });
+  if (!isFullAccessAdmin(user.email)) return redirect({ href: "/admin/users", locale });
   const isRtl = locale === "ar";
 
   let logs: any[] = [];

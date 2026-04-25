@@ -19,6 +19,7 @@ interface AdminDashboardClientProps {
     pendingVerifications: number;
     totalOwners: number;
     totalContractors: number;
+    totalEngineers: number;
     publishedProjects: number;
     totalBids: number;
     totalCategories: number;
@@ -34,6 +35,7 @@ interface AdminDashboardClientProps {
     pendingVerifications: DrillItem[];
     totalOwners: DrillItem[];
     totalContractors: DrillItem[];
+    totalEngineers: DrillItem[];
     publishedProjects: DrillItem[];
     totalBids: DrillItem[];
     totalCategories: DrillItem[];
@@ -59,6 +61,7 @@ const DETAIL_TITLES: Record<string, { en: string; ar: string }> = {
   pendingVerifications: { en: "Pending Verifications", ar: "طلبات التحقق المعلقة" },
   totalOwners: { en: "Owners", ar: "ملاك المشاريع" },
   totalContractors: { en: "Contractors", ar: "المقاولون" },
+  totalEngineers: { en: "Engineers", ar: "المهندسون" },
   publishedProjects: { en: "Published Projects", ar: "المشاريع المنشورة" },
   totalBids: { en: "Submitted Bids", ar: "العروض المقدمة" },
   totalCategories: { en: "Categories", ar: "التصنيفات" },
@@ -75,11 +78,12 @@ export default function AdminDashboardClient({ isRtl, stats, recentUsers, drilld
     { ...KPI_CONFIG[3], label: isRtl ? "إجمالي الترسيات" : "Total Awards", value: stats.totalAwards },
   ]), [isRtl, stats]);
 
-  const detailItems = selectedKey ? drilldowns[selectedKey] : [];
+  const detailItems = selectedKey ? (drilldowns[selectedKey] || []) : [];
 
   const statTiles = [
     { key: "totalOwners" as DrillKey, label: isRtl ? "ملاك مشاريع" : "Owners", value: stats.totalOwners },
     { key: "totalContractors" as DrillKey, label: isRtl ? "مقاولون" : "Contractors", value: stats.totalContractors },
+    { key: "totalEngineers" as DrillKey, label: isRtl ? "مهندسون" : "Engineers", value: stats.totalEngineers },
     { key: "publishedProjects" as DrillKey, label: isRtl ? "مشاريع منشورة" : "Published", value: stats.publishedProjects },
     { key: "totalBids" as DrillKey, label: isRtl ? "عروض مقدمة" : "Bids", value: stats.totalBids },
     { key: "totalCategories" as DrillKey, label: isRtl ? "تصنيفات" : "Categories", value: stats.totalCategories },

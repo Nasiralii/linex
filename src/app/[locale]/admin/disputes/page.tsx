@@ -4,6 +4,7 @@ import { getLocale } from "next-intl/server";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { AlertTriangle, CheckCircle, Clock, MessageSquare, XCircle } from "lucide-react";
+import { isFullAccessAdmin } from "@/lib/admin-config";
 
 // G15: Admin dispute resolution UI
 
@@ -38,6 +39,7 @@ export default async function AdminDisputesPage() {
   const user = await getCurrentUser();
   const locale = await getLocale();
   if (!user || user.role !== "ADMIN") return redirect({ href: "/dashboard", locale });
+  if (!isFullAccessAdmin(user.email)) return redirect({ href: "/admin/users", locale });
   const isRtl = locale === "ar";
 
   let disputes: any[] = [];
