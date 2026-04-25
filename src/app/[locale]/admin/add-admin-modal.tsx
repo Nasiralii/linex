@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { X, Eye, EyeOff } from "lucide-react";
+import { X, Eye, EyeOff, Loader2 } from "lucide-react";
 import { addAdmin } from "./admins/actions";
+import { useToast } from "@/components/toast";
 
 interface AddAdminModalProps {
   isOpen: boolean;
@@ -13,14 +14,26 @@ interface AddAdminModalProps {
 export default function AddAdminModal({ isOpen, onClose, isRtl }: AddAdminModalProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { showToast } = useToast();
 
   async function handleSubmit(formData: FormData) {
     try {
       setError("");
-      await addAdmin(formData);
-      onClose();
-    } catch (e: any) {
-      setError(e.message || "Failed to add admin");
+      setLoading(true);
+      const result = await addAdmin(formData);
+      if (result.success) {
+        showToast(isRtl ? "تم إضافة المسؤول بنجاح" : "Admin added successfully", "success");
+        onClose();
+      } else {
+        setError(result.error || "Failed to add admin");
+        showToast(result.error || (isRtl ? "فشل إضافة المسؤول" : "Failed to add admin"), "error");
+      }
+    } catch {
+      setError("Failed to add admin");
+      showToast(isRtl ? "فشل إضافة المسؤول" : "Failed to add admin", "error");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -126,6 +139,7 @@ export default function AddAdminModal({ isOpen, onClose, isRtl }: AddAdminModalP
 
           <button
             type="submit"
+            disabled={loading}
             style={{
               padding: "0.75rem",
               borderRadius: "var(--radius-md)",
@@ -134,11 +148,17 @@ export default function AddAdminModal({ isOpen, onClose, isRtl }: AddAdminModalP
               color: "white",
               background: "var(--primary)",
               border: "none",
-              cursor: "pointer",
+              cursor: loading ? "not-allowed" : "pointer",
               marginTop: "0.5rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "0.5rem",
+              opacity: loading ? 0.7 : 1,
             }}
           >
-            {isRtl ? "إضافة" : "Add"}
+            {loading ? <Loader2 style={{ width: "16px", height: "16px" }} className="animate-spin" /> : null}
+            {loading ? (isRtl ? "جاري..." : "Loading...") : (isRtl ? "إضافة" : "Add")}
           </button>
         </form>
       </div>

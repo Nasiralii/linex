@@ -25,5 +25,5 @@ export default async function AdminManagementPage() {
     select: { id: true, email: true, status: true, createdAt: true },
   });
 
-  return <AdminManagementClient admins={admins} isRtl={isRtl} />;
+  return <AdminManagementClient admins={admins} isRtl={isRtl} currentUserEmail={user.email} />;
 }

@@ -8,21 +8,21 @@ import { revalidatePath } from "next/cache";
 export async function addAdmin(formData: FormData) {
   const user = await getCurrentUser();
   if (!user || user.role !== "ADMIN" || !isFullAccessAdmin(user.email)) {
-    throw new Error("FORBIDDEN: Full access admin only");
+    return { error: "FORBIDDEN: Full access admin only" };
   }
 
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
   if (!email || !password || password.length < 8) {
-    throw new Error("Invalid input");
+    return { error: "Invalid input" };
   }
 
   const existing = await db.user.findUnique({
     where: { email: email.toLowerCase() },
   });
   if (existing) {
-    throw new Error("Email already exists");
+    return { error: "Email already exists" };
   }
 
   const passwordHash = await hashPassword(password);
@@ -38,29 +38,30 @@ export async function addAdmin(formData: FormData) {
   });
 
   revalidatePath("/admin/admins");
+  return { success: true };
 }
 
 export async function deleteAdmin(formData: FormData) {
   const user = await getCurrentUser();
   if (!user || user.role !== "ADMIN" || !isFullAccessAdmin(user.email)) {
-    throw new Error("FORBIDDEN: Full access admin only");
+    return { error: "FORBIDDEN: Full access admin only" };
   }
 
   const userId = formData.get("userId") as string;
   const hardDelete = formData.get("hardDelete") === "true";
 
   if (userId === user.id) {
-    throw new Error("Cannot delete yourself");
+    return { error: "Cannot delete yourself" };
   }
 
   const targetUser = await db.user.findUnique({ where: { id: userId } });
   if (!targetUser || targetUser.role !== "ADMIN") {
-    throw new Error("User not found or not an admin");
+    return { error: "User not found or not an admin" };
   }
 
   // Prevent deleting full access admins
   if (isFullAccessAdmin(targetUser.email)) {
-    throw new Error("Cannot delete full access admin");
+    return { error: "Cannot delete full access admin" };
   }
 
   if (hardDelete) {
@@ -75,28 +76,29 @@ export async function deleteAdmin(formData: FormData) {
   }
 
   revalidatePath("/admin/admins");
+  return { success: true };
 }
 
 export async function toggleAdminStatus(formData: FormData) {
   const user = await getCurrentUser();
   if (!user || user.role !== "ADMIN" || !isFullAccessAdmin(user.email)) {
-    throw new Error("FORBIDDEN: Full access admin only");
+    return { error: "FORBIDDEN: Full access admin only" };
   }
 
   const userId = formData.get("userId") as string;
 
   if (userId === user.id) {
-    throw new Error("Cannot change your own status");
+    return { error: "Cannot change your own status" };
   }
 
   const targetUser = await db.user.findUnique({ where: { id: userId } });
   if (!targetUser || targetUser.role !== "ADMIN") {
-    throw new Error("User not found or not an admin");
+    return { error: "User not found or not an admin" };
   }
 
   // Prevent changing full access admin status
   if (isFullAccessAdmin(targetUser.email)) {
-    throw new Error("Cannot change full access admin status");
+    return { error: "Cannot change full access admin status" };
   }
 
   const newStatus = targetUser.status === "ACTIVE" ? "DEACTIVATED" : "ACTIVE";
@@ -107,25 +109,26 @@ export async function toggleAdminStatus(formData: FormData) {
   });
 
   revalidatePath("/admin/admins");
+  return { success: true };
 }
 
 export async function updateAdminPassword(formData: FormData) {
   const user = await getCurrentUser();
   if (!user || user.role !== "ADMIN") {
-    throw new Error("FORBIDDEN: Admin only");
+    return { error: "FORBIDDEN: Admin only" };
   }
 
   const userId = formData.get("userId") as string;
   const newPassword = formData.get("newPassword") as string;
 
   if (!newPassword || newPassword.length < 8) {
-    throw new Error("Password must be at least 8 characters");
+    return { error: "Password must be at least 8 characters" };
   }
 
   // Full access admin can update any admin password
   // Limited access admin can only update their own password
   if (!isFullAccessAdmin(user.email) && userId !== user.id) {
-    throw new Error("FORBIDDEN: Can only update your own password");
+    return { error: "FORBIDDEN: Can only update your own password" };
   }
 
   const passwordHash = await hashPassword(newPassword);
@@ -135,5 +138,11 @@ export async function updateAdminPassword(formData: FormData) {
     data: { passwordHash },
   });
 
+  // Delete all active sessions to force logout
+  await db.session.deleteMany({
+    where: { userId },
+  });
+
   revalidatePath("/admin/admins");
+  return { success: true };
 }
