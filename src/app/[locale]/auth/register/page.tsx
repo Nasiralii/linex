@@ -5,7 +5,7 @@ import { Link, useRouter } from "@/i18n/routing";
 import { useEffect, useState } from "react";
 import { registerAction } from "../actions";
 import { sanitizeSaudiPhoneInput, transliterateArabic } from "@/lib/utils";
-import { Building2, HardHat, Eye, EyeOff, Loader2, AlertCircle, Compass } from "lucide-react";
+import { HardHat, Eye, EyeOff, Loader2, AlertCircle, Compass, Home } from "lucide-react";
 
 export default function RegisterPage() {
   const t = useTranslations("auth.register");
@@ -67,7 +67,7 @@ export default function RegisterPage() {
   };
 
   const roles = [
-    { id: "OWNER", icon: Building2, label: isRtl ? "مالك مشروع" : "Project Owner", desc: isRtl ? "أبحث عن مقاولين ومهندسين لمشاريعي" : "I'm looking for contractors and engineers" },
+    { id: "OWNER", icon: Home, label: isRtl ? "مالك مشروع" : "Project Owner", desc: isRtl ? "أبحث عن مقاولين ومهندسين لمشاريعي" : "I'm looking for contractors and engineers" },
     { id: "CONTRACTOR", icon: HardHat, label: isRtl ? "مقاول / مورد" : "Contractor / Supplier", desc: isRtl ? "أبحث عن فرص مشاريع إنشائية" : "I'm looking for construction projects" },
     { id: "ENGINEER", icon: Compass, label: isRtl ? "مهندس" : "Engineer", desc: isRtl ? "مصمم أو مشرف هندسي" : "Designer or Supervisor engineer" },
   ];
@@ -75,14 +75,7 @@ export default function RegisterPage() {
   return (
     <div className="animate-fade-in" style={{ maxWidth: "520px", margin: "0 auto" }}>
       <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-        <div style={{
-          width: "56px", height: "56px", borderRadius: "var(--radius-2xl)", margin: "0 auto 1rem",
-          background: "linear-gradient(135deg, var(--primary), var(--primary-dark))",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 4px 14px rgba(42, 123, 136, 0.3)",
-        }}>
-          <Building2 style={{ width: "28px", height: "28px", color: "white" }} />
-        </div>
+        <img src="/logo.jpg" alt="Rasi" style={{ width: "56px", height: "56px", borderRadius: "var(--radius-2xl)", margin: "0 auto 1rem", boxShadow: "0 4px 14px rgba(42, 123, 136, 0.3)" }} />
         <h1 style={{ fontSize: "1.75rem", fontWeight: 700, color: "var(--text)", marginBottom: "0.5rem" }}>
           {t("title")}
         </h1>

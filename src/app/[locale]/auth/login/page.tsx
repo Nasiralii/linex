@@ -4,7 +4,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Link, useRouter } from "@/i18n/routing";
 import { useEffect, useState } from "react";
 import { loginAction } from "../actions";
-import { Building2, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
 
 export default function LoginPage() {
   const t = useTranslations("auth.login");
@@ -73,14 +73,7 @@ export default function LoginPage() {
     <div className="animate-fade-in" style={{ maxWidth: "440px", margin: "0 auto" }}>
       {/* Header */}
       <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-        <div style={{
-          width: "56px", height: "56px", borderRadius: "var(--radius-2xl)", margin: "0 auto 1rem",
-          background: "linear-gradient(135deg, var(--primary), var(--primary-dark))",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 4px 14px rgba(42, 123, 136, 0.3)",
-        }}>
-          <Building2 style={{ width: "28px", height: "28px", color: "white" }} />
-        </div>
+        <img src="/logo.jpg" alt="Rasi" style={{ width: "56px", height: "56px", borderRadius: "var(--radius-2xl)", margin: "0 auto 1rem", boxShadow: "0 4px 14px rgba(42, 123, 136, 0.3)" }} />
         <h1 style={{ fontSize: "1.75rem", fontWeight: 700, color: "var(--text)", marginBottom: "0.5rem" }}>
           {t("title")}
         </h1>
