@@ -1,5 +1,5 @@
 // ============================================================================
-// Structured Logger — Production-ready logging for LineX-Forsa
+// Structured Logger — Production-ready logging for Rasi
 // ============================================================================
 
 type LogLevel = "debug" | "info" | "warn" | "error";
@@ -19,9 +19,15 @@ const LOG_LEVELS: Record<LogLevel, number> = {
   error: 3,
 };
 
-const CURRENT_LEVEL = LOG_LEVELS[process.env.LOG_LEVEL as LogLevel] ?? LOG_LEVELS.info;
+const CURRENT_LEVEL =
+  LOG_LEVELS[process.env.LOG_LEVEL as LogLevel] ?? LOG_LEVELS.info;
 
-function formatLog(level: LogLevel, message: string, context?: LogContext, error?: Error) {
+function formatLog(
+  level: LogLevel,
+  message: string,
+  context?: LogContext,
+  error?: Error,
+) {
   const timestamp = new Date().toISOString();
   const logEntry = {
     timestamp,
@@ -36,7 +42,7 @@ function formatLog(level: LogLevel, message: string, context?: LogContext, error
       },
     }),
   };
-  
+
   return JSON.stringify(logEntry);
 }
 
@@ -79,7 +85,12 @@ export const logger = {
     });
   },
 
-  db(operation: string, entityType: string, entityId?: string, userId?: string) {
+  db(
+    operation: string,
+    entityType: string,
+    entityId?: string,
+    userId?: string,
+  ) {
     this.debug(`DB: ${operation}`, {
       userId,
       action: operation,
@@ -88,8 +99,15 @@ export const logger = {
     });
   },
 
-  api(method: string, path: string, statusCode: number, userId?: string, duration?: number) {
-    const level = statusCode >= 500 ? "error" : statusCode >= 400 ? "warn" : "info";
+  api(
+    method: string,
+    path: string,
+    statusCode: number,
+    userId?: string,
+    duration?: number,
+  ) {
+    const level =
+      statusCode >= 500 ? "error" : statusCode >= 400 ? "warn" : "info";
     this[level](`API: ${method} ${path}`, {
       userId,
       action: `${method} ${path}`,

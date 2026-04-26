@@ -63,7 +63,7 @@
     },
     "register": {
       "title": "Create Account",
-      "subtitle": "Join LineX Forsa Marketplace",
+      "subtitle": "Join Rasi Marketplace",
       "fullName": "Full Name",
       "email": "Email Address",
       "password": "Password",
@@ -273,6 +273,6 @@
     "faq": "FAQ",
     "partners": "Partners",
     "contact": "Contact Us",
-    "copyright": "© {year} LineX Forsa. All rights reserved."
+    "copyright": "© {year} Rasi. All rights reserved."
   }
 }

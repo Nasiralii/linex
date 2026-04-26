@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 
 // ============================================================================
-// Email Service — Resend Integration for LineX-Forsa
+// Email Service — Resend Integration for Rasi
 // ============================================================================
 
 let _resend: Resend | null = null;

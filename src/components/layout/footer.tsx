@@ -32,7 +32,7 @@ export function Footer() {
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               <span style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.8125rem", color: "rgba(255,255,255,0.4)" }}>
-                <Mail style={{ width: "14px", height: "14px" }} /> info@linexforsa.com
+                <Mail style={{ width: "14px", height: "14px" }} /> info@rasi.sa
               </span>
               <span style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.8125rem", color: "rgba(255,255,255,0.4)" }}>
                 <MapPin style={{ width: "14px", height: "14px" }} /> {isRtl ? "المملكة العربية السعودية" : "Saudi Arabia"}

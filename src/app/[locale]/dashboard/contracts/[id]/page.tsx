@@ -43,8 +43,8 @@ export default async function ContractPage({ params }: { params: Promise<{ id: s
   const ownerSigned = !!contract.ownerSignedAt;
   const contractorSigned = !!contract.contractorSignedAt;
   const defaultTerms = isRtl
-    ? "شروط العقد القياسية لمنصة لاينكس فرصة.\n\n1. يلتزم المقاول بتنفيذ جميع الأعمال حسب المواصفات المتفق عليها.\n2. يتم الدفع حسب مراحل الإنجاز المحددة.\n3. مدة الضمان: 12 شهراً من تاريخ التسليم.\n4. أي نزاع يُحل ودياً أولاً، ثم عبر التحكيم.\n5. تسري أحكام النظام السعودي للمقاولات."
-    : "Standard LineX Forsa platform contract terms.\n\n1. The contractor commits to executing all works per agreed specifications.\n2. Payment shall be made according to defined milestones.\n3. Warranty period: 12 months from delivery date.\n4. Any dispute shall be resolved amicably first, then via arbitration.\n5. Saudi construction regulations apply.";
+    ? "شروط العقد القياسية لمنصة راسي.\n\n1. يلتزم المقاول بتنفيذ جميع الأعمال حسب المواصفات المتفق عليها.\n2. يتم الدفع حسب مراحل الإنجاز المحددة.\n3. مدة الضمان: 12 شهراً من تاريخ التسليم.\n4. أي نزاع يُحل ودياً أولاً، ثم عبر التحكيم.\n5. تسري أحكام النظام السعودي للمقاولات."
+    : "Standard Rasi platform contract terms.\n\n1. The contractor commits to executing all works per agreed specifications.\n2. Payment shall be made according to defined milestones.\n3. Warranty period: 12 months from delivery date.\n4. Any dispute shall be resolved amicably first, then via arbitration.\n5. Saudi construction regulations apply.";
 
   return (
     <div style={{ background: "var(--bg)", minHeight: "calc(100vh - 64px)" }}>

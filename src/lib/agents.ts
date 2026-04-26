@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 
 // ============================================================================
-// LineX-Forsa AI Agents — All 11 Agents (Bilingual AR/EN)
+// Rasi AI Agents — All 11 Agents (Bilingual AR/EN)
 // ============================================================================
 
 let _openai: OpenAI | null = null;
@@ -34,7 +34,7 @@ export async function customerSupportAgent(
     messages: [
       {
         role: "system",
-        content: `You are the customer support agent for LineX-Forsa construction marketplace. Respond in ${lang}.
+        content: `You are the customer support agent for Rasi construction marketplace. Respond in ${lang}.
 ${PLATFORM_CONTEXT}
 FAQ:
 - Registration is free for all roles (Owner, Contractor, Engineer)
@@ -74,7 +74,7 @@ export async function projectIntakeAgent(
     messages: [
       {
         role: "system",
-        content: `You are a construction project intake consultant for LineX-Forsa. Respond in ${lang}.
+        content: `You are a construction project intake consultant for Rasi. Respond in ${lang}.
 Guide the user step by step to define their project. Ask about: type of work, location, budget, timeline, specific requirements.
 When you have enough info, return JSON with:
 { "ready": true, "project": { "title": "", "titleAr": "", "description": "", "descriptionAr": "", "projectType": "CONSTRUCTION_ONLY|DESIGN_ONLY|DESIGN_AND_CONSTRUCTION", "suggestedCategory": "", "budgetMin": 0, "budgetMax": 0, "estimatedDuration": "" }, "message": "conversation response" }
@@ -141,7 +141,7 @@ export async function adminIntelligenceAgent(
     messages: [
       {
         role: "system",
-        content: `You are an admin intelligence analyst for LineX-Forsa construction marketplace. Respond in ${lang}.
+        content: `You are an admin intelligence analyst for Rasi construction marketplace. Respond in ${lang}.
 Analyze platform stats and provide actionable insights.
 Return JSON: { "summary": "brief overview", "insights": ["insight1"], "alerts": ["alert1"], "recommendations": ["rec1"] }`,
       },
@@ -172,7 +172,7 @@ export async function outreachAgent(
     messages: [
       {
         role: "system",
-        content: `Generate a personalized outreach message for a contractor/engineer about a new matching project on LineX-Forsa. 
+        content: `Generate a personalized outreach message for a contractor/engineer about a new matching project on Rasi. 
 Return JSON: { "subject": "", "subjectAr": "", "message": "", "messageAr": "", "whatsappMessage": "", "whatsappMessageAr": "" }
 Keep it professional, concise, and include a call-to-action. Mention the project name, location, and budget range.`,
       },
