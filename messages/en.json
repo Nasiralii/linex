@@ -274,5 +274,219 @@
     "partners": "Partners",
     "contact": "Contact Us",
     "copyright": "© {year} Rasi. All rights reserved."
+  },
+  "landing": {
+    "brand": {
+      "arabic": "راسي",
+      "tagline": "Saudi Arabia's Digital Marketplace for Construction & Design"
+    },
+    "nav": {
+      "howItWorks": "How It Works",
+      "forOwners": "For Owners",
+      "professionals": "Professionals",
+      "verification": "Verification",
+      "about": "About",
+      "signIn": "Sign In",
+      "postProject": "Post Your Project"
+    },
+    "hero": {
+      "tagline": "Saudi Arabia's Digital Marketplace for Construction & Design",
+      "title": {
+        "line1": "Construction starts",
+        "line2": "with the right decision."
+      },
+      "word1": "Make it clearly.",
+      "word2": "Make it confidently.",
+      "word3": "Make it with Rasi.",
+      "description": "Rasi connects project owners with qualified contractors and engineers. Post your project with clear specifications, receive offers from verified professionals, and compare price, timeline, track record, and ratings on one dashboard — then award with a documented workflow.",
+      "cta": {
+        "postProject": "Post Your Project",
+        "joinPro": "Join as a Professional"
+      },
+      "microcopy": "Post in minutes — no documents required to start."
+    },
+    "trustStrip": {
+      "item1": "Verified professional profiles",
+      "item2": "Transparent four-tier system",
+      "item3": "Structured side-by-side comparison",
+      "item4": "Documented decision journey"
+    },
+    "stats": {
+      "projects": "Projects Posted",
+      "pros": "Verified Professionals",
+      "bids": "Bids Submitted",
+      "awards": "Successful Awards"
+    },
+    "howItWorks": {
+      "tag": "How It Works",
+      "title": {
+        "line1": "From brief to award —",
+        "highlight": "in three steps."
+      },
+      "short": "Post. Compare. Decide with confidence.",
+      "step1": {
+        "title": "Post Your Project",
+        "arabic": "اطرح مشروعك",
+        "desc": "Add project details, location, service type, estimated budget, and timeline. Upload drawings or photos if available."
+      },
+      "step2": {
+        "title": "Receive & Compare Offers",
+        "arabic": "استقبل وقارن العروض",
+        "desc": "Offers arrive from qualified contractors or engineers. Compare price, timeline, track record, and ratings on one dashboard."
+      },
+      "step3": {
+        "title": "Decide with Confidence",
+        "arabic": "اختر بثقة",
+        "desc": "Ask questions, request clarifications, and award your decision. The contractual relationship begins directly between you and the awarded party."
+      },
+      "cta": "See How It Works"
+    },
+    "audiences": {
+      "tag": "Built for Both Sides",
+      "title": {
+        "line1": "One platform.",
+        "highlight": "Two journeys."
+      },
+      "owners": {
+        "title": "For Project Owners",
+        "arabic": "لأصحاب المشاريع",
+        "headline": "Stop searching alone. Let qualified professionals come to your project.",
+        "desc": "Whether you are building a villa, designing a space, finishing an office, renovating a home, or developing a commercial project — Rasi turns your idea into a structured project request that reaches the right contractors and engineers.",
+        "item1": "Villa and residential construction",
+        "item2": "Architectural and interior design",
+        "item3": "Residential and commercial finishing",
+        "item4": "Renovation and refurbishment",
+        "cta": "Post Your Project"
+      },
+      "pros": {
+        "title": "For Contractors & Engineers",
+        "arabic": "للمقاولين والمهندسين",
+        "headline": "Real projects are looking for your expertise.",
+        "desc": "If you are a licensed contractor or specialized engineer, Rasi gives you a structured channel to reach serious project owners. Build a verified professional profile and compete for projects that match your specialty.",
+        "item1": "Access real projects with clear specifications",
+        "item2": "Verified professional profile showcasing your work",
+        "item3": "Competition based on capability, not connections",
+        "item4": "Build a measurable digital reputation",
+        "cta": "Join as a Professional"
+      }
+    },
+    "whyRasi": {
+      "tag": "Why Rasi",
+      "title": {
+        "line1": "Not all offers are equal —",
+        "highlight": "Rasi shows you the difference."
+      },
+      "card1": {
+        "title": "Construction-Specific by Design",
+        "arabic": "متخصصة في البناء فقط",
+        "desc": "Rasi is not a generic services directory. Every feature — from professional profiles to comparison dashboards — is engineered around construction, design, finishing, and renovation projects."
+      },
+      "card2": {
+        "title": "Qualification Before Competition",
+        "arabic": "التأهيل قبل المنافسة",
+        "desc": "Offers appear on the platform only from professionals who have cleared profile, specialization, and experience review. Verification is the condition for competing — not a marketing label."
+      },
+      "card3": {
+        "title": "Structured Comparison",
+        "arabic": "مقارنة منظَّمة",
+        "desc": "We convert offers from fragmented WhatsApp conversations into structured, comparable data on unified criteria. The decision becomes clearer, and real differences actually surface."
+      },
+      "card4": {
+        "title": "Built for the Saudi Market",
+        "arabic": "مصمَّمة للسوق السعودي",
+        "desc": "From verification flows to professional classifications, Rasi is built on a real understanding of Saudi contracting norms, local contractor workflows, and regulatory context."
+      }
+    },
+    "trustTiers": {
+      "tag": "Verification & Qualification",
+      "title": {
+        "line1": "Trust starts",
+        "highlight": "before the first offer."
+      },
+      "description": "Platform quality is not measured by registration counts, but by the quality of those allowed to compete. We designed a multi-stage process to raise the trust baseline and reduce decision ambiguity.",
+      "reviewTitle": "What We Review",
+      "review1": "Legal information and commercial registration",
+      "review2": "Licensing and professional classification",
+      "review3": "Prior work and documented projects",
+      "review4": "On-platform ratings and behavior",
+      "tier1": {
+        "name": "Registered",
+        "arabic": "مسجَّل",
+        "desc": "Completed registration and basic verification. Ready to browse active projects.",
+        "perk1": "Profile visibility",
+        "perk2": "Project browsing",
+        "perk3": "Basic messaging"
+      },
+      "tier2": {
+        "name": "Qualified",
+        "arabic": "مؤهَّل",
+        "desc": "Complete profile with documented experience in the declared specialty. Eligible to submit offers.",
+        "perk1": "Submit offers",
+        "perk2": "Specialization badge",
+        "perk3": "Priority matching"
+      },
+      "tier3": {
+        "name": "Preferred",
+        "arabic": "مفضَّل",
+        "desc": "Strong performance record and accumulated positive ratings. Featured placement in comparison dashboards.",
+        "perk1": "Featured placement",
+        "perk2": "Performance analytics",
+        "perk3": "Trust badge"
+      },
+      "tier4": {
+        "name": "Elite",
+        "arabic": "نخبة",
+        "desc": "Sustained high performance, continuous commitment, and a documented track record on the platform.",
+        "perk1": "Elite tier badge",
+        "perk2": "Premium visibility",
+        "perk3": "Dedicated support"
+      }
+    },
+    "quote": {
+      "text": "The single most consequential moment in any construction project is choosing the right executing party — it determines quality, cost discipline, and error rates.",
+      "attribution": "Rasi · Saudi Arabia's Digital Marketplace for Construction & Design"
+    },
+    "cta": {
+      "tag": "Ready to Start?",
+      "title": {
+        "line1": "Start your project",
+        "highlight": "with confidence."
+      },
+      "description": "Whether you are a project owner or a construction professional — the right next step starts here.",
+      "button1": "Post Your Project",
+      "button2": "Join as a Professional",
+      "footer": "Post in minutes · No documents required · Sunday–Thursday 9AM–6PM Riyadh"
+    },
+    "footer": {
+      "description": "Saudi Arabia's digital marketplace for construction and design. We organize the decision journey from brief to award.",
+      "company": "Operated by Information Technology Integrated Solutions Co.",
+      "location": "Riyadh, Kingdom of Saudi Arabia · 2026",
+      "copyright": "© {year} Rasi. All rights reserved.",
+      "contact": "info@rasi.sa · Riyadh, Saudi Arabia",
+      "col1": {
+        "title": "Platform",
+        "link1": "Home",
+        "link2": "How It Works",
+        "link3": "For Owners",
+        "link4": "For Professionals",
+        "link5": "Verification"
+      },
+      "col2": {
+        "title": "Company",
+        "link1": "About Rasi",
+        "link2": "Services",
+        "link3": "Why Rasi",
+        "link4": "FAQ",
+        "link5": "Partners"
+      },
+      "col3": {
+        "title": "Support",
+        "link1": "Contact Us",
+        "link2": "Privacy Policy",
+        "link3": "Terms of Use",
+        "link4": "Support Center",
+        "link5": "Join as a Pro"
+      }
+    }
   }
 }

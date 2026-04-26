@@ -8,9 +8,11 @@ const intlMiddleware = createMiddleware(routing);
 export default function middleware(request: NextRequest) {
   // First handle i18n routing
   const response = intlMiddleware(request);
-  
-  // BUG-C06: Return the i18n response directly - don't bypass it with NextResponse.next()
-  // The intlMiddleware already handles locale detection and routing correctly
+
+  // Add pathname header for landing page detection in layout
+  const pathname = request.nextUrl.pathname;
+  response.headers.set("x-pathname", pathname);
+
   return response;
 }
 
@@ -19,9 +21,5 @@ export const config = {
   // - API routes (/api/...)
   // - Next.js internals (_next/...)
   // - Static files (favicon.ico, images, etc.)
-  matcher: [
-    "/",
-    "/(ar|en)/:path*",
-    "/((?!api|_next|_vercel|.*\\..*).*)",
-  ],
+  matcher: ["/", "/(ar|en)/:path*", "/((?!api|_next|_vercel|.*\\..*).*)"],
 };

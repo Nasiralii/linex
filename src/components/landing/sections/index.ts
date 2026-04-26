@@ -1,0 +1,11 @@
+export { Navbar } from "./Navbar";
+export { Hero } from "./Hero";
+export { StatsStrip } from "./StatsStrip";
+export { HowItWorks } from "./HowItWorks";
+export { TwoAudiences } from "./TwoAudiences";
+export { Marquee } from "./Marquee";
+export { TrustTiers } from "./TrustTiers";
+export { WhyRasi } from "./WhyRasi";
+export { ParallaxQuote } from "./ParallaxQuote";
+export { CTASection } from "./CTASection";
+export { Footer } from "./Footer";
