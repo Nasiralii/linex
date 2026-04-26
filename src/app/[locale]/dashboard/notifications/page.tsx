@@ -63,7 +63,7 @@ export default function NotificationsPage() {
 
   return (
     <div style={{ background: "var(--bg)", minHeight: "calc(100vh - 64px)" }}>
-      <div style={{ background: "linear-gradient(135deg, #0a4e41, #0f6b57)", padding: "2rem 0" }}>
+      <div style={{ background: "linear-gradient(135deg, #1C5963, #2A7B88)", padding: "2rem 0" }}>
         <div className="container-app" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
             <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "white" }}>

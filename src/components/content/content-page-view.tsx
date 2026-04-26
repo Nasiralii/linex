@@ -14,7 +14,7 @@ export function ContentPageView({ title, excerpt, content }: ContentPageViewProp
     <div style={{ background: "var(--bg)", minHeight: "calc(100vh - 64px)" }}>
       <section
         style={{
-          background: "linear-gradient(135deg, #0a4e41 0%, #0f6b57 60%, #127a63 100%)",
+          background: "linear-gradient(135deg, #1C5963 0%, #2A7B88 60%, #3A8B98 100%)",
           color: "white",
           padding: "4rem 0 3rem",
         }}

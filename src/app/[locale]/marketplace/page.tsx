@@ -87,7 +87,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
 
   return (
     <div style={{ background: "var(--bg)", minHeight: "calc(100vh - 64px)" }}>
-      <div style={{ background: "linear-gradient(135deg, #0a4e41, #0f6b57)", padding: "2.5rem 0 2rem" }}>
+      <div style={{ background: "linear-gradient(135deg, #1C5963, #2A7B88)", padding: "2.5rem 0 2rem" }}>
         <div className="container-app">
           <h1 style={{ fontSize: "1.75rem", fontWeight: 800, color: "white", marginBottom: "0.5rem" }}>{t("title")}</h1>
           <p style={{ fontSize: "0.9375rem", color: "rgba(255,255,255,0.7)", marginBottom: "1.5rem" }}>{t("subtitle")}</p>

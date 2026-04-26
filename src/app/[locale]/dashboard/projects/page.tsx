@@ -52,7 +52,7 @@ export default async function MyProjectsPage({
   return (
     <div style={{ background: "var(--bg)", minHeight: "calc(100vh - 64px)" }}>
       {/* Header */}
-      <div style={{ background: "linear-gradient(135deg, #0a4e41, #0f6b57)", padding: "2rem 0" }}>
+      <div style={{ background: "linear-gradient(135deg, #1C5963, #2A7B88)", padding: "2rem 0" }}>
         <div className="container-app" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
           <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "white", margin: 0 }}>
             {isRtl ? "مشاريعي" : "My Projects"}
@@ -60,7 +60,7 @@ export default async function MyProjectsPage({
               ({projects.length})
             </span>
           </h1>
-          <Link href="/dashboard/projects/new" className="btn-primary" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "0.5rem", background: "white", color: "#0f6b57", fontWeight: 700, fontSize: "0.875rem", padding: "0.625rem 1.25rem", borderRadius: "var(--radius-lg)" }}>
+          <Link href="/dashboard/projects/new" className="btn-primary" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "0.5rem", background: "white", color: "#2A7B88", fontWeight: 700, fontSize: "0.875rem", padding: "0.625rem 1.25rem", borderRadius: "var(--radius-lg)" }}>
             <Plus style={{ width: "16px", height: "16px" }} />
             {isRtl ? "مشروع جديد" : "New Project"}
           </Link>
@@ -130,7 +130,7 @@ export default async function MyProjectsPage({
                       <ExternalLink style={{ width: "14px", height: "14px" }} /> {isRtl ? "عرض في السوق" : "View in Marketplace"}
                     </Link>
                     {showExec && (
-                      <Link href={`/dashboard/execution/${p.id}`} style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", fontSize: "0.8125rem", fontWeight: 600, color: "#c58b2a", textDecoration: "none" }}>
+                      <Link href={`/dashboard/execution/${p.id}`} style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", fontSize: "0.8125rem", fontWeight: 600, color: "#B87333", textDecoration: "none" }}>
                         <Hammer style={{ width: "14px", height: "14px" }} /> {isRtl ? "متابعة التنفيذ" : "Execution Workspace"}
                       </Link>
                     )}

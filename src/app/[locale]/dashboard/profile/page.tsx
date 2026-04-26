@@ -546,7 +546,7 @@ export default function ProfilePage() {
 
   return (
     <div style={{ background: "var(--bg)", minHeight: "calc(100vh - 64px)" }}>
-      <div style={{ background: "linear-gradient(135deg, #0a4e41, #0f6b57)", padding: "2rem 0" }}>
+      <div style={{ background: "linear-gradient(135deg, #1C5963, #2A7B88)", padding: "2rem 0" }}>
         <div className="container-app" style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
           {/* G8: Avatar upload */}
           <div style={{ position: "relative" }}>
@@ -696,14 +696,14 @@ export default function ProfilePage() {
           </div>
           {/* <div className="" style={{ minWidth: "180px", flex: 1, maxWidth: "280px" }}>
             <div style={{ width: "100%", height: "8px", background: "var(--surface-2)", borderRadius: "999px", overflow: "hidden" }}>
-              <div style={{ width: `${((activeStepIndex + 1) / tabs.length) * 100}%`, height: "100%", background: "linear-gradient(90deg, #0a4e41, #0f6b57)", borderRadius: "999px", transition: "width 0.25s ease" }} />
+              <div style={{ width: `${((activeStepIndex + 1) / tabs.length) * 100}%`, height: "100%", background: "linear-gradient(90deg, #1C5963, #2A7B88)", borderRadius: "999px", transition: "width 0.25s ease" }} />
             </div>
           </div> */}
           <div className="min-w-[180px] flex-1 max-w-[280px]">
   <div className="flex w-full h-2 rounded-full overflow-hidden">
     {/* Completed - Green */}
     <div 
-      className="h-full bg-[#0f6b57] transition-all duration-300"
+      className="h-full bg-[#2A7B88] transition-all duration-300"
       style={{ width: `${((activeStepIndex + 1) / tabs.length) * 100}%` }}
     />
     <div 

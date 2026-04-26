@@ -143,7 +143,7 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
 
   return (
     <div style={{ background: "var(--bg)", minHeight: "calc(100vh - 64px)" }}>
-      <div style={{ background: "linear-gradient(135deg, #0a4e41, #0f6b57)", padding: "2rem 0" }}>
+      <div style={{ background: "linear-gradient(135deg, #1C5963, #2A7B88)", padding: "2rem 0" }}>
         <div className="container-app">
           <Link href="/dashboard" style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.8125rem", textDecoration: "none", display: "flex", alignItems: "center", gap: "0.25rem" }}>
             <ArrowLeft style={{ width: "14px", height: "14px" }} /> {isRtl ? "العودة للوحة التحكم" : "Back to Dashboard"}

@@ -57,7 +57,7 @@ export function AiChatWidget() {
           width: "60px", height: "60px", borderRadius: "50%",
           background: "linear-gradient(135deg, var(--primary), var(--primary-dark))",
           color: "white", border: "none", cursor: "pointer",
-          boxShadow: "0 4px 20px rgba(15, 107, 87, 0.4)",
+          boxShadow: "0 4px 20px rgba(42, 123, 136, 0.4)",
           display: "flex", alignItems: "center", justifyContent: "center",
           transition: "all 200ms ease",
         }}
@@ -87,7 +87,7 @@ export function AiChatWidget() {
               <Bot style={{ width: "24px", height: "24px", color: "white" }} />
               <div>
                 <div style={{ color: "white", fontSize: "0.9375rem", fontWeight: 700 }}>
-                  {isRtl ? "مساعد لاينكس فرصة" : "LineX Forsa Assistant"}
+                  {isRtl ? "مساعد راسي" : "Rasi Assistant"}
                 </div>
                 <div style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.6875rem" }}>
                   {isRtl ? "متاح الآن • AI" : "Online now • AI"}

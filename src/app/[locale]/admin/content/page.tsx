@@ -118,7 +118,7 @@ export default async function AdminContentPage({ searchParams }: { searchParams:
               padding: "1rem 1.25rem",
               marginBottom: "1rem",
               border: `1px solid ${wasPublished ? "var(--success)" : "var(--accent)"}`,
-              background: wasPublished ? "rgba(16, 185, 129, 0.08)" : "rgba(197, 139, 42, 0.08)",
+              background: wasPublished ? "rgba(16, 185, 129, 0.08)" : "rgba(184, 115, 51, 0.08)",
               color: wasPublished ? "var(--success)" : "var(--accent)",
               fontSize: "0.875rem",
               fontWeight: 700,

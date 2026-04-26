@@ -24,9 +24,9 @@ export default function RevenueCharts({ revenue, monthlyRevenue, isRtl }: Props)
 
   const maxBar = Math.max(...monthlyRevenue.map(m => m.total), 1);
   const sources = [
-    { label: isRtl ? "كراسات" : "Krasat", value: revenue.krasat, color: "#0f6b57" },
+    { label: isRtl ? "كراسات" : "Krasat", value: revenue.krasat, color: "#2A7B88" },
     { label: isRtl ? "إشراف" : "Supervision", value: revenue.supervision, color: "#2563eb" },
-    { label: isRtl ? "عقود" : "Contracts", value: revenue.contracts, color: "#c58b2a" },
+    { label: isRtl ? "عقود" : "Contracts", value: revenue.contracts, color: "#B87333" },
     { label: isRtl ? "رسوم المنصة" : "Platform Fees", value: revenue.platformFees, color: "#7c3aed" },
   ];
   const totalRev = sources.reduce((s, r) => s + r.value, 0) || 1;
@@ -47,7 +47,7 @@ export default function RevenueCharts({ revenue, monthlyRevenue, isRtl }: Props)
       {/* Bar Chart */}
       <div style={{ ...glass, flex: "0 0 60%" }}>
         <h3 style={secHead}>
-          <span style={{ width: 4, height: 20, borderRadius: 2, background: "linear-gradient(to bottom, #c58b2a, #a06d1e)", display: "inline-block" }} />
+          <span style={{ width: 4, height: 20, borderRadius: 2, background: "linear-gradient(to bottom, #B87333, #8C5A28)", display: "inline-block" }} />
           {isRtl ? "الإيرادات الشهرية" : "Monthly Revenue"}
         </h3>
         <div style={{ display: "flex", alignItems: "flex-end", gap: 14, height: 200, padding: "0 4px" }}>
@@ -59,11 +59,11 @@ export default function RevenueCharts({ revenue, monthlyRevenue, isRtl }: Props)
                 onMouseEnter={() => setHovBar(i)} onMouseLeave={() => setHovBar(null)}>
                 <div style={{
                   width: "100%", maxWidth: 52, height: anim ? h : 0, minHeight: m.total > 0 ? 8 : 0,
-                  background: isHov ? "linear-gradient(to top, #14a085, #3dd9b5)" : "linear-gradient(to top, #0f6b57, #14a085)",
+                  background: isHov ? "linear-gradient(to top, #14a085, #3dd9b5)" : "linear-gradient(to top, #2A7B88, #3A8B98)",
                   borderRadius: "8px 8px 0 0",
                   transition: `height 0.9s cubic-bezier(0.34,1.56,0.64,1) ${i * 0.1}s, background 0.3s ease`,
                   cursor: "pointer",
-                  boxShadow: isHov ? "0 -6px 20px rgba(15,107,87,0.35)" : `0 -2px ${Math.max(4, h * 0.06)}px rgba(15,107,87,0.15)`,
+                  boxShadow: isHov ? "0 -6px 20px rgba(42,123,136,0.35)" : `0 -2px ${Math.max(4, h * 0.06)}px rgba(42,123,136,0.15)`,
                 }} />
                 <span style={{ fontSize: "0.6875rem", color: "#6b7280", marginTop: 8, fontWeight: 500 }}>{m.month}</span>
                 {isHov && (
@@ -92,7 +92,7 @@ export default function RevenueCharts({ revenue, monthlyRevenue, isRtl }: Props)
       {/* Donut Chart */}
       <div style={{ ...glass, flex: "0 0 calc(40% - 1.25rem)", display: "flex", flexDirection: "column", alignItems: "center" }}>
         <h3 style={{ ...secHead, alignSelf: "flex-start" }}>
-          <span style={{ width: 4, height: 20, borderRadius: 2, background: "linear-gradient(to bottom, #c58b2a, #a06d1e)", display: "inline-block" }} />
+          <span style={{ width: 4, height: 20, borderRadius: 2, background: "linear-gradient(to bottom, #B87333, #8C5A28)", display: "inline-block" }} />
           {isRtl ? "مصادر الإيرادات" : "Revenue Sources"}
         </h3>
         <div style={{

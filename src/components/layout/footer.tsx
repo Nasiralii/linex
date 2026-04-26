@@ -2,7 +2,7 @@
 
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
-import { Building2, Mail, MapPin } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
 import { PUBLIC_CONTENT_PAGES } from "@/lib/content-pages";
 
 export function Footer() {
@@ -22,15 +22,9 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
-              <div style={{
-                width: "36px", height: "36px", borderRadius: "var(--radius-lg)",
-                background: "linear-gradient(135deg, var(--primary), var(--primary-dark))",
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
-                <Building2 style={{ width: "18px", height: "18px", color: "white" }} />
-              </div>
+              <img src="/logo.jpg" alt="Rasi" style={{ width: "36px", height: "36px" }} />
               <span style={{ fontSize: "1.125rem", fontWeight: 700, color: "white" }}>
-                {isRtl ? "لاينكس فرصة" : "LineX Forsa"}
+                {isRtl ? "راسي" : "Rasi"}
               </span>
             </div>
             <p style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.5)", maxWidth: "320px", lineHeight: 1.7, marginBottom: "1rem" }}>

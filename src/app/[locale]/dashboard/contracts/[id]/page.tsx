@@ -49,7 +49,7 @@ export default async function ContractPage({ params }: { params: Promise<{ id: s
   return (
     <div style={{ background: "var(--bg)", minHeight: "calc(100vh - 64px)" }}>
       {/* Header */}
-      <div style={{ background: "linear-gradient(135deg, #0a4e41, #0f6b57)", padding: "2rem 0" }}>
+      <div style={{ background: "linear-gradient(135deg, #1C5963, #2A7B88)", padding: "2rem 0" }}>
         <div className="container-app">
           <Link href="/dashboard" style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.8125rem", textDecoration: "none" }}>← {isRtl ? "العودة" : "Back"}</Link>
           <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "white", marginTop: "0.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>

@@ -1,0 +1,13 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- White Background -->
+  <rect width="40" height="40" fill="white"/>
+  
+  <!-- X Shape - Top-Left to Bottom-Right (Navy) -->
+  <rect x="8" y="8" width="24" height="6" transform="rotate(45 20 20)" fill="#1B2A4A"/>
+  
+  <!-- X Shape - Top-Right to Bottom-Left (Copper) -->
+  <rect x="8" y="8" width="24" height="6" transform="rotate(-45 20 20)" fill="#B87333"/>
+  
+  <!-- Center Cream Square -->
+  <rect x="14" y="14" width="12" height="12" fill="#F5F3EF"/>
+</svg>

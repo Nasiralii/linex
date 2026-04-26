@@ -12,11 +12,11 @@ interface Performer { rank: number; name: string; rating: number; projects: numb
 interface Props { projects: Project[]; performers: Performer[]; isRtl: boolean }
 
 const SC: Record<string, { bg: string; text: string }> = {
-  DRAFT: { bg: "#f3f4f6", text: "#6b7280" }, PUBLISHED: { bg: "#ecfdf5", text: "#0f6b57" },
-  BIDDING: { bg: "#fef3c7", text: "#c58b2a" }, AWARDED: { bg: "#eff6ff", text: "#2563eb" },
+  DRAFT: { bg: "#f3f4f6", text: "#6b7280" }, PUBLISHED: { bg: "#E8F4F6", text: "#2A7B88" },
+  BIDDING: { bg: "#fef3c7", text: "#B87333" }, AWARDED: { bg: "#eff6ff", text: "#2563eb" },
   IN_PROGRESS: { bg: "#e0f2fe", text: "#0369a1" }, COMPLETED: { bg: "#dcfce7", text: "#15803d" },
   CANCELLED: { bg: "#fee2e2", text: "#dc2626" }, PENDING_REVIEW: { bg: "#fff7ed", text: "#b45309" },
-  SUBMITTED: { bg: "#eff6ff", text: "#2563eb" }, SHORTLISTED: { bg: "#fef3c7", text: "#c58b2a" },
+  SUBMITTED: { bg: "#eff6ff", text: "#2563eb" }, SHORTLISTED: { bg: "#fef3c7", text: "#B87333" },
   REJECTED: { bg: "#fee2e2", text: "#dc2626" }, WITHDRAWN: { bg: "#f3f4f6", text: "#6b7280" },
 };
 const MC = ["🥇", "🥈", "🥉"];
@@ -49,12 +49,12 @@ export default function DrillDownTable({ projects, performers, isRtl }: Props) {
     <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
       <div style={glass}>
         <h3 style={secHead}>
-          <span style={{ width: 4, height: 20, borderRadius: 2, background: "linear-gradient(to bottom, #c58b2a, #a06d1e)", display: "inline-block" }} />
+          <span style={{ width: 4, height: 20, borderRadius: 2, background: "linear-gradient(to bottom, #B87333, #8C5A28)", display: "inline-block" }} />
           {isRtl ? "جدول المشاريع التفصيلي" : "Projects Drill-Down"}
         </h3>
         <div style={{ overflowX: "auto", borderRadius: 12, border: "1px solid #e5e7eb" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 800 }}>
-            <thead><tr style={{ background: "linear-gradient(135deg, #0f6b57, #0a4e41)" }}>
+            <thead><tr style={{ background: "linear-gradient(135deg, #2A7B88, #1C5963)" }}>
               <th style={th} onClick={() => sort("title")}>{(isRtl ? "المشروع" : "Project") + si("title")}</th>
               <th style={th} onClick={() => sort("owner")}>{(isRtl ? "المالك" : "Owner") + si("owner")}</th>
               <th style={th}>{isRtl ? "النوع" : "Type"}</th>
@@ -72,17 +72,17 @@ export default function DrillDownTable({ projects, performers, isRtl }: Props) {
                   <tr key={p.id} onClick={() => setExpId(isE ? null : p.id)}
                     onMouseEnter={() => setHovRow(p.id)} onMouseLeave={() => setHovRow(null)}
                     style={{ cursor: "pointer", background: rowBg, transition: "background 0.2s", borderBottom: "1px solid #f3f4f6" }}>
-                    <td style={{ ...td, fontWeight: 600, color: "#0f6b57" }}>{isRtl ? (p.titleAr || p.title) : p.title}</td>
+                    <td style={{ ...td, fontWeight: 600, color: "#2A7B88" }}>{isRtl ? (p.titleAr || p.title) : p.title}</td>
                     <td style={td}>{p.owner}</td>
                     <td style={td}><span style={{ padding: "3px 10px", borderRadius: 12, background: "#f3f4f6", fontSize: "0.6875rem", fontWeight: 500 }}>{isRtl ? tl.ar : tl.en}</span></td>
                     <td style={td}><Chip status={p.status} /></td>
                     <td style={{ ...td, fontWeight: 700, color: "#1a2332" }}>{p.bidsCount}</td>
-                    <td style={{ ...td, fontWeight: 700, color: p.awardAmount ? "#0f6b57" : "#9ca3af" }}>{p.awardAmount ? `${p.awardAmount.toLocaleString()} SAR` : "—"}</td>
-                    <td style={td}>{isE ? <ChevronUp style={{ width: 16, height: 16, color: "#0f6b57" }} /> : <ChevronDown style={{ width: 16, height: 16, color: "#9ca3af" }} />}</td>
+                    <td style={{ ...td, fontWeight: 700, color: p.awardAmount ? "#2A7B88" : "#9ca3af" }}>{p.awardAmount ? `${p.awardAmount.toLocaleString()} SAR` : "—"}</td>
+                    <td style={td}>{isE ? <ChevronUp style={{ width: 16, height: 16, color: "#2A7B88" }} /> : <ChevronDown style={{ width: 16, height: 16, color: "#9ca3af" }} />}</td>
                   </tr>
                   {isE && <tr key={p.id + "-exp"}><td colSpan={7} style={{ padding: 0, borderBottom: "1px solid #e5e7eb" }}>
                     <div style={{ padding: "16px 20px", background: "linear-gradient(135deg, #f0fdf4, #f5f2ea)", maxHeight: 300, overflow: "hidden", transition: "max-height 0.4s ease" }}>
-                      <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0f6b57", marginBottom: 10 }}>
+                      <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#2A7B88", marginBottom: 10 }}>
                         {isRtl ? "تفاصيل العروض" : "Bid Details"}{p.awardContractor && ` — ${isRtl ? "الفائز" : "Winner"}: ${p.awardContractor}`}
                       </div>
                       <div style={{ fontSize: "0.6875rem", color: "#6b7280", marginBottom: 10 }}>
@@ -96,10 +96,10 @@ export default function DrillDownTable({ projects, performers, isRtl }: Props) {
                                 <span style={{ fontWeight: 600, fontSize: "0.8125rem", color: "#1a2332" }}>{b.company}</span>
                                 <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
                                   {b.score > 0 && <span style={{ fontSize: "0.6875rem", color: "#7c3aed", fontWeight: 700, background: "#f3e8ff", padding: "2px 8px", borderRadius: 10 }}>AI: {b.score}</span>}
-                                  {b.confidence && <span style={{ fontSize: "0.6875rem", color: "#0f6b57", fontWeight: 700, background: "#ecfdf5", padding: "2px 8px", borderRadius: 10 }}>{isRtl ? `ثقة: ${b.confidence}` : `Conf: ${b.confidence}`}</span>}
+                                  {b.confidence && <span style={{ fontSize: "0.6875rem", color: "#2A7B88", fontWeight: 700, background: "#ecfdf5", padding: "2px 8px", borderRadius: 10 }}>{isRtl ? `ثقة: ${b.confidence}` : `Conf: ${b.confidence}`}</span>}
                                   {!!b.fallbackCount && <span style={{ fontSize: "0.6875rem", color: "#b45309", fontWeight: 700, background: "#fff7ed", padding: "2px 8px", borderRadius: 10 }}>{isRtl ? `بدائل: ${b.fallbackCount}` : `Fallbacks: ${b.fallbackCount}`}</span>}
                                   {!!b.missingCount && <span style={{ fontSize: "0.6875rem", color: "#dc2626", fontWeight: 700, background: "#fee2e2", padding: "2px 8px", borderRadius: 10 }}>{isRtl ? `نواقص: ${b.missingCount}` : `Missing: ${b.missingCount}`}</span>}
-                                  <span style={{ fontSize: "0.875rem", fontWeight: 800, color: "#0f6b57" }}>{b.amount.toLocaleString()} SAR</span>
+                                  <span style={{ fontSize: "0.875rem", fontWeight: 800, color: "#2A7B88" }}>{b.amount.toLocaleString()} SAR</span>
                                   <Chip status={b.status} />
                                 </div>
                               </div>
@@ -125,7 +125,7 @@ export default function DrillDownTable({ projects, performers, isRtl }: Props) {
       {/* Top Performers */}
       <div style={glass}>
         <h3 style={secHead}>
-          <span style={{ width: 4, height: 20, borderRadius: 2, background: "linear-gradient(to bottom, #c58b2a, #a06d1e)", display: "inline-block" }} />
+          <span style={{ width: 4, height: 20, borderRadius: 2, background: "linear-gradient(to bottom, #B87333, #8C5A28)", display: "inline-block" }} />
           {isRtl ? "أفضل المقاولين أداءً" : "Top Performers"}
         </h3>
         {performers.length === 0 ? <div style={{ textAlign: "center", color: "#9ca3af", padding: "2rem" }}>{isRtl ? "لا توجد بيانات" : "No data"}</div> : (
@@ -139,7 +139,7 @@ export default function DrillDownTable({ projects, performers, isRtl }: Props) {
               }}>
                 {i < 3 ? <span style={{ fontSize: "1.75rem" }}>{MC[i]}</span> : <span style={{ width: 30, textAlign: "center", fontSize: "1rem", fontWeight: 800, color: "#9ca3af" }}>{pf.rank}</span>}
                 <span style={{ flex: 1, fontWeight: 700, fontSize: "0.9375rem", color: "#1a2332" }}>{pf.name}</span>
-                <span style={{ fontSize: "0.875rem", color: "#c58b2a", fontWeight: 800 }}>★ {pf.rating.toFixed(1)}</span>
+                <span style={{ fontSize: "0.875rem", color: "#B87333", fontWeight: 800 }}>★ {pf.rating.toFixed(1)}</span>
                 <span style={{ fontSize: "0.75rem", color: "#6b7280", background: "#f3f4f6", padding: "3px 10px", borderRadius: 10 }}>
                   {pf.projects} {isRtl ? "مشروع" : "proj"} · {pf.reviews} {isRtl ? "تقييم" : "reviews"}
                 </span>

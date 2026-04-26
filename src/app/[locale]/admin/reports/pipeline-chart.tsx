@@ -16,7 +16,7 @@ const SL: Record<string, { en: string; ar: string }> = {
 const FUNNEL_COLORS = [
   "linear-gradient(135deg, #b8e6d8, #8fd4c0)", "linear-gradient(135deg, #7dd3bc, #5ec4a6)",
   "linear-gradient(135deg, #4cc9a0, #30b889)", "linear-gradient(135deg, #2db882, #1fa06e)",
-  "linear-gradient(135deg, #0f9b6b, #0d845b)", "linear-gradient(135deg, #0f6b57, #0a4e41)",
+  "linear-gradient(135deg, #0f9b6b, #0d845b)", "linear-gradient(135deg, #2A7B88, #1C5963)",
 ];
 
 export default function PipelineChart({ pipeline, users, isRtl }: Props) {
@@ -34,8 +34,8 @@ export default function PipelineChart({ pipeline, users, isRtl }: Props) {
   const totalP = pipeline.reduce((s, p) => s + p.count, 0) || 1;
   const total = users.owners + users.contractors + users.engineers || 1;
   const roles = [
-    { label: isRtl ? "ملّاك" : "Owners", count: users.owners, color: "#0f6b57", icon: "👤" },
-    { label: isRtl ? "مقاولين" : "Contractors", count: users.contractors, color: "#c58b2a", icon: "🏗" },
+    { label: isRtl ? "ملّاك" : "Owners", count: users.owners, color: "#2A7B88", icon: "👤" },
+    { label: isRtl ? "مقاولين" : "Contractors", count: users.contractors, color: "#B87333", icon: "🏗" },
     { label: isRtl ? "مهندسين" : "Engineers", count: users.engineers, color: "#2563eb", icon: "⚙️" },
   ];
   const maxR = Math.max(...roles.map(r => r.count), 1);
@@ -49,7 +49,7 @@ export default function PipelineChart({ pipeline, users, isRtl }: Props) {
       {/* Funnel */}
       <div style={{ ...glass, flex: "2 1 500px", minWidth: "400px" }}>
         <h3 style={secHead}>
-          <span style={{ width: 4, height: 20, borderRadius: 2, background: "linear-gradient(to bottom, #c58b2a, #a06d1e)", display: "inline-block" }} />
+          <span style={{ width: 4, height: 20, borderRadius: 2, background: "linear-gradient(to bottom, #B87333, #8C5A28)", display: "inline-block" }} />
           {isRtl ? "خط سير المشاريع" : "Project Pipeline"}
         </h3>
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -73,7 +73,7 @@ export default function PipelineChart({ pipeline, users, isRtl }: Props) {
                       borderRadius: i === 0 ? "12px 12px 8px 8px" : i === 5 ? "8px 8px 12px 12px" : 8,
                       display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                       transition: "all 0.3s ease",
-                      boxShadow: `0 2px 8px rgba(15,107,87,${0.05 + i * 0.03})`,
+                      boxShadow: `0 2px 8px rgba(42,123,136,${0.05 + i * 0.03})`,
                     }}>
                       <div style={{
                         width: 28, height: 28, borderRadius: "50%", background: "rgba(255,255,255,0.35)",
@@ -107,7 +107,7 @@ export default function PipelineChart({ pipeline, users, isRtl }: Props) {
       {/* Users by Role */}
       <div style={{ ...glass, flex: "1 1 350px", minWidth: "300px" }}>
         <h3 style={secHead}>
-          <span style={{ width: 4, height: 20, borderRadius: 2, background: "linear-gradient(to bottom, #c58b2a, #a06d1e)", display: "inline-block" }} />
+          <span style={{ width: 4, height: 20, borderRadius: 2, background: "linear-gradient(to bottom, #B87333, #8C5A28)", display: "inline-block" }} />
           {isRtl ? "المستخدمين حسب الدور" : "Users by Role"}
         </h3>
         <div style={{
@@ -154,10 +154,10 @@ export default function PipelineChart({ pipeline, users, isRtl }: Props) {
         </div>
         <div style={{ display: "flex", justifyContent: "center", gap: 16, borderTop: "1px solid #f3f4f6", paddingTop: 12 }}>
           <span style={{ fontSize: "0.6875rem", color: "#6b7280" }}>
-            {isRtl ? "موثّقين" : "Verified"}: <strong style={{ color: "#0f6b57" }}>{users.verified}</strong>
+            {isRtl ? "موثّقين" : "Verified"}: <strong style={{ color: "#2A7B88" }}>{users.verified}</strong>
           </span>
           <span style={{ fontSize: "0.6875rem", color: "#6b7280" }}>
-            {isRtl ? "معلّقين" : "Pending"}: <strong style={{ color: "#c58b2a" }}>{users.pending}</strong>
+            {isRtl ? "معلّقين" : "Pending"}: <strong style={{ color: "#B87333" }}>{users.pending}</strong>
           </span>
         </div>
       </div>

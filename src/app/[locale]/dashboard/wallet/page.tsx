@@ -181,7 +181,7 @@ export default async function WalletPage({
 
   return (
     <div style={{ background: "var(--bg)", minHeight: "calc(100vh - 64px)" }}>
-      <div style={{ background: "linear-gradient(135deg, #0a4e41, #0f6b57)", padding: "2rem 0" }}>
+      <div style={{ background: "linear-gradient(135deg, #1C5963, #2A7B88)", padding: "2rem 0" }}>
         <div className="container-app">
           <Link href="/dashboard" style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.8125rem", textDecoration: "none" }}>
             ← {isRtl ? "العودة" : "Back"}
@@ -216,7 +216,7 @@ export default async function WalletPage({
         )}
 
         {/* Balance Card */}
-        <div className="card" style={{ padding: "2rem", marginBottom: "1.5rem", textAlign: "center", background: "linear-gradient(135deg, #0a4e41, #0f6b57)", color: "white", borderRadius: "var(--radius-xl)" }}>
+        <div className="card" style={{ padding: "2rem", marginBottom: "1.5rem", textAlign: "center", background: "linear-gradient(135deg, #1C5963, #2A7B88)", color: "white", borderRadius: "var(--radius-xl)" }}>
           <div style={{ fontSize: "0.875rem", opacity: 0.8, marginBottom: "0.25rem" }}>
             {isRtl ? "رصيدك الحالي" : "Current Balance"}
           </div>
@@ -235,7 +235,7 @@ export default async function WalletPage({
         </div>
 
         {user.role === "ENGINEER" && (
-          <div className="card" style={{ padding: "1.5rem", marginBottom: "1.5rem", border: "1px solid rgba(197,139,42,0.35)", background: "linear-gradient(135deg, rgba(197,139,42,0.08), rgba(15,107,87,0.05))" }}>
+          <div className="card" style={{ padding: "1.5rem", marginBottom: "1.5rem", border: "1px solid rgba(184,115,51,0.35)", background: "linear-gradient(135deg, rgba(184,115,51,0.08), rgba(42,123,136,0.05))" }}>
             <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)", marginBottom: "0.5rem" }}>
               {isRtl ? "شراء باقة عروض الإشراف" : "Buy Supervision Bid Pack"}
             </h3>

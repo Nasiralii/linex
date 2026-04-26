@@ -80,7 +80,7 @@ export default async function MyBidsPage() {
 
   return (
     <div style={{ background: "var(--bg)", minHeight: "calc(100vh - 64px)" }}>
-      <div style={{ background: "linear-gradient(135deg, #0a4e41, #0f6b57)", padding: "2rem 0" }}>
+      <div style={{ background: "linear-gradient(135deg, #1C5963, #2A7B88)", padding: "2rem 0" }}>
         <div className="container-app">
           <Link href="/dashboard" style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.8125rem", textDecoration: "none" }}>
             ← {isRtl ? "العودة" : "Back"}
@@ -151,7 +151,7 @@ export default async function MyBidsPage() {
                     </span>
                       {bid.status === "AWARDED" && (
                         <div style={{ marginTop: "0.5rem" }}>
-                          <Link href={`/dashboard/execution/${bid.projectId}`} style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", fontSize: "0.75rem", fontWeight: 700, color: "#c58b2a", textDecoration: "none" }}>
+                          <Link href={`/dashboard/execution/${bid.projectId}`} style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", fontSize: "0.75rem", fontWeight: 700, color: "#B87333", textDecoration: "none" }}>
                             <Hammer style={{ width: "14px", height: "14px" }} />
                             {isRtl ? "عرض المشروع المرسّى" : "Open Awarded Project"}
                           </Link>

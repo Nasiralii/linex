@@ -79,7 +79,7 @@ export default function RegisterPage() {
           width: "56px", height: "56px", borderRadius: "var(--radius-2xl)", margin: "0 auto 1rem",
           background: "linear-gradient(135deg, var(--primary), var(--primary-dark))",
           display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 4px 14px rgba(15, 107, 87, 0.3)",
+          boxShadow: "0 4px 14px rgba(42, 123, 136, 0.3)",
         }}>
           <Building2 style={{ width: "28px", height: "28px", color: "white" }} />
         </div>

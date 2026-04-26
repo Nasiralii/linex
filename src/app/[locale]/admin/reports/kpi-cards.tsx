@@ -88,11 +88,11 @@ interface KPIData { totalRevenue: number; activeProjects: number; totalUsers: nu
 export default function KPICards({ data, revenue, isRtl, selectedKey, onSelect }: { data: KPIData; revenue: any; isRtl: boolean; selectedKey?: string; onSelect?: (key: string) => void }) {
   const cards = [
     { key: "totalRevenue", title: isRtl ? "إجمالي الإيرادات" : "Total Revenue", value: data.totalRevenue, icon: DollarSign,
-      trend: "up", trendLabel: "↑12%", gradient: "linear-gradient(135deg, #0f6b57, #0a4e41)",
-      glow: "rgba(15,107,87,0.35)", isCur: true, sparkIdx: 0 },
+      trend: "up", trendLabel: "↑12%", gradient: "linear-gradient(135deg, #2A7B88, #1C5963)",
+      glow: "rgba(42,123,136,0.35)", isCur: true, sparkIdx: 0 },
     { key: "activeProjects", title: isRtl ? "المشاريع النشطة" : "Active Projects", value: data.activeProjects, icon: FolderOpen,
-      trend: "up", trendLabel: "↑8%", gradient: "linear-gradient(135deg, #c58b2a, #a06d1e)",
-      glow: "rgba(197,139,42,0.35)", isCur: false, sparkIdx: 1 },
+      trend: "up", trendLabel: "↑8%", gradient: "linear-gradient(135deg, #B87333, #8C5A28)",
+      glow: "rgba(184,115,51,0.35)", isCur: false, sparkIdx: 1 },
     { key: "totalUsers", title: isRtl ? "المستخدمين" : "Registered Users", value: data.totalUsers, icon: Users,
       trend: "up", trendLabel: "↑15%", gradient: "linear-gradient(135deg, #2563eb, #1d4ed8)",
       glow: "rgba(37,99,235,0.35)", isCur: false, sparkIdx: 2 },

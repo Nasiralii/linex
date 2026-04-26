@@ -47,9 +47,9 @@ type DrillKey = keyof AdminDashboardClientProps["drilldowns"];
 
 const KPI_CONFIG = [
   { key: "totalUsers", icon: Users, color: "#2563eb", bg: "#eff6ff" },
-  { key: "totalProjects", icon: FolderOpen, color: "#0f6b57", bg: "#e8f5f0" },
+  { key: "totalProjects", icon: FolderOpen, color: "#2A7B88", bg: "#E8F4F6" },
   { key: "verifiedContractors", icon: ShieldCheck, color: "#7c3aed", bg: "#f5f3ff" },
-  { key: "totalAwards", icon: DollarSign, color: "#c58b2a", bg: "#fdf4e4" },
+  { key: "totalAwards", icon: DollarSign, color: "#B87333", bg: "#F5EDE6" },
 ] as const;
 
 const DETAIL_TITLES: Record<string, { en: string; ar: string }> = {

@@ -46,7 +46,7 @@ export default function DashboardClient(props: DashboardProps) {
   const Section = ({ title, titleAr, children }: { title: string; titleAr: string; children: React.ReactNode }) => (
     <div style={{ marginBottom: "0.5rem" }}>
       <h2 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#1a2332", marginBottom: "1.25rem", paddingBottom: 8,
-        borderBottom: "3px solid transparent", borderImage: "linear-gradient(90deg, #c58b2a, #a06d1e, transparent) 1" }}>
+        borderBottom: "3px solid transparent", borderImage: "linear-gradient(90deg, #B87333, #8C5A28, transparent) 1" }}>
         {isRtl ? titleAr : title}
       </h2>
       {children}
@@ -91,8 +91,8 @@ export default function DashboardClient(props: DashboardProps) {
         }} style={{
           padding: "8px 20px", borderRadius: 20, fontSize: "0.8125rem", fontWeight: 600,
           border: "none", cursor: "pointer", transition: "all 0.3s ease",
-          background: "linear-gradient(135deg, #0f6b57, #0a4e41)", color: "#fff",
-          boxShadow: "0 4px 12px rgba(15,107,87,0.3)",
+          background: "linear-gradient(135deg, #2A7B88, #1C5963)", color: "#fff",
+          boxShadow: "0 4px 12px rgba(42,123,136,0.3)",
         }}>
           {isRtl ? "تطبيق" : "Apply"}
         </button>

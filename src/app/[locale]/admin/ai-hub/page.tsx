@@ -5,8 +5,8 @@ import { useState } from "react";
 import { Bot, MessageCircle, Sparkles, BarChart3, Send, FileText, PenTool, FileCheck, DollarSign, Star, Megaphone, Shield, Loader2, Copy, CheckCircle } from "lucide-react";
 
 const AGENTS = [
-  { id: "support", icon: MessageCircle, name: "Customer Support", nameAr: "الدعم الفني", color: "#0f6b57", placeholder: "Ask any question about the platform...", placeholderAr: "اسأل أي سؤال عن المنصة..." },
-  { id: "intake", icon: Sparkles, name: "Project Intake", nameAr: "إنشاء المشاريع", color: "#c58b2a", placeholder: "Describe a project you want to create...", placeholderAr: "اوصف مشروع تريد إنشاءه..." },
+  { id: "support", icon: MessageCircle, name: "Customer Support", nameAr: "الدعم الفني", color: "#2A7B88", placeholder: "Ask any question about the platform...", placeholderAr: "اسأل أي سؤال عن المنصة..." },
+  { id: "intake", icon: Sparkles, name: "Project Intake", nameAr: "إنشاء المشاريع", color: "#B87333", placeholder: "Describe a project you want to create...", placeholderAr: "اوصف مشروع تريد إنشاءه..." },
   { id: "bid-evaluator", icon: BarChart3, name: "Bid Evaluator", nameAr: "محلل العروض", color: "#2563eb", placeholder: "Paste bid details to analyze...", placeholderAr: "الصق تفاصيل العروض للتحليل..." },
   { id: "admin-intelligence", icon: Shield, name: "Admin Intelligence", nameAr: "ذكاء الإدارة", color: "#7c3aed", placeholder: "Enter platform stats for analysis...", placeholderAr: "أدخل إحصائيات المنصة للتحليل..." },
   { id: "outreach", icon: Send, name: "Outreach Agent", nameAr: "وكيل التواصل", color: "#0891b2", placeholder: "Describe project + contractor for outreach message...", placeholderAr: "اوصف المشروع والمقاول لرسالة التواصل..." },

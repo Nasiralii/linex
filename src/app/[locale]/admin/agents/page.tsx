@@ -34,8 +34,8 @@ async function toggleAgent(formData: FormData) {
 }
 
 const AGENTS = [
-  { key: "customer_support", icon: MessageCircle, name: "Customer Support Chatbot", nameAr: "مساعد الدعم الفني", desc: "24/7 bilingual chatbot on every page", descAr: "روبوت دعم فني ثنائي اللغة على كل صفحة", color: "#0f6b57" },
-  { key: "project_intake", icon: Sparkles, name: "Project Intake Assistant", nameAr: "مساعد إنشاء المشاريع", desc: "Conversational project creation wizard", descAr: "معالج إنشاء مشاريع تفاعلي بالذكاء الاصطناعي", color: "#c58b2a" },
+  { key: "customer_support", icon: MessageCircle, name: "Customer Support Chatbot", nameAr: "مساعد الدعم الفني", desc: "24/7 bilingual chatbot on every page", descAr: "روبوت دعم فني ثنائي اللغة على كل صفحة", color: "#2A7B88" },
+  { key: "project_intake", icon: Sparkles, name: "Project Intake Assistant", nameAr: "مساعد إنشاء المشاريع", desc: "Conversational project creation wizard", descAr: "معالج إنشاء مشاريع تفاعلي بالذكاء الاصطناعي", color: "#B87333" },
   { key: "bid_evaluator", icon: BarChart3, name: "Smart Bid Evaluator", nameAr: "محلل العروض الذكي", desc: "AI analysis and comparison of bids", descAr: "تحليل ومقارنة العروض بالذكاء الاصطناعي", color: "#2563eb" },
   { key: "admin_intelligence", icon: Shield, name: "Admin Intelligence", nameAr: "ذكاء الإدارة", desc: "Platform health insights and alerts", descAr: "تحليلات وتنبيهات صحة المنصة", color: "#7c3aed" },
   { key: "outreach", icon: Send, name: "Outreach & Engagement", nameAr: "التواصل والمشاركة", desc: "Personalized notifications for matching projects", descAr: "إشعارات مخصصة للمشاريع المطابقة", color: "#0891b2" },

@@ -24,7 +24,7 @@ export default async function HomePage() {
     <div>
       {/* ========== HERO ========== */}
       <section style={{
-        background: "linear-gradient(135deg, #0a4e41 0%, #0f6b57 40%, #127a63 70%, #1a9e7e 100%)",
+        background: "linear-gradient(135deg, #1C5963 0%, #2A7B88 40%, #3A8B98 70%, #4A9BA8 100%)",
         position: "relative",
         overflow: "hidden",
       }}>
@@ -42,7 +42,7 @@ export default async function HomePage() {
         <div style={{
           position: "absolute", top: "50%", right: "10%",
           width: "200px", height: "200px", borderRadius: "50%",
-          background: "rgba(197, 139, 42, 0.1)",
+          background: "rgba(184, 115, 51, 0.1)",
         }} />
 
         <div className="container-app" style={{ position: "relative", zIndex: 1, padding: "5rem 1.5rem 4.5rem" }}>
@@ -84,7 +84,7 @@ export default async function HomePage() {
                   padding: "0.875rem 2rem", borderRadius: "var(--radius-lg)",
                   fontSize: "1rem", fontWeight: 700, textDecoration: "none",
                   background: "var(--accent)", color: "white",
-                  boxShadow: "0 4px 14px rgba(197, 139, 42, 0.4)",
+                  boxShadow: "0 4px 14px rgba(184, 115, 51, 0.4)",
                   transition: "all 200ms ease",
                 }}>
                   <Building2 style={{ width: "20px", height: "20px" }} />
@@ -123,9 +123,9 @@ export default async function HomePage() {
             maxWidth: "900px", margin: "0 auto",
           }}>
             {[
-              { icon: FolderOpen, value: "500+", label: t("stats.projects"), color: "#0f6b57" },
+              { icon: FolderOpen, value: "500+", label: t("stats.projects"), color: "#2A7B88" },
               { icon: Users, value: "200+", label: t("stats.contractors"), color: "#2563eb" },
-              { icon: BarChart3, value: "1,200+", label: t("stats.bids"), color: "#c58b2a" },
+              { icon: BarChart3, value: "1,200+", label: t("stats.bids"), color: "#B87333" },
               { icon: Trophy, value: "350+", label: t("stats.awards"), color: "#7c3aed" },
             ].map((s, i) => (
               <div key={i} className="card" style={{ padding: "1.5rem", textAlign: "center" }}>
@@ -172,7 +172,7 @@ export default async function HomePage() {
                   background: "var(--primary)", color: "white",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: "0.875rem", fontWeight: 700, margin: "0 auto 1rem",
-                  boxShadow: "0 2px 8px rgba(15, 107, 87, 0.3)",
+                  boxShadow: "0 2px 8px rgba(42, 123, 136, 0.3)",
                 }}>
                   {step.num}
                 </div>
@@ -208,8 +208,8 @@ export default async function HomePage() {
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1.5rem", maxWidth: "960px", margin: "0 auto" }}>
             {[
-              { icon: ShieldCheck, title: t("trust.verification"), desc: t("trust.verificationDesc"), color: "#0f6b57", bg: "#e8f5f0" },
-              { icon: BarChart3, title: t("trust.structured"), desc: t("trust.structuredDesc"), color: "#c58b2a", bg: "#fdf4e4" },
+              { icon: ShieldCheck, title: t("trust.verification"), desc: t("trust.verificationDesc"), color: "#2A7B88", bg: "#E8F4F6" },
+              { icon: BarChart3, title: t("trust.structured"), desc: t("trust.structuredDesc"), color: "#B87333", bg: "#F5EDE6" },
               { icon: Headphones, title: t("trust.support"), desc: t("trust.supportDesc"), color: "#2563eb", bg: "#eff6ff" },
             ].map((item, i) => (
               <div key={i} className="card" style={{ padding: "2rem 1.5rem", textAlign: "center" }}>
@@ -246,7 +246,7 @@ export default async function HomePage() {
       </section>
 
       <section style={{
-        background: "linear-gradient(135deg, #0a4e41 0%, #0f6b57 50%, #127a63 100%)",
+        background: "linear-gradient(135deg, #1C5963 0%, #2A7B88 50%, #3A8B98 100%)",
         position: "relative", overflow: "hidden",
       }}>
         <div style={{
@@ -268,7 +268,7 @@ export default async function HomePage() {
                 padding: "0.875rem 2rem", borderRadius: "var(--radius-lg)",
                 fontSize: "1rem", fontWeight: 700, textDecoration: "none",
                 background: "var(--accent)", color: "white",
-                boxShadow: "0 4px 14px rgba(197, 139, 42, 0.4)",
+                boxShadow: "0 4px 14px rgba(184, 115, 51, 0.4)",
               }}>
                 <Building2 style={{ width: "20px", height: "20px" }} />
                 {t("hero.ownerCta")}

@@ -21,10 +21,18 @@ export interface ContractData {
 
 export function generateContractHTML(data: ContractData): string {
   const formatDate = (d: Date | null | undefined) =>
-    d ? new Date(d).toLocaleDateString("ar-SA", { year: "numeric", month: "long", day: "numeric" }) : "—";
+    d
+      ? new Date(d).toLocaleDateString("ar-SA", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })
+      : "—";
 
-  const statusText = data.ownerSignedAt && data.contractorSignedAt
-    ? "موقّع / Signed" : "بانتظار التوقيع / Pending Signature";
+  const statusText =
+    data.ownerSignedAt && data.contractorSignedAt
+      ? "موقّع / Signed"
+      : "بانتظار التوقيع / Pending Signature";
 
   return `<!DOCTYPE html>
 <html dir="rtl" lang="ar">
@@ -32,14 +40,14 @@ export function generateContractHTML(data: ContractData): string {
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Segoe UI', Tahoma, sans-serif; color: #1a2332; padding: 40px; max-width: 800px; margin: 0 auto; }
-  .header { text-align: center; border-bottom: 3px solid #0f6b57; padding-bottom: 20px; margin-bottom: 30px; }
-  .header h1 { font-size: 24px; color: #0f6b57; margin-bottom: 4px; }
+  .header { text-align: center; border-bottom: 3px solid #2A7B88; padding-bottom: 20px; margin-bottom: 30px; }
+  .header h1 { font-size: 24px; color: #2A7B88; margin-bottom: 4px; }
   .header p { font-size: 12px; color: #888; }
   .badge { display: inline-block; padding: 4px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; }
-  .badge-pro { background: #e8f5e9; color: #0f6b57; }
+  .badge-pro { background: #E8F4F6; color: #2A7B88; }
   .badge-simple { background: #f5f5f5; color: #666; }
   .section { margin-bottom: 24px; }
-  .section h2 { font-size: 16px; color: #0f6b57; border-bottom: 1px solid #e0e0e0; padding-bottom: 6px; margin-bottom: 12px; }
+  .section h2 { font-size: 16px; color: #2A7B88; border-bottom: 1px solid #e0e0e0; padding-bottom: 6px; margin-bottom: 12px; }
   .grid { display: flex; gap: 20px; flex-wrap: wrap; }
   .grid-item { flex: 1; min-width: 200px; }
   .label { font-size: 11px; color: #888; margin-bottom: 2px; }
@@ -47,24 +55,24 @@ export function generateContractHTML(data: ContractData): string {
   .terms { background: #fafafa; padding: 20px; border-radius: 8px; font-size: 13px; line-height: 2; white-space: pre-wrap; border: 1px solid #eee; }
   .sigs { display: flex; gap: 40px; margin-top: 20px; }
   .sig-box { flex: 1; border: 2px solid #e0e0e0; border-radius: 8px; padding: 20px; text-align: center; min-height: 120px; }
-  .sig-box.signed { border-color: #0f6b57; }
+  .sig-box.signed { border-color: #2A7B88; }
   .sig-label { font-size: 11px; color: #888; margin-bottom: 8px; }
   .sig-name { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
   .sig-status { font-size: 12px; }
-  .sig-status.done { color: #0f6b57; font-weight: 700; }
-  .sig-status.pending { color: #c58b2a; }
+  .sig-status.done { color: #2A7B88; font-weight: 700; }
+  .sig-status.pending { color: #B87333; }
   .footer { margin-top: 40px; text-align: center; font-size: 10px; color: #aaa; border-top: 1px solid #eee; padding-top: 16px; }
-  .amount { font-size: 22px; font-weight: 800; color: #0f6b57; }
+  .amount { font-size: 22px; font-weight: 800; color: #2A7B88; }
 </style></head>
 <body>
   <div class="header">
-    <h1>لاينكس فرصة — LineX Forsa</h1>
+    <h1>راسي — Rasi</h1>
     <p>منصة سوق البناء — Construction Marketplace</p>
     <div style="margin-top: 8px;">
       <span class="badge ${data.contractType === "PROFESSIONAL" ? "badge-pro" : "badge-simple"}">
         ${data.contractType === "PROFESSIONAL" ? "عقد احترافي / Professional" : "عقد بسيط / Simple"}
       </span>
-      <span class="badge" style="background:#fff3e0;color:#c58b2a;margin-right:8px;">${statusText}</span>
+      <span class="badge" style="background:#F5EDE6;color:#B87333;margin-right:8px;">${statusText}</span>
     </div>
   </div>
 
@@ -133,8 +141,8 @@ export function generateContractHTML(data: ContractData): string {
   </div>
 
   <div class="footer">
-    <p>هذا العقد صادر من منصة لاينكس فرصة — This contract is issued by LineX Forsa Platform</p>
-    <p style="margin-top:4px;">linex-forsa.vercel.app</p>
+    <p>هذا العقد صادر من منصة راسي — This contract is issued by Rasi Platform</p>
+    <p style="margin-top:4px;">rasi.sa</p>
   </div>
 </body></html>`;
 }

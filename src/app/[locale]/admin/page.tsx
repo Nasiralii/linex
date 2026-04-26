@@ -217,7 +217,7 @@ export default async function AdminDashboardPage() {
                 items: [
                   { href: "/admin" as const, icon: BarChart3, label: isRtl ? "الإحصائيات" : "Statistics", color: "#1a2332" },
                   { href: "/admin/reports" as const, icon: BarChart3, label: isRtl ? "التقارير" : "Reports", color: "#059669" },
-                  { href: "/admin/audit" as const, icon: FileText, label: isRtl ? "سجل العمليات" : "Audit Log", color: "#c58b2a" },
+                  { href: "/admin/audit" as const, icon: FileText, label: isRtl ? "سجل العمليات" : "Audit Log", color: "#B87333" },
                   { href: "/admin/audit/auth" as const, icon: ShieldCheck, label: isRtl ? "حوادث المصادقة" : "Auth Incidents", color: "#dc2626" },
                   { href: "/admin/content" as const, icon: FileText, label: isRtl ? "إدارة المحتوى" : "Content Management", color: "#7c3aed" },
                 ],
@@ -226,13 +226,13 @@ export default async function AdminDashboardPage() {
                 title: isRtl ? "المستخدمون" : "Users",
                 items: [
                   { href: "/admin/users" as const, icon: Users, label: isRtl ? "المستخدمون" : "Users", color: "#2563eb" },
-                  { href: "/admin/engineers" as const, icon: ShieldCheck, label: isRtl ? "المهندسون" : "Engineers", color: "#0f6b57" },
+                  { href: "/admin/engineers" as const, icon: ShieldCheck, label: isRtl ? "المهندسون" : "Engineers", color: "#2A7B88" },
                 ],
               },
               {
                 title: isRtl ? "العمليات والمنصة" : "Operations & Platform",
                 items: [
-                  { href: "/admin/projects" as const, icon: FolderOpen, label: isRtl ? "المشاريع" : "Projects", color: "#0f6b57" },
+                  { href: "/admin/projects" as const, icon: FolderOpen, label: isRtl ? "المشاريع" : "Projects", color: "#2A7B88" },
                   { href: "/admin/disputes" as const, icon: AlertTriangle, label: isRtl ? "النزاعات" : "Disputes", color: "#f59e0b" },
                   { href: "/admin/reviews" as const, icon: Eye, label: isRtl ? "التقييمات" : "Reviews", color: "#8b5cf6" },
                   { href: "/admin/refunds" as const, icon: DollarSign, label: isRtl ? "المبالغ المستردة" : "Refunds", color: "#dc2626" },
@@ -282,7 +282,7 @@ export default async function AdminDashboardPage() {
                 color: "var(--text-secondary)", background: "var(--surface-2)",
                 border: "1px solid var(--border-light)", transition: "all 150ms ease",
               }}>
-                <FolderOpen style={{ width: "16px", height: "16px", color: "#0f6b57" }} />
+                <FolderOpen style={{ width: "16px", height: "16px", color: "#2A7B88" }} />
                 {isRtl ? "المشاريع" : "Projects"}
                 <ArrowRight style={{ width: "12px", height: "12px", color: "var(--text-muted)" }} />
               </Link>

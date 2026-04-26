@@ -7,12 +7,12 @@ interface MatchBadgeProps {
 }
 
 export function MatchBadge({ score, isRtl }: MatchBadgeProps) {
-  const color = score >= 80 ? "#0f6b57" :
-    score >= 60 ? "#c58b2a" :
+  const color = score >= 80 ? "#2A7B88" :
+    score >= 60 ? "#B87333" :
     score >= 40 ? "#6b7280" : "#9ca3af";
 
-  const bg = score >= 80 ? "rgba(15,107,87,0.1)" :
-    score >= 60 ? "rgba(197,139,42,0.1)" :
+  const bg = score >= 80 ? "rgba(42,123,136,0.1)" :
+    score >= 60 ? "rgba(184,115,51,0.1)" :
     score >= 40 ? "rgba(107,114,128,0.1)" : "rgba(156,163,175,0.1)";
 
   const label = isRtl ? "تطابق" : "Match";

@@ -134,7 +134,7 @@ export default async function DashboardPage() {
   return (
     <div style={{ background: "var(--bg)", minHeight: "calc(100vh - 64px)" }}>
       {/* Header */}
-      <div style={{ background: "linear-gradient(135deg, #0a4e41, #0f6b57)", padding: "2rem 0" }}>
+      <div style={{ background: "linear-gradient(135deg, #1C5963, #2A7B88)", padding: "2rem 0" }}>
         <div className="container-app">
           <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "white", marginBottom: "0.25rem" }}>
             {isRtl ? "مرحباً بك" : "Welcome back"} 👋
@@ -151,13 +151,13 @@ export default async function DashboardPage() {
         {/* Stats */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "1rem", marginBottom: "2rem" }}>
           {(isOwner ? [
-            { icon: FolderOpen, label: isRtl ? "مشاريعي" : "My Projects", value: projectCount, color: "#0f6b57", bg: "#e8f5f0", link: "/dashboard/projects" as const },
-            { icon: FileCheck, label: isRtl ? "العروض المستلمة" : "Bids Received", value: bidCount, color: "#c58b2a", bg: "#fdf4e4" },
+            { icon: FolderOpen, label: isRtl ? "مشاريعي" : "My Projects", value: projectCount, color: "#2A7B88", bg: "#E8F4F6", link: "/dashboard/projects" as const },
+            { icon: FileCheck, label: isRtl ? "العروض المستلمة" : "Bids Received", value: bidCount, color: "#B87333", bg: "#F5EDE6" },
             { icon: Award, label: isRtl ? "الترسيات" : "Awards", value: awardCount, color: "#7c3aed", bg: "#f5f3ff" },
             { icon: Clock, label: isRtl ? "قيد التنفيذ" : "In Progress", value: 0, color: "#2563eb", bg: "#eff6ff" },
           ] : [
-            { icon: BarChart3, label: isRtl ? "عروضي" : "My Bids", value: bidCount, color: "#0f6b57", bg: "#e8f5f0" },
-            { icon: Award, label: isRtl ? "مشاريع فائزة" : "Won", value: awardCount, color: "#c58b2a", bg: "#fdf4e4" },
+            { icon: BarChart3, label: isRtl ? "عروضي" : "My Bids", value: bidCount, color: "#2A7B88", bg: "#E8F4F6" },
+            { icon: Award, label: isRtl ? "مشاريع فائزة" : "Won", value: awardCount, color: "#B87333", bg: "#F5EDE6" },
             { icon: Sparkles, label: isRtl ? "توصيات AI" : "AI Matches", value: aiMatches.length, color: "#7c3aed", bg: "#f5f3ff" },
             { icon: ShieldCheck, label: isRtl ? "حالة التحقق" : "Verification", value: (isEngineer ? engineerProfile?.verificationStatus : contractorProfile?.verificationStatus) === "VERIFIED" ? "✓" : "—", color: "#2563eb", bg: "#eff6ff" },
           ]).map((stat: any, i) => {
@@ -194,7 +194,7 @@ export default async function DashboardPage() {
               <Link href="/dashboard/notifications" style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.75rem", borderRadius: "var(--radius-md)", background: "var(--surface-2)", fontSize: "0.875rem", fontWeight: 500, color: "var(--text-secondary)", textDecoration: "none" }}>
                 {isRtl ? "📬 الإشعارات" : "📬 Notifications"}
               </Link>
-              <Link href="/dashboard/wallet" style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.75rem", borderRadius: "var(--radius-md)", background: "#ecfdf5", fontSize: "0.875rem", fontWeight: 700, color: "#0f6b57", textDecoration: "none" }}>
+              <Link href="/dashboard/wallet" style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.75rem", borderRadius: "var(--radius-md)", background: "#E8F4F6", fontSize: "0.875rem", fontWeight: 700, color: "#2A7B88", textDecoration: "none" }}>
                 💳 {isRtl ? "المحفظة" : "Wallet"}
               </Link>
               {!isAdmin && (
@@ -203,7 +203,7 @@ export default async function DashboardPage() {
                 </Link>
               )}
               {!isOwner && awardCount > 0 && (
-                <Link href="/dashboard/bids" style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.75rem", borderRadius: "var(--radius-md)", background: "#fdf4e4", fontSize: "0.875rem", fontWeight: 700, color: "#c58b2a", textDecoration: "none" }}>
+                <Link href="/dashboard/bids" style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.75rem", borderRadius: "var(--radius-md)", background: "#F5EDE6", fontSize: "0.875rem", fontWeight: 700, color: "#B87333", textDecoration: "none" }}>
                   🛠️ {isRtl ? "المشاريع المرسّاة ومساحة التنفيذ" : "Awarded Projects & Execution Workspace"}
                 </Link>
               )}
@@ -248,7 +248,7 @@ export default async function DashboardPage() {
           )}
 
           {!isOwner && (awardedWorkspaceProjects.length > 0 || supervisorWorkspaceProjects.length > 0) && (
-            <div className="card" style={{ padding: "1.5rem", border: "2px solid #c58b2a" }}>
+            <div className="card" style={{ padding: "1.5rem", border: "2px solid #B87333" }}>
               <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)", marginBottom: "1rem" }}>
                 {isRtl ? "مساحة التنفيذ للمشاريع المرسّاة" : "Execution Workspace for Awarded Projects"}
               </h3>
@@ -276,7 +276,7 @@ export default async function DashboardPage() {
                         {isRtl ? "جميع أدوات التنفيذ متاحة هنا" : "All execution tools are available here"}
                       </div>
                     </div>
-                    <div style={{ color: "#c58b2a", fontSize: "0.8125rem", fontWeight: 700 }}>
+                    <div style={{ color: "#B87333", fontSize: "0.8125rem", fontWeight: 700 }}>
                       {isRtl ? "دخول مساحة التنفيذ" : "Open Workspace"}
                     </div>
                   </Link>

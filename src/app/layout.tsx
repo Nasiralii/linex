@@ -3,8 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "LineX Forsa | لاينكس فرصة",
-    template: "%s | LineX Forsa",
+    default: "Rasi | راسي",
+    template: "%s | Rasi",
   },
   description:
     "Trusted Construction Marketplace — Connect with verified contractors in Saudi Arabia | منصة المقاولات الإنشائية الموثوقة",

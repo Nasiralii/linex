@@ -379,7 +379,7 @@ export default async function SupervisionPage({
 
   return (
     <div style={{ background: "var(--bg)", minHeight: "calc(100vh - 64px)" }}>
-      <div style={{ background: "linear-gradient(135deg, #0a4e41, #0f6b57)", padding: "2rem 0" }}>
+      <div style={{ background: "linear-gradient(135deg, #1C5963, #2A7B88)", padding: "2rem 0" }}>
         <div className="container-app">
           <Link href="/dashboard" style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.8125rem", textDecoration: "none" }}>
             ← {isRtl ? "العودة" : "Back"}
@@ -472,7 +472,7 @@ export default async function SupervisionPage({
         )}
 
         {isEngineer && engineerProfile && (
-          <div className="card" style={{ padding: "1.25rem 1.5rem", marginBottom: "1.5rem", background: "linear-gradient(135deg, rgba(15,107,87,0.08), rgba(37,99,235,0.06))" }}>
+          <div className="card" style={{ padding: "1.25rem 1.5rem", marginBottom: "1.5rem", background: "linear-gradient(135deg, rgba(42,123,136,0.08), rgba(37,99,235,0.06))" }}>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", alignItems: "center", justifyContent: "space-between" }}>
               <div>
                 <div style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)" }}>
@@ -531,7 +531,7 @@ export default async function SupervisionPage({
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                     {request.bids.map((bid: any) => (
-                      <div key={bid.id} style={{ padding: "1rem", borderRadius: "var(--radius-md)", background: "var(--surface-2)", border: bid.status === "AWARDED" ? "1px solid rgba(15,107,87,0.35)" : "1px solid transparent" }}>
+                      <div key={bid.id} style={{ padding: "1rem", borderRadius: "var(--radius-md)", background: "var(--surface-2)", border: bid.status === "AWARDED" ? "1px solid rgba(42,123,136,0.35)" : "1px solid transparent" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", alignItems: "flex-start" }}>
                           <div>
                             <div style={{ fontSize: "0.9375rem", fontWeight: 700, color: "var(--text)" }}>

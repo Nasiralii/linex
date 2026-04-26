@@ -3,7 +3,7 @@
 import { useTranslations, useLocale } from "next-intl";
 import { Link, usePathname, useRouter } from "@/i18n/routing";
 import { useState, useEffect } from "react";
-import { Menu, X, Globe, Building2, User, LogOut } from "lucide-react";
+import { Menu, X, Globe, User, LogOut } from "lucide-react";
 
 async function createClientAuthAuditLog(action: string, metadata?: Record<string, unknown>) {
   try {
@@ -144,16 +144,10 @@ export function Navbar({ initialUser }: NavbarProps) {
       <div className="container-app">
         <div className="flex items-center justify-between" style={{ height: "64px" }}>
           <Link href="/" className="flex items-center gap-3" style={{ textDecoration: "none" }}>
-            <div className="flex items-center justify-center" style={{
-              width: "40px", height: "40px", borderRadius: "var(--radius-lg)",
-              background: "linear-gradient(135deg, var(--primary), var(--primary-dark))",
-              boxShadow: "0 2px 8px rgba(15, 107, 87, 0.3)",
-            }}>
-              <Building2 style={{ width: "22px", height: "22px", color: "white" }} />
-            </div>
+            <img src="/logo.jpg" alt="Rasi" style={{ width: "40px", height: "40px" }} />
             <div style={{ display: "flex", flexDirection: "column" }}>
               <span style={{ fontSize: "1.125rem", fontWeight: 700, color: "var(--text)", lineHeight: 1.2 }}>
-                {isRtl ? "لاينكس فرصة" : "LineX Forsa"}
+                {isRtl ? "راسي" : "Rasi"}
               </span>
               <span style={{ fontSize: "0.625rem", color: "var(--text-muted)", lineHeight: 1.2 }}>
                 {tCommon("tagline")}
