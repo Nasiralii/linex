@@ -1,6 +1,5 @@
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
-import { headers } from "next/headers";
 import { routing } from "@/i18n/routing";
 import { getCurrentUser } from "@/lib/auth";
 import { Navbar } from "@/components/layout/navbar";
@@ -26,11 +25,6 @@ export default async function LocaleLayout({
   const messages = (await import(`../../../messages/${locale}.json`)).default;
   const dir = locale === "ar" ? "rtl" : "ltr";
 
-  // Check if we're on the landing page
-  const headersList = await headers();
-  const pathname = headersList.get("x-pathname") || "";
-  const isLandingPage = pathname.includes("/landing") || pathname === `/${locale}` || pathname === "/";
-
   // ONLY use JWT cookie — NO DB queries in layout
   // This prevents layout crashes when DB connection pool is exhausted
   let authUser: { email: string; role: string; notificationCount?: number } | null = null;
@@ -52,10 +46,10 @@ export default async function LocaleLayout({
     <div lang={locale} dir={dir} style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <NextIntlClientProvider locale={locale} messages={messages}>
         <ToastProvider>
-          {!isLandingPage && <Navbar initialUser={authUser} />}
+          <Navbar initialUser={authUser} />
           <main style={{ flex: 1 }}>{children}</main>
-          {!isLandingPage && <Footer />}
-          {!isLandingPage && <AiChatWidget />}
+          <Footer />
+          <AiChatWidget />
         </ToastProvider>
       </NextIntlClientProvider>
     </div>
