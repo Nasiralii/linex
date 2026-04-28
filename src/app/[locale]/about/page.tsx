@@ -17,25 +17,17 @@ export default async function AboutPage() {
       <AboutHeroSection t={t} />
       <WhoWeAreSection t={t} />
       <WhatDeliversSection t={t} />
-      <WhatIsNotSection />
-      <VisionMissionSection />
+      <WhatIsNotSection t={t} />
+      <VisionMissionSection t={t} />
       <OurStorySection t={t} />
-      <OurValuesSection />
+      <OurValuesSection t={t} />
 
       {/* Tagline / CTA Section */}
-      <section
-        style={{
-          background: "linear-gradient(150deg, var(--brand-navy) 0%, var(--brand-navy-light) 55%, var(--brand-teal-dark) 100%)",
-          padding: "4rem 0",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
+      <section className="relative overflow-hidden py-12 md:py-16 bg-linear-to-br from-(--brand-navy) via-(--brand-navy-light) to-(--brand-teal-dark)">
         {/* Background texture */}
         <div
+          className="absolute inset-0"
           style={{
-            position: "absolute",
-            inset: 0,
             backgroundImage: `
               radial-gradient(circle at 85% 25%, rgba(184,115,51,0.1) 0%, transparent 40%),
               radial-gradient(circle at 10% 75%, rgba(42,123,136,0.15) 0%, transparent 45%)
@@ -43,18 +35,8 @@ export default async function AboutPage() {
           }}
         />
 
-        <div className="container-app" style={{ position: "relative", zIndex: 1 }}>
-          <p
-            style={{
-              fontSize: "clamp(1.125rem, 2.5vw, 1.5rem)",
-              fontWeight: 500,
-              color: "var(--brand-white)",
-              textAlign: "center",
-              maxWidth: "800px",
-              margin: "0 auto",
-              lineHeight: 1.6,
-            }}
-          >
+        <div className="container-app relative z-10 px-4 md:px-6">
+          <p className="text-lg md:text-xl lg:text-2xl font-medium text-(--brand-white) text-center max-w-3xl mx-auto leading-relaxed">
             {t("tagline")}
           </p>
         </div>

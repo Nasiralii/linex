@@ -1,131 +1,176 @@
-import { FolderOpen, BarChart3, Shield, FileText, Sparkles } from "lucide-react";
+import { FolderPlus, Users, BarChartHorizontal, ShieldCheck, MessageSquare, FileCheck, Star } from "lucide-react";
 
 interface WhatDeliversSectionProps {
   t: (key: string) => string;
 }
 
 export function WhatDeliversSection({ t }: WhatDeliversSectionProps) {
-  const items = [
-    { icon: FolderOpen, color: "var(--brand-teal)", bg: "linear-gradient(135deg, var(--brand-teal-light) 0%, #d4e8eb 100%)", borderColor: "var(--brand-teal)" },
-    { icon: BarChart3, color: "var(--brand-navy)", bg: "linear-gradient(135deg, #e8ecf4 0%, #dce4ed 100%)", borderColor: "var(--brand-navy)" },
-    { icon: Shield, color: "var(--brand-copper)", bg: "linear-gradient(135deg, var(--brand-copper-light) 0%, #ebe0d4 100%)", borderColor: "var(--brand-copper)" },
-    { icon: FileText, color: "#B85C38", bg: "linear-gradient(135deg, #fdf2ef 0%, #f5e0d8 100%)", borderColor: "#B85C38" },
+  const services = [
+    { icon: FolderPlus, color: "#0d7377" },
+    { icon: Users, color: "#14a085" },
+    { icon: BarChartHorizontal, color: "#2980b9" },
+    { icon: ShieldCheck, color: "#8e44ad" },
+    { icon: MessageSquare, color: "#d35400" },
+    { icon: FileCheck, color: "#c0392b" },
+    { icon: Star, color: "#f39c12" },
   ];
 
   return (
-    <section
-      style={{
-        background: "linear-gradient(180deg, var(--brand-white) 0%, var(--brand-ivory) 100%)",
-        padding: "6rem 0",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      {/* Background decoration */}
-      <div
-        style={{
-          position: "absolute",
-          top: "5%",
-          left: "10%",
-          width: "200px",
-          height: "200px",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(42,123,136,0.06) 0%, transparent 70%)",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          bottom: "10%",
-          right: "5%",
-          width: "250px",
-          height: "250px",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(184,115,51,0.06) 0%, transparent 70%)",
-        }}
-      />
-
-      <div className="container-app" style={{ position: "relative", zIndex: 1 }}>
-        <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+    <section style={{ padding: "6rem 0", backgroundColor: "var(--background)" }}>
+      <div className="container-app" style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 1.5rem" }}>
+        
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: "4rem" }}>
           <div
             style={{
               display: "inline-flex",
               alignItems: "center",
-              justifyContent: "center",
               gap: "0.5rem",
               fontSize: "0.75rem",
               fontWeight: 700,
               letterSpacing: "0.12em",
               textTransform: "uppercase",
-              color: "var(--brand-teal)",
+              color: "#0d7377",
               marginBottom: "1rem",
-              padding: "0.5rem 1rem",
-              background: "var(--brand-white)",
-              borderRadius: "20px",
-              boxShadow: "0 2px 12px rgba(42,123,136,0.12)",
             }}
           >
-            <Sparkles style={{ width: "16px", height: "16px", color: "var(--brand-teal)" }} />
-            {t("whatDelivers.title")}
+            <span style={{ width: "20px", height: "1.5px", background: "#0d7377", display: "inline-block" }} />
+            {t("whatDelivers.badge")}
+            <span style={{ width: "20px", height: "1.5px", background: "#0d7377", display: "inline-block" }} />
           </div>
           <h2
             style={{
               fontSize: "clamp(1.75rem, 3vw, 2.5rem)",
-              fontWeight: 800,
+              fontWeight: 500,
               color: "var(--brand-navy)",
               letterSpacing: "-0.025em",
+              lineHeight: 1.15,
             }}
           >
             {t("whatDelivers.title")}
           </h2>
+          
+          <p style={{ 
+            fontSize: "1.125rem", 
+            color: "#6b7b8c",
+            maxWidth: "520px",
+            margin: "0 auto",
+            lineHeight: 1.7,
+          }}>
+            {t("whatDelivers.subtitle")}
+          </p>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "1.5rem",
-            maxWidth: "1200px",
-            margin: "0 auto",
-          }}
-        >
-          {items.map((item, i) => (
+        {/* Cards Grid - 3 columns */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {services.map((s, i) => (
             <div
               key={i}
               style={{
-                background: item.bg,
-                padding: "2rem",
+                background: "#ffffff",
                 borderRadius: "16px",
-                border: "1px solid var(--brand-ivory-dark)",
+                padding: "2rem",
+                border: "1px solid #f0f2f5",
+                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                position: "relative",
+                overflow: "hidden",
               }}
             >
-              <div
-                style={{
-                  width: "48px",
-                  height: "48px",
-                  borderRadius: "12px",
-                  background: "var(--brand-white)",
+              {/* Header Row */}
+              <div style={{
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "space-between",
+                marginBottom: "1.25rem",
+              }}>
+                <div style={{
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center",
-                  marginBottom: "1rem",
-                  boxShadow: "0 2px 8px rgba(27,42,74,0.08)",
-                }}
-              >
-                <item.icon style={{ width: "24px", height: "24px", color: item.color }} />
+                  gap: "0.875rem",
+                }}>
+                  {/* Icon */}
+                  <div style={{
+                    width: "48px",
+                    height: "48px",
+                    borderRadius: "12px",
+                    background: "linear-gradient(135deg, #e6f4f1 0%, #d4e8eb 100%)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}>
+                    <s.icon style={{ width: "22px", height: "22px", color: "#0d7377" }} />
+                  </div>
+                  
+                </div>
               </div>
-              <p
-                style={{
-                  fontSize: "1rem",
-                  lineHeight: 1.6,
-                  color: "var(--brand-charcoal)",
-                  margin: 0,
-                }}
-              >
-                {t(`whatDelivers.items.${i}`)}
+              
+              {/* Title */}
+              <h3 style={{
+                fontSize: "1.125rem",
+                fontWeight: 700,
+                color: "#0a1628",
+                marginBottom: "0.75rem",
+                lineHeight: 1.4,
+              }}>
+                {t(`whatDelivers.services.${i}.title`)}
+              </h3>
+              
+              {/* Description */}
+              <p style={{
+                fontSize: "0.9375rem",
+                lineHeight: 1.75,
+                color: "#5a6b7c",
+                margin: "0 0 1rem",
+              }}>
+                {t(`whatDelivers.services.${i}.description`)}
               </p>
+              
             </div>
           ))}
+        </div>
+
+        {/* Bottom CTA */}
+        <div style={{
+          marginTop: "4rem",
+          padding: "2.5rem",
+          background: "#f8fafb",
+          borderRadius: "20px",
+          textAlign: "center",
+          border: "1px solid #f0f2f5",
+        }}>
+          <div style={{
+            width: "56px",
+            height: "56px",
+            borderRadius: "50%",
+            background: "#ffffff",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            margin: "0 auto 1.25rem",
+          }}>
+            <ShieldCheck style={{ width: "26px", height: "26px", color: "#0d7377" }} />
+          </div>
+          
+          <h4 style={{
+            fontSize: "1.25rem",
+            fontWeight: 700,
+            color: "#0a1628",
+            marginBottom: "0.5rem",
+          }}>
+            Scope of Platform
+          </h4>
+          
+          <p style={{
+            fontSize: "1rem",
+            color: "#5a6b7c",
+            maxWidth: "600px",
+            margin: "0 auto",
+            lineHeight: 1.7,
+          }}>
+            Rasi&apos;s role ends at award. The platform does not manage execution, 
+            track milestones, or intervene in the contractual relationship.
+          </p>
         </div>
       </div>
     </section>

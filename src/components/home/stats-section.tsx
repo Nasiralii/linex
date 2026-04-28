@@ -6,10 +6,10 @@ interface StatsSectionProps {
 
 export function StatsSection({ t }: StatsSectionProps) {
   const stats = [
-    { icon: FolderOpen, value: "500+", label: t("stats.projects"), color: "var(--brand-teal)", bg: "linear-gradient(135deg, var(--brand-teal-light) 0%, #d4e8eb 100%)" },
-    { icon: Users, value: "200+", label: t("stats.contractors"), color: "var(--brand-navy)", bg: "linear-gradient(135deg, #e8ecf4 0%, #dce4ed 100%)" },
-    { icon: BarChart3, value: "1,200+", label: t("stats.bids"), color: "var(--brand-copper)", bg: "linear-gradient(135deg, var(--brand-copper-light) 0%, #ebe0d4 100%)" },
-    { icon: Trophy, value: "350+", label: t("stats.awards"), color: "#B85C38", bg: "linear-gradient(135deg, #fdf2ef 0%, #f5e0d8 100%)" },
+    { icon: FolderOpen, value: "500+", label: t("stats.projects"), color: "#0d7377", bg: "linear-gradient(135deg, #e6f4f1 0%, #d4e8eb 100%)" },
+    { icon: Users, value: "200+", label: t("stats.contractors"), color: "#0d7377", bg: "linear-gradient(135deg, #e6f4f1 0%, #d4e8eb 100%)" },
+    { icon: BarChart3, value: "1,200+", label: t("stats.bids"), color: "#0d7377", bg: "linear-gradient(135deg, #e6f4f1 0%, #d4e8eb 100%)" },
+    { icon: Trophy, value: "350+", label: t("stats.awards"), color: "#0d7377", bg: "linear-gradient(135deg, #e6f4f1 0%, #d4e8eb 100%)" },
   ];
 
   return (
@@ -59,7 +59,7 @@ export function StatsSection({ t }: StatsSectionProps) {
               <div
                 style={{
                   fontSize: "2rem",
-                  fontWeight: 800,
+                  fontWeight: 500,
                   color: "var(--brand-charcoal)",
                   lineHeight: 1,
                   letterSpacing: "-0.03em",
@@ -70,7 +70,7 @@ export function StatsSection({ t }: StatsSectionProps) {
               <div
                 style={{
                   fontSize: "0.8125rem",
-                  color: "var(--brand-warm-grey)",
+                  color: "black",
                   fontWeight: 500,
                   letterSpacing: "0.02em",
                 }}

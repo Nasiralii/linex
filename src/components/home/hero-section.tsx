@@ -59,11 +59,7 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
           inset: 0,
           zIndex: 0,
           opacity: 0.035,
-          backgroundImage: `
-            linear-gradient(rgba(255,255,255,1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)
-          `,
-          backgroundSize: "64px 64px",
+         
         }}
       />
 
@@ -210,7 +206,7 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
                 padding: "0.9375rem 1.25rem",
                 borderRadius: "10px",
                 fontSize: "0.9375rem",
-                fontWeight: 700,
+                fontWeight: 500,
                 textDecoration: "none",
                 background: "var(--brand-copper)",
                 color: "var(--brand-white)",
@@ -233,7 +229,7 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
               padding: "0.9375rem 1.25rem",
               borderRadius: "10px",
               fontSize: "0.9375rem",
-              fontWeight: 600,
+              fontWeight: 500,
               textDecoration: "none",
               color: "var(--brand-white)",
               border: "1.5px solid rgba(255,255,255,0.28)",

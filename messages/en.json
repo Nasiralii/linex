@@ -241,6 +241,7 @@
       "step4Desc": "Track your project execution through the shared workspace"
     },
     "trust": {
+      "label": "Our Foundation",
       "title": "Trusted & Secure Platform",
       "verifiedProfiles": "Verified Professional Profiles",
       "verifiedProfilesDesc": "Every contractor and engineer is thoroughly vetted with documented credentials, portfolio, and track record",
@@ -301,15 +302,46 @@
     },
     "whoWeAre": {
       "title": "Who We Are",
-      "description": "Rasi is a Saudi digital platform purpose-built to connect project owners with qualified contractors and engineers across construction, design, finishing, and renovation. We believe the single most consequential moment in any project is the moment of choosing the executing party — it determines quality, cost discipline, and error rates. Rasi is the digital infrastructure that organizes that moment."
+      "headline": "Transforming Construction Procurement in Saudi Arabia",
+      "description": "Rasi is a Saudi digital platform purpose-built to connect project owners with qualified contractors and engineers across construction, design, finishing, and renovation. We believe the single most consequential moment in any project is the moment of choosing the executing party — it determines quality, cost discipline, and error rates. Rasi is the digital infrastructure that organizes that moment.",
+      "imageCaption": "Connecting Saudi Construction Industry",
+      "point1": "Saudi Vision 2030 Aligned",
+      "point2": "Verified Contractor Network",
+      "point3": "Transparent Procurement Process"
     },
     "whatDelivers": {
-      "title": "What Rasi Delivers",
-      "items": [
-        "A structured digital environment for posting projects and receiving offers from qualified parties.",
-        "Transparent comparison on one dashboard: price, timeline, track record, ratings.",
-        "A four-tier trust system with publicly published criteria: Registered, Qualified, Preferred, Elite.",
-        "Documentation of the decision journey — from brief to award."
+      "badge": "7 Core Services",
+      "title": "Services designed to support the contracting decision — before execution begins.",
+      "subtitle": "Everything you need to post, compare, verify, and award.",
+      "services": [
+        {
+          "title": "Project Posting",
+          "description": "We help project owners present their request professionally: project type, location, scope of work, estimated budget, timeline, and supporting files. The clearer the brief, the more accurate the offers."
+        },
+        {
+          "title": "Qualified Proposals",
+          "description": "Instead of random outreach, your project reaches contractors and engineers whose specialization matches the work, so the offers you receive are worth comparing."
+        },
+        {
+          "title": "Structured Comparison",
+          "description": "A unified comparison dashboard surfaces the real differences between offers: total price, timeline, track record, prior ratings, and profile completeness."
+        },
+        {
+          "title": "Verification & Qualification",
+          "description": "Contractor and engineer profiles are reviewed against published criteria: legal information, specialization, prior work, and fit with the project type. Verification is the condition for competing — not a marketing label."
+        },
+        {
+          "title": "Structured Communication",
+          "description": "In-platform messaging supports questions, clarifications, and detail reviews before award — all conversations are documented in the project context."
+        },
+        {
+          "title": "Documentation & Contracts",
+          "description": "Tools to document scope, offers, and correspondence, plus support for clear contract drafting before execution begins. Documentation reduces disputes downstream."
+        },
+        {
+          "title": "Ratings & Reputation",
+          "description": "After the engagement closes, ratings build a clear professional record for contractors and engineers — equipping future owners to make better-informed decisions."
+        }
       ]
     },
     "whatIsNot": {
@@ -329,8 +361,15 @@
       "description": "To enable project owners to reach qualified options, and serious contractors and engineers to reach real opportunities, through a platform founded on verification, transparency, and fair comparison."
     },
     "ourStory": {
-      "title": "Our Story",
-      "description": "Rasi began from a clear market reality: project owners struggling to find trustworthy professionals and falling back on personal referrals; serious contractors missing the right opportunities; and qualified engineers lacking a clean channel to display their expertise. We built Rasi not as a directory of names, but as an operating layer that converts random search into a structured decision."
+      "title": "Engineering the Trust Infrastructure.",
+      "description": "Rasi began from a clear market reality: project owners struggling to find trustworthy professionals while falling back on personal referrals. We didn't build a list; we built a system.",
+      "quote": "We convert random search into a structured decision.",
+      "step1Title": "Unstructured Market",
+      "step1Desc": "Random referrals & hidden data",
+      "step2Title": "Rasi Logic Layer",
+      "step2Desc": "Verification & Comparison Engine",
+      "step3Title": "Final Decision",
+      "step3Desc": "Trusted Infrastructure for KSA"
     },
     "ourValues": {
       "title": "Our Values",

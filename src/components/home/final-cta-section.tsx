@@ -9,10 +9,10 @@ interface FinalCtaSectionProps {
 
 export function FinalCtaSection({ t, showOwnerCta, ownerCtaHref }: FinalCtaSectionProps) {
   const whyRasiItems = [
-    { icon: HardHat, text: t("whyRasi.constructionOnly"), bg: "var(--brand-copper-light)", color: "var(--brand-copper)" },
-    { icon: Award, text: t("whyRasi.qualification"), bg: "var(--brand-teal-light)", color: "var(--brand-teal)" },
-    { icon: TrendingUp, text: t("whyRasi.transparent"), bg: "#e8ecf4", color: "var(--brand-navy)" },
-    { icon: Globe, text: t("whyRasi.saudiMarket"), bg: "var(--brand-ivory)", color: "var(--brand-copper-dark)" },
+    { icon: HardHat, text: t("whyRasi.constructionOnly"), bg: "var(--brand-copper-light)", color: "#0d7377" },
+    { icon: Award, text: t("whyRasi.qualification"), bg: "var(--brand-teal-light)", color: "#0d7377" },
+    { icon: TrendingUp, text: t("whyRasi.transparent"), bg: "#e8ecf4", color: "#0d7377" },
+    { icon: Globe, text: t("whyRasi.saudiMarket"), bg: "var(--brand-ivory)", color: "#0d7377" },
   ];
 
   return (
@@ -93,28 +93,27 @@ export function FinalCtaSection({ t, showOwnerCta, ownerCtaHref }: FinalCtaSecti
             {whyRasiItems.map((item, i) => (
               <div
                 key={i}
+                className={`rounded-xl ${i === 0 ? "md:rounded-br-3xl" : i === 1 ? "md:rounded-bl-3xl" : i === 2 ? "md:rounded-tr-3xl" : "md:rounded-tl-3xl"}`}
                 style={{
                   display: "flex",
                   alignItems: "center",
                   gap: "1rem",
                   padding: "1.25rem 1.5rem",
                   background: item.bg,
-                  borderRadius: "12px",
                   boxShadow: "0 4px 24px rgba(27,42,74,0.12)",
                   border: "1px solid var(--brand-ivory-dark)",
                 }}
               >
                 <div
                   style={{
-                    width: "48px",
-                    height: "48px",
+                    width: "52px",
+                    height: "52px",
                     borderRadius: "12px",
                     background: "var(--brand-white)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     flexShrink: 0,
-                    boxShadow: "0 2px 8px rgba(27,42,74,0.08)",
                   }}
                 >
                   <item.icon style={{ width: "22px", height: "22px", color: item.color }} />
@@ -122,7 +121,7 @@ export function FinalCtaSection({ t, showOwnerCta, ownerCtaHref }: FinalCtaSecti
                 <span
                   style={{
                     fontSize: "0.9375rem",
-                    fontWeight: 600,
+                    fontWeight: 500,
                     color: "var(--brand-charcoal)",
                     lineHeight: 1.5,
                     textAlign: "left",
@@ -147,15 +146,17 @@ export function FinalCtaSection({ t, showOwnerCta, ownerCtaHref }: FinalCtaSecti
         >
           {showOwnerCta && (
             <Link
+             className="hover:scale-105"
               href={ownerCtaHref as "/auth/register" | "/dashboard/projects/new"}
               style={{
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "0.625rem",
-                padding: "1rem 2.25rem",
+                padding: "0.9375rem 1.25rem",
                 borderRadius: "10px",
                 fontSize: "0.9375rem",
-                fontWeight: 700,
+                  transition: "all 200ms ease",
+                fontWeight: 500,
                 textDecoration: "none",
                 background: "var(--brand-copper)",
                 color: "var(--brand-white)",
@@ -168,15 +169,17 @@ export function FinalCtaSection({ t, showOwnerCta, ownerCtaHref }: FinalCtaSecti
             </Link>
           )}
           <Link
+           className="hover:scale-105"
             href="/auth/register?role=contractor"
             style={{
               display: "inline-flex",
+                transition: "all 200ms ease",
               alignItems: "center",
               gap: "0.625rem",
-              padding: "1rem 2.25rem",
+              padding: "0.9375rem 1.25rem",
               borderRadius: "10px",
               fontSize: "0.9375rem",
-              fontWeight: 600,
+              fontWeight: 500,
               textDecoration: "none",
               color: "var(--brand-white)",
               border: "1.5px solid rgba(255,255,255,0.25)",

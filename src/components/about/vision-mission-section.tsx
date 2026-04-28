@@ -1,6 +1,10 @@
 import { Eye, Target } from "lucide-react";
 
-export function VisionMissionSection() {
+interface VisionMissionSectionProps {
+  t: (key: string) => string;
+}
+
+export function VisionMissionSection({ t }: VisionMissionSectionProps) {
   return (
     <section style={{
       background: "linear-gradient(135deg, #1C5963 0%, #2A7B88 50%, #3A8B98 100%)",
@@ -18,18 +22,10 @@ export function VisionMissionSection() {
       }} />
 
       <div className="container-app" style={{ position: "relative", zIndex: 1 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "2rem", maxWidth: "960px", margin: "0 auto" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "2rem", margin: "0 auto" }}>
           {[
-            {
-              icon: Eye,
-              label: "Vision",
-              text: "To be the most trusted digital infrastructure in Saudi Arabia for organizing the construction professional selection decision.",
-            },
-            {
-              icon: Target,
-              label: "Mission",
-              text: "To enable project owners to reach qualified options, and serious contractors and engineers to reach real opportunities, through a platform founded on verification, transparency, and fair comparison.",
-            },
+            { icon: Eye, label: t("vision.title"), text: t("vision.description") },
+            { icon: Target, label: t("mission.title"), text: t("mission.description") },
           ].map((item, i) => (
             <div key={i} style={{
               padding: "2.5rem",
@@ -46,7 +42,7 @@ export function VisionMissionSection() {
               }}>
                 <item.icon style={{ width: "26px", height: "26px", color: "white" }} />
               </div>
-              <div style={{ fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.6)", marginBottom: "0.75rem" }}>
+              <div style={{ fontSize: "1re.3m", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "white", marginBottom: "0.75rem" }}>
                 {item.label}
               </div>
               <p style={{ fontSize: "1rem", color: "white", lineHeight: 1.75, margin: 0 }}>
