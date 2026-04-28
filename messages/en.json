@@ -216,8 +216,10 @@
   },
   "home": {
     "hero": {
-      "title": "The Trusted Construction Marketplace",
-      "subtitle": "Connect your projects with the best verified contractors in Saudi Arabia",
+      "title": "Construction starts with the right decision. Make it clearly. Make it confidently.",
+      "subtitle": "Rasi is Saudi Arabia's digital marketplace for construction and design — connecting project owners with qualified contractors and engineers through a structured journey from project brief to professional award.",
+      "intro": "Choosing the right professional is the single most important decision in any construction or design project. On Rasi, you post your project with clear specifications, receive qualified offers from verified professionals, compare price, timeline, track record, and ratings on one dashboard — and award your decision through a documented workflow, instead of scattered messages and unverifiable referrals.",
+      "ctaTitle": "Ready to start your project?",
       "ownerCta": "Post Your Project",
       "contractorCta": "Find Opportunities"
     },
@@ -240,12 +242,30 @@
     },
     "trust": {
       "title": "Trusted & Secure Platform",
-      "verification": "Verified Contractors",
-      "verificationDesc": "All contractors go through a comprehensive verification process",
-      "structured": "Structured Bids",
-      "structuredDesc": "Easy and transparent bid comparison",
-      "support": "Continuous Support",
-      "supportDesc": "Dedicated support team to help you at every step"
+      "verifiedProfiles": "Verified Professional Profiles",
+      "verifiedProfilesDesc": "Every contractor and engineer is thoroughly vetted with documented credentials, portfolio, and track record",
+      "transparentTiers": "Transparent Four-Tier System",
+      "transparentTiersDesc": "Clear classification with published criteria so you know exactly what each tier represents",
+      "sideBySide": "Side-by-Side Comparison",
+      "sideBySideDesc": "Structured comparison tools to evaluate bids on price, timeline, experience, and ratings",
+      "documentedJourney": "Documented Decision Journey",
+      "documentedJourneyDesc": "Complete audit trail from project brief to award — every step tracked and recorded"
+    },
+    "twoSided": {
+      "ownersTitle": "For Project Owners",
+      "ownersDesc": "Post your project and receive qualified offers — without the random search.",
+      "contractorsTitle": "For Contractors & Engineers",
+      "contractorsDesc": "Showcase your expertise to serious projects looking for your specialty."
+    },
+    "whyRasi": {
+      "title": "Why Rasi",
+      "constructionOnly": "Construction-only — not a generic services directory",
+      "qualification": "Qualification before competition — only verified professionals can submit offers",
+      "transparent": "Transparent comparison — turning messages into measurable data",
+      "saudiMarket": "Built for the Saudi market — designed around local contracting norms and regulatory context",
+      "postProject": "Post Your Project",
+      "joinProfessional": "Join as a Professional",
+      "microcopy": "Post in minutes — no documents required to start."
     }
   },
   "notifications": {
@@ -274,5 +294,69 @@
     "partners": "Partners",
     "contact": "Contact Us",
     "copyright": "© {year} Rasi. All rights reserved."
+  },
+  "about": {
+    "hero": {
+      "headline": "We are restructuring the moment construction decisions begin"
+    },
+    "whoWeAre": {
+      "title": "Who We Are",
+      "description": "Rasi is a Saudi digital platform purpose-built to connect project owners with qualified contractors and engineers across construction, design, finishing, and renovation. We believe the single most consequential moment in any project is the moment of choosing the executing party — it determines quality, cost discipline, and error rates. Rasi is the digital infrastructure that organizes that moment."
+    },
+    "whatDelivers": {
+      "title": "What Rasi Delivers",
+      "items": [
+        "A structured digital environment for posting projects and receiving offers from qualified parties.",
+        "Transparent comparison on one dashboard: price, timeline, track record, ratings.",
+        "A four-tier trust system with publicly published criteria: Registered, Qualified, Preferred, Elite.",
+        "Documentation of the decision journey — from brief to award."
+      ]
+    },
+    "whatIsNot": {
+      "title": "What Rasi Is Not",
+      "items": [
+        "Not a contracting company.",
+        "Does not execute construction work directly.",
+        "Does not guarantee project outcomes — the contractual relationship remains between the owner and the awarded party."
+      ]
+    },
+    "vision": {
+      "title": "Vision",
+      "description": "To be the most trusted digital infrastructure in Saudi Arabia for organizing the construction professional selection decision."
+    },
+    "mission": {
+      "title": "Mission",
+      "description": "To enable project owners to reach qualified options, and serious contractors and engineers to reach real opportunities, through a platform founded on verification, transparency, and fair comparison."
+    },
+    "ourStory": {
+      "title": "Our Story",
+      "description": "Rasi began from a clear market reality: project owners struggling to find trustworthy professionals and falling back on personal referrals; serious contractors missing the right opportunities; and qualified engineers lacking a clean channel to display their expertise. We built Rasi not as a directory of names, but as an operating layer that converts random search into a structured decision."
+    },
+    "ourValues": {
+      "title": "Our Values",
+      "items": [
+        {
+          "title": "Trust first",
+          "description": "Building confidence through verified profiles"
+        },
+        {
+          "title": "Transparency",
+          "description": "Clear information and fair offers"
+        },
+        {
+          "title": "Professionalism",
+          "description": "Quality presentation of projects and profiles"
+        },
+        {
+          "title": "Quality",
+          "description": "Rigorous qualification of professionals"
+        },
+        {
+          "title": "Neutrality",
+          "description": "We don't recommend specific parties — we equip owners to choose"
+        }
+      ]
+    },
+    "tagline": "Rasi — Saudi Arabia's digital marketplace for construction and design. We organize the decision journey from brief to award."
   }
 }

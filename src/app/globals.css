@@ -7,6 +7,23 @@
    ============================================================================ */
 
 :root {
+  /* Brand Colors */
+  --brand-navy: #1b2a4a;
+  --brand-navy-dark: #111d33;
+  --brand-navy-light: #243659;
+  --brand-copper: #b87333;
+  --brand-copper-dark: #9e6228;
+  --brand-copper-light: #f5ede2;
+  --brand-charcoal: #2d2d2d;
+  --brand-warm-grey: #8c8c8c;
+  --brand-ivory: #f5f3ef;
+  --brand-ivory-dark: #ede9e2;
+  --brand-teal: #2a7b88;
+  --brand-teal-dark: #1e5c67;
+  --brand-teal-light: #e8f4f6;
+  --brand-white: #ffffff;
+
+  /* Semantic Tokens */
   --bg: #f5f2ea;
   --bg-alt: #eee9df;
   --surface: #ffffff;
