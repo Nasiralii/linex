@@ -1,5 +1,4 @@
-import React from 'react';
-import { Layers, ShieldCheck, CheckCircle2, Cpu, Zap, Share2 } from "lucide-react";
+import { CheckCircle2, Cpu, Share2 } from "lucide-react";
 
 interface OurStorySectionProps {
   t: (key: string) => string;
@@ -8,7 +7,7 @@ interface OurStorySectionProps {
 export function OurStorySection({ t }: OurStorySectionProps) {
   return (
     <section style={{ 
-      padding: "8rem 0", 
+      padding: "5rem 0", 
       background: "#FFFFFF", 
       position: "relative"
     }}>
@@ -105,6 +104,9 @@ export function OurStorySection({ t }: OurStorySectionProps) {
               </h2>
               <p style={{ color: "#4B5563", fontSize: "1.125rem", lineHeight: 1.8, marginBottom: "2rem" }}>
                 {t("ourStory.description")}
+              </p>
+              <p style={{ color: "#4B5563", fontSize: "1.125rem", lineHeight: 1.8, marginBottom: "2rem" }}>
+                {t("ourStory.description2")}
               </p>
               <div style={{ background: "#F9FAFB", padding: "2rem", borderLeft: "4px solid #0d7377", textAlign: "right" }}>
                 <p className='text-start' style={{ color: "#1B2A4A", fontSize: "1.1rem", fontStyle: "italic", margin: 0 }}>

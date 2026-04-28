@@ -174,7 +174,7 @@ export function WhoWeAreSection({ t }: WhoWeAreSectionProps) {
                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: "0.875rem" }}>
                   <CheckCircle2 style={{ width: "22px", height: "22px", color: "#0d7377", flexShrink: 0, marginTop: "0.15rem" }} />
                   <p style={{ margin: 0, color: "var(--brand-charcoal)", fontSize: "0.95rem", lineHeight: 1.7 }}>
-                    {t(`whatDelivers.services.${i}.title`)}
+                    {t(`whatDelivers.summaryItems.${i}`)}
                   </p>
                 </div>
               ))}

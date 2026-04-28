@@ -6,21 +6,26 @@ interface WhatDeliversSectionProps {
 
 export function WhatDeliversSection({ t }: WhatDeliversSectionProps) {
   const services = [
-    { icon: FolderPlus, color: "#0d7377" },
-    { icon: Users, color: "#14a085" },
-    { icon: BarChartHorizontal, color: "#2980b9" },
-    { icon: ShieldCheck, color: "#8e44ad" },
-    { icon: MessageSquare, color: "#d35400" },
-    { icon: FileCheck, color: "#c0392b" },
-    { icon: Star, color: "#f39c12" },
+    { icon: FolderPlus },
+    { icon: Users },
+    { icon: BarChartHorizontal },
+    { icon: ShieldCheck },
+    { icon: MessageSquare },
+    { icon: FileCheck },
+    { icon: Star },
   ];
 
   return (
-    <section style={{ padding: "6rem 0", backgroundColor: "var(--background)" }}>
-      <div className="container-app" style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 1.5rem" }}>
-        
-        {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: "4rem" }}>
+    <section
+      style={{
+        padding: "5rem 0",
+        background: "linear-gradient(180deg, var(--brand-ivory) 0%, #ffffff 100%)",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      <div className="container-app" style={{ position: "relative", zIndex: 1 }}>
+        <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
           <div
             style={{
               display: "inline-flex",
@@ -41,10 +46,12 @@ export function WhatDeliversSection({ t }: WhatDeliversSectionProps) {
           <h2
             style={{
               fontSize: "clamp(1.75rem, 3vw, 2.5rem)",
-              fontWeight: 500,
+              fontWeight: 700,
               color: "var(--brand-navy)",
               letterSpacing: "-0.025em",
               lineHeight: 1.15,
+              maxWidth: "780px",
+              margin: "0 auto 1rem",
             }}
           >
             {t("whatDelivers.title")}
@@ -52,8 +59,8 @@ export function WhatDeliversSection({ t }: WhatDeliversSectionProps) {
           
           <p style={{ 
             fontSize: "1.125rem", 
-            color: "#6b7b8c",
-            maxWidth: "520px",
+            color: "#475569",
+            maxWidth: "640px",
             margin: "0 auto",
             lineHeight: 1.7,
           }}>
@@ -61,26 +68,45 @@ export function WhatDeliversSection({ t }: WhatDeliversSectionProps) {
           </p>
         </div>
 
-        {/* Cards Grid - 3 columns */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {services.map((s, i) => (
             <div
               key={i}
               style={{
                 background: "#ffffff",
-                borderRadius: "16px",
+                borderRadius: "22px",
                 padding: "2rem",
-                border: "1px solid #f0f2f5",
-                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                border: "1px solid rgba(27,42,74,0.08)",
                 position: "relative",
                 overflow: "hidden",
+                boxShadow: "0 18px 44px -32px rgba(27,42,74,0.28)",
+                minHeight: "310px",
               }}
             >
-              {/* Header Row */}
+              <span
+                style={{
+                  position: "absolute",
+                  top: "1rem",
+                  right: "1rem",
+                  width: "56px",
+                  height: "56px",
+                  borderRadius: "18px",
+                  background: "rgba(13,115,119,0.08)",
+                  color: "#0d7377",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "1.5rem",
+                  fontWeight: 900,
+                  letterSpacing: "-0.04em",
+                }}
+              >
+                {i + 1}
+              </span>
+
               <div style={{
                 display: "flex",
                 alignItems: "flex-start",
-                justifyContent: "space-between",
                 marginBottom: "1.25rem",
               }}>
                 <div style={{
@@ -88,11 +114,10 @@ export function WhatDeliversSection({ t }: WhatDeliversSectionProps) {
                   alignItems: "center",
                   gap: "0.875rem",
                 }}>
-                  {/* Icon */}
                   <div style={{
-                    width: "48px",
-                    height: "48px",
-                    borderRadius: "12px",
+                    width: "54px",
+                    height: "54px",
+                    borderRadius: "18px",
                     background: "linear-gradient(135deg, #e6f4f1 0%, #d4e8eb 100%)",
                     display: "flex",
                     alignItems: "center",
@@ -100,77 +125,29 @@ export function WhatDeliversSection({ t }: WhatDeliversSectionProps) {
                   }}>
                     <s.icon style={{ width: "22px", height: "22px", color: "#0d7377" }} />
                   </div>
-                  
                 </div>
               </div>
-              
-              {/* Title */}
+
               <h3 style={{
-                fontSize: "1.125rem",
-                fontWeight: 700,
+                fontSize: "1.2rem",
+                fontWeight: 800,
                 color: "#0a1628",
                 marginBottom: "0.75rem",
                 lineHeight: 1.4,
               }}>
                 {t(`whatDelivers.services.${i}.title`)}
               </h3>
-              
-              {/* Description */}
+
               <p style={{
                 fontSize: "0.9375rem",
                 lineHeight: 1.75,
                 color: "#5a6b7c",
-                margin: "0 0 1rem",
+                margin: 0,
               }}>
                 {t(`whatDelivers.services.${i}.description`)}
               </p>
-              
             </div>
           ))}
-        </div>
-
-        {/* Bottom CTA */}
-        <div style={{
-          marginTop: "4rem",
-          padding: "2.5rem",
-          background: "#f8fafb",
-          borderRadius: "20px",
-          textAlign: "center",
-          border: "1px solid #f0f2f5",
-        }}>
-          <div style={{
-            width: "56px",
-            height: "56px",
-            borderRadius: "50%",
-            background: "#ffffff",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            margin: "0 auto 1.25rem",
-          }}>
-            <ShieldCheck style={{ width: "26px", height: "26px", color: "#0d7377" }} />
-          </div>
-          
-          <h4 style={{
-            fontSize: "1.25rem",
-            fontWeight: 700,
-            color: "#0a1628",
-            marginBottom: "0.5rem",
-          }}>
-            Scope of Platform
-          </h4>
-          
-          <p style={{
-            fontSize: "1rem",
-            color: "#5a6b7c",
-            maxWidth: "600px",
-            margin: "0 auto",
-            lineHeight: 1.7,
-          }}>
-            Rasi&apos;s role ends at award. The platform does not manage execution, 
-            track milestones, or intervene in the contractual relationship.
-          </p>
         </div>
       </div>
     </section>

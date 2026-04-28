@@ -7,6 +7,7 @@ import {
   TwoSidedSnapshotSection,
   TrustPillarsSection,
   FinalCtaSection,
+  OwnerSupportSection,
 } from "@/components/home";
 import {
   WhoWeAreSection,
@@ -56,6 +57,7 @@ export default async function HomePage() {
       <OurStorySection t={tAbout} />
       <OurValuesSection t={tAbout} />
       <WhatDeliversSection t={tAbout} />
+      <OwnerSupportSection t={t} showOwnerCta={showOwnerCta} ownerCtaHref={ownerCtaHref} />
     </div>
   );
 }

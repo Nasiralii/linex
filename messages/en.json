@@ -268,6 +268,38 @@
       "postProject": "Post Your Project",
       "joinProfessional": "Join as a Professional",
       "microcopy": "Post in minutes — no documents required to start."
+    },
+    "ownerSection": {
+      "headline": "Stop searching alone. Let qualified professionals come to your project.",
+      "mainCopy": "Whether you are building a villa, designing a space, finishing an office, renovating a home, or developing a commercial project — Rasi turns your idea into a structured project request that reaches the right contractors and engineers, and brings back comparable offers.",
+      "howWeHelpTitle": "How We Help You",
+      "helpItems": [
+        "Post your project in minutes, in a professional format.",
+        "Receive offers from professionals who have been verified.",
+        "Compare price, timeline, track record, and ratings on one dashboard.",
+        "Communicate with bidders inside a documented channel.",
+        "Award your decision confidently — with a clear record of the journey."
+      ],
+      "projectTypesTitle": "Project Types Supported",
+      "projectTypes": [
+        "Villa and residential construction.",
+        "Architectural and interior design.",
+        "Residential and commercial finishing.",
+        "Renovation and refurbishment.",
+        "Commercial and office projects.",
+        "Engineering supervision and consulting.",
+        "Design + Build combined engagements."
+      ],
+      "featuresTitle": "Additional Owner Features",
+      "features": [
+        "Manage all your projects in one place via the owner dashboard.",
+        "Receive instant notifications when new offers or updates arrive.",
+        "Access standard contract templates that help you contract with confidence.",
+        "Browse each contractor's or engineer's portfolio before deciding."
+      ],
+      "trustTitle": "Trust Message",
+      "trustMessage": "Rasi does not choose the executing party for you, does not guarantee execution outcomes, and does not monitor work quality after award. Our role is to prepare a better decision — with clearer information. You award, and you contract — we make sure you reach that moment with confidence and reliable data.",
+      "cta": "Post Your Project Now"
     }
   },
   "notifications": {
@@ -311,21 +343,43 @@
       "point3": "Transparent Procurement Process"
     },
     "whatDelivers": {
-      "badge": "What Rasi Delivers",
-      "title": "What Rasi Delivers",
-      "subtitle": "Everything you need to post, compare, verify, and award.",
+      "badge": "Services",
+      "title": "Services designed to support the contracting decision — before execution begins.",
+      "subtitle": "A complete workflow for posting, comparing, verifying, communicating, documenting, and building trust.",
+      "summaryItems": [
+        "A structured digital environment for posting projects and receiving offers from qualified parties.",
+        "Transparent comparison on one dashboard: price, timeline, track record, ratings.",
+        "A four-tier trust system with publicly published criteria: Registered, Qualified, Preferred, Elite.",
+        "Documentation of the decision journey — from brief to award."
+      ],
       "services": [
         {
-          "title": "A structured digital environment for posting projects and receiving offers from qualified parties."
+          "title": "Project Posting",
+          "description": "We help project owners present their request professionally: project type, location, scope of work, estimated budget, timeline, and supporting files. The clearer the brief, the more accurate the offers."
         },
         {
-          "title": "Transparent comparison on one dashboard: price, timeline, track record, ratings."
+          "title": "Qualified Proposals",
+          "description": "Instead of random outreach, your project reaches contractors and engineers whose specialization matches the work, so the offers you receive are worth comparing."
         },
         {
-          "title": "A four-tier trust system with publicly published criteria: Registered, Qualified, Preferred, Elite."
+          "title": "Structured Comparison",
+          "description": "A unified comparison dashboard surfaces the real differences between offers: total price, timeline, track record, prior ratings, and profile completeness."
         },
         {
-          "title": "Documentation of the decision journey — from brief to award."
+          "title": "Verification & Qualification",
+          "description": "Contractor and engineer profiles are reviewed against published criteria: legal information, specialization, prior work, and fit with the project type. Verification is the condition for competing — not a marketing label."
+        },
+        {
+          "title": "Structured Communication",
+          "description": "In-platform messaging supports questions, clarifications, and detail reviews before award — all conversations are documented in the project context."
+        },
+        {
+          "title": "Documentation & Contracts",
+          "description": "Tools to document scope, offers, and correspondence, plus support for clear contract drafting before execution begins. Documentation reduces disputes downstream."
+        },
+        {
+          "title": "Ratings & Reputation",
+          "description": "After the engagement closes, ratings build a clear professional record for contractors and engineers — equipping future owners to make better-informed decisions."
         }
       ]
     },
@@ -347,8 +401,9 @@
       "description": "To enable project owners to reach qualified options, and serious contractors and engineers to reach real opportunities, through a platform founded on verification, transparency, and fair comparison."
     },
     "ourStory": {
-      "title": "Engineering the Trust Infrastructure.",
-      "description": "Rasi began from a clear market reality: project owners struggling to find trustworthy professionals while falling back on personal referrals. We didn't build a list; we built a system.",
+      "title": "Our Story",
+      "description": "Rasi began from a clear market reality: project owners struggling to find trustworthy professionals and falling back on personal referrals; serious contractors missing the right opportunities; and qualified engineers lacking a clean channel to display their expertise. We built Rasi not as a directory of names, but as an operating layer that converts random search into a structured decision.",
+      "description2": "We work in service of Saudi Vision 2030, which positions construction and housing as strategic priorities, and we contribute to sector efficiency through a digital tool that respects local regulations, reinforces transparency, and reduces transaction friction.",
       "quote": "We convert random search into a structured decision.",
       "step1Title": "Unstructured Market",
       "step1Desc": "Random referrals & hidden data",
@@ -362,23 +417,27 @@
       "items": [
         {
           "title": "Trust first",
-          "description": "Building confidence through verified profiles"
+          "description": "Trust first."
         },
         {
           "title": "Transparency",
-          "description": "Clear information and fair offers"
+          "description": "Transparency in information and offers."
         },
         {
           "title": "Professionalism",
-          "description": "Quality presentation of projects and profiles"
+          "description": "Professionalism in how projects and profiles are presented."
         },
         {
           "title": "Quality",
-          "description": "Rigorous qualification of professionals"
+          "description": "Quality in the qualification of professionals."
         },
         {
           "title": "Neutrality",
-          "description": "We don't recommend specific parties — we equip owners to choose"
+          "description": "We do not recommend a specific party; we equip the owner to choose."
+        },
+        {
+          "title": "Regulatory commitment",
+          "description": "We respect Saudi laws across everything we do."
         }
       ]
     },
