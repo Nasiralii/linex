@@ -2,8 +2,6 @@ import { getTranslations } from "next-intl/server";
 import {
   AboutHeroSection,
   WhoWeAreSection,
-  WhatDeliversSection,
-  WhatIsNotSection,
   VisionMissionSection,
   OurStorySection,
   OurValuesSection,
@@ -16,8 +14,6 @@ export default async function AboutPage() {
     <div className="bg-(--brand-ivory)">
       <AboutHeroSection t={t} />
       <WhoWeAreSection t={t} />
-      <WhatDeliversSection t={t} />
-      <WhatIsNotSection t={t} />
       <VisionMissionSection t={t} />
       <OurStorySection t={t} />
       <OurValuesSection t={t} />

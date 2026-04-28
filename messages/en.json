@@ -221,7 +221,7 @@
       "intro": "Choosing the right professional is the single most important decision in any construction or design project. On Rasi, you post your project with clear specifications, receive qualified offers from verified professionals, compare price, timeline, track record, and ratings on one dashboard — and award your decision through a documented workflow, instead of scattered messages and unverifiable referrals.",
       "ctaTitle": "Ready to start your project?",
       "ownerCta": "Post Your Project",
-      "contractorCta": "Find Opportunities"
+      "contractorCta": "Join as a Professional"
     },
     "stats": {
       "projects": "Projects",
@@ -253,6 +253,7 @@
       "documentedJourneyDesc": "Complete audit trail from project brief to award — every step tracked and recorded"
     },
     "twoSided": {
+      "title": "Two-Sided Snapshot",
       "ownersTitle": "For Project Owners",
       "ownersDesc": "Post your project and receive qualified offers — without the random search.",
       "contractorsTitle": "For Contractors & Engineers",
@@ -298,11 +299,11 @@
   },
   "about": {
     "hero": {
-      "headline": "We are restructuring the moment construction decisions begin"
+      "headline": "We are restructuring the moment construction decisions begin."
     },
     "whoWeAre": {
       "title": "Who We Are",
-      "headline": "Transforming Construction Procurement in Saudi Arabia",
+      "headline": "Digital Infrastructure for Better Construction Decisions",
       "description": "Rasi is a Saudi digital platform purpose-built to connect project owners with qualified contractors and engineers across construction, design, finishing, and renovation. We believe the single most consequential moment in any project is the moment of choosing the executing party — it determines quality, cost discipline, and error rates. Rasi is the digital infrastructure that organizes that moment.",
       "imageCaption": "Connecting Saudi Construction Industry",
       "point1": "Saudi Vision 2030 Aligned",
@@ -310,37 +311,21 @@
       "point3": "Transparent Procurement Process"
     },
     "whatDelivers": {
-      "badge": "7 Core Services",
-      "title": "Services designed to support the contracting decision — before execution begins.",
+      "badge": "What Rasi Delivers",
+      "title": "What Rasi Delivers",
       "subtitle": "Everything you need to post, compare, verify, and award.",
       "services": [
         {
-          "title": "Project Posting",
-          "description": "We help project owners present their request professionally: project type, location, scope of work, estimated budget, timeline, and supporting files. The clearer the brief, the more accurate the offers."
+          "title": "A structured digital environment for posting projects and receiving offers from qualified parties."
         },
         {
-          "title": "Qualified Proposals",
-          "description": "Instead of random outreach, your project reaches contractors and engineers whose specialization matches the work, so the offers you receive are worth comparing."
+          "title": "Transparent comparison on one dashboard: price, timeline, track record, ratings."
         },
         {
-          "title": "Structured Comparison",
-          "description": "A unified comparison dashboard surfaces the real differences between offers: total price, timeline, track record, prior ratings, and profile completeness."
+          "title": "A four-tier trust system with publicly published criteria: Registered, Qualified, Preferred, Elite."
         },
         {
-          "title": "Verification & Qualification",
-          "description": "Contractor and engineer profiles are reviewed against published criteria: legal information, specialization, prior work, and fit with the project type. Verification is the condition for competing — not a marketing label."
-        },
-        {
-          "title": "Structured Communication",
-          "description": "In-platform messaging supports questions, clarifications, and detail reviews before award — all conversations are documented in the project context."
-        },
-        {
-          "title": "Documentation & Contracts",
-          "description": "Tools to document scope, offers, and correspondence, plus support for clear contract drafting before execution begins. Documentation reduces disputes downstream."
-        },
-        {
-          "title": "Ratings & Reputation",
-          "description": "After the engagement closes, ratings build a clear professional record for contractors and engineers — equipping future owners to make better-informed decisions."
+          "title": "Documentation of the decision journey — from brief to award."
         }
       ]
     },
@@ -349,6 +334,7 @@
       "items": [
         "Not a contracting company.",
         "Does not execute construction work directly.",
+        "Does not supervise execution or monitor its quality.",
         "Does not guarantee project outcomes — the contractual relationship remains between the owner and the awarded party."
       ]
     },

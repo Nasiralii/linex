@@ -106,7 +106,7 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
         style={{
           position: "relative",
           zIndex: 1,
-          padding: "6rem 2rem 7rem",
+          padding: "clamp(4rem, 10vw, 6rem) 1rem clamp(5rem, 11vw, 7rem)",
         }}
       >
         {/* Eyebrow badge */}
@@ -147,12 +147,15 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
         <h1
           className="uppercase"
           style={{
-            fontSize: "clamp(2.25rem, 5vw, 3.75rem)",
+            fontSize: "clamp(2rem, 10vw, 3.75rem)",
             fontWeight: 700,
             color: "var(--brand-white)",
             lineHeight: 1.1,
             letterSpacing: "-0.03em",
             marginBottom: "1.5rem",
+            marginLeft: "auto",
+            marginRight: "auto",
+            maxWidth: "960px",
           }}
         >
           {t("hero.title")}
@@ -161,11 +164,13 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
         {/* Subtitle */}
         <p
           style={{
-            fontSize: "clamp(1.2rem, 1.7vw, 1.1875rem)",
+            fontSize: "clamp(1rem, 2.8vw, 1.1875rem)",
             color: "rgba(255,255,255,0.78)",
             lineHeight: 1.7,
-            padding: "0rem 8rem",
             fontWeight: 400,
+            marginLeft: "auto",
+            marginRight: "auto",
+            maxWidth: "800px",
           }}
         >
           {t("hero.subtitle")}
@@ -175,7 +180,10 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
         {t("hero.intro") && (
           <div
             style={{
-              padding: "1.25rem 12.75rem",
+              width: "min(100%, 680px)",
+              padding: "1.25rem 0",
+              marginLeft: "auto",
+              marginRight: "auto",
               marginBottom: "1.5rem",
             }}
           >
@@ -197,11 +205,12 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
         <div style={{ display: "flex", gap: "0.875rem", justifyContent: "center", flexWrap: "wrap" }}>
           {showOwnerCta && (
             <Link
-              className="hover:scale-105"
+              className="w-full justify-center hover:scale-105 sm:w-auto"
               href={ownerCtaHref as "/auth/register" | "/dashboard/projects/new"}
               style={{
                 display: "inline-flex",
                 alignItems: "center",
+                justifyContent: "center",
                 gap: "0.625rem",
                 padding: "0.9375rem 1.25rem",
                 borderRadius: "10px",
@@ -220,11 +229,12 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
             </Link>
           )}
           <Link
-            className="hover:scale-105"
+            className="w-full justify-center hover:scale-105 sm:w-auto"
             href="/marketplace"
             style={{
               display: "inline-flex",
               alignItems: "center",
+              justifyContent: "center",
               gap: "0.625rem",
               padding: "0.9375rem 1.25rem",
               borderRadius: "10px",

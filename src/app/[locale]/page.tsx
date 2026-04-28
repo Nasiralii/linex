@@ -4,13 +4,13 @@ import {
   HeroSection,
   StatsSection,
   HowItWorksSection,
+  TwoSidedSnapshotSection,
   TrustPillarsSection,
   FinalCtaSection,
 } from "@/components/home";
 import {
   WhoWeAreSection,
   WhatDeliversSection,
-  WhatIsNotSection,
   VisionMissionSection,
   OurStorySection,
   OurValuesSection,
@@ -40,6 +40,8 @@ export default async function HomePage() {
 
       <HowItWorksSection t={t} />
 
+      <TwoSidedSnapshotSection t={t} />
+
       <TrustPillarsSection t={t} />
 
       <FinalCtaSection
@@ -50,7 +52,6 @@ export default async function HomePage() {
 
       {/* About Us Sections */}
       <WhoWeAreSection t={tAbout} />
-      <WhatIsNotSection t={tAbout} />
       <VisionMissionSection t={tAbout} />
       <OurStorySection t={tAbout} />
       <OurValuesSection t={tAbout} />
