@@ -64,7 +64,7 @@ export function FinalCtaSection({ t, showOwnerCta, ownerCtaHref }: FinalCtaSecti
         style={{
           position: "relative",
           zIndex: 1,
-          padding: "5.5rem 2rem",
+          padding: "clamp(4rem, 8vw, 5.5rem) 1rem",
           textAlign: "center",
         }}
       >
@@ -82,9 +82,8 @@ export function FinalCtaSection({ t, showOwnerCta, ownerCtaHref }: FinalCtaSecti
             {t("whyRasi.title")}
           </h2>
           <div
+            className="grid grid-cols-1 md:grid-cols-2"
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(2, 1fr)",
               gap: "1.5rem",
               maxWidth: "800px",
               margin: "0 auto",
@@ -98,7 +97,7 @@ export function FinalCtaSection({ t, showOwnerCta, ownerCtaHref }: FinalCtaSecti
                   display: "flex",
                   alignItems: "center",
                   gap: "1rem",
-                  padding: "1.25rem 1.5rem",
+                  padding: "1.1rem 1.15rem",
                   background: item.bg,
                   boxShadow: "0 4px 24px rgba(27,42,74,0.12)",
                   border: "1px solid var(--brand-ivory-dark)",
@@ -120,7 +119,7 @@ export function FinalCtaSection({ t, showOwnerCta, ownerCtaHref }: FinalCtaSecti
                 </div>
                 <span
                   style={{
-                    fontSize: "0.9375rem",
+                    fontSize: "0.9rem",
                     fontWeight: 500,
                     color: "var(--brand-charcoal)",
                     lineHeight: 1.5,
@@ -146,11 +145,12 @@ export function FinalCtaSection({ t, showOwnerCta, ownerCtaHref }: FinalCtaSecti
         >
           {showOwnerCta && (
             <Link
-             className="hover:scale-105"
+             className="w-full justify-center hover:scale-105 sm:w-auto"
               href={ownerCtaHref as "/auth/register" | "/dashboard/projects/new"}
               style={{
                 display: "inline-flex",
                 alignItems: "center",
+                justifyContent: "center",
                 gap: "0.625rem",
                 padding: "0.9375rem 1.25rem",
                 borderRadius: "10px",
@@ -169,12 +169,13 @@ export function FinalCtaSection({ t, showOwnerCta, ownerCtaHref }: FinalCtaSecti
             </Link>
           )}
           <Link
-           className="hover:scale-105"
+           className="w-full justify-center hover:scale-105 sm:w-auto"
             href="/auth/register?role=contractor"
             style={{
               display: "inline-flex",
                 transition: "all 200ms ease",
               alignItems: "center",
+              justifyContent: "center",
               gap: "0.625rem",
               padding: "0.9375rem 1.25rem",
               borderRadius: "10px",

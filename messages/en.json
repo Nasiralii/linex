@@ -230,15 +230,16 @@
       "awards": "Successful Awards"
     },
     "howItWorks": {
-      "title": "How It Works",
+      "title": "From brief to award — in three steps.",
+      "shortVersion": "Post. Compare. Decide with confidence.",
+      "afterAwardTitle": "After Award",
+      "afterAward": "Once awarded, your project moves from the selection phase to execution — outside Rasi's scope. After the engagement closes, you can return to rate the awarded party, contributing to a stronger market for the next project owner.",
       "step1Title": "Post Your Project",
-      "step1Desc": "Add your construction project details and specify your requirements",
-      "step2Title": "Receive Bids",
-      "step2Desc": "Verified contractors submit their bids on your project",
-      "step3Title": "Compare & Choose",
-      "step3Desc": "Compare bids and select the best contractor for your project",
-      "step4Title": "Start Execution",
-      "step4Desc": "Track your project execution through the shared workspace"
+      "step1Desc": "Add project details, location, service type, estimated budget, and timeline. Upload drawings or photos if available.",
+      "step2Title": "Receive & Compare Offers",
+      "step2Desc": "Offers arrive from qualified contractors or engineers. Compare price, timeline, track record, and ratings on one dashboard.",
+      "step3Title": "Decide with Confidence",
+      "step3Desc": "Ask questions, request clarifications, and award your decision. The contractual relationship begins directly between you and the awarded party."
     },
     "trust": {
       "label": "Our Foundation",

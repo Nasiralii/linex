@@ -17,7 +17,15 @@ export function ProfessionalSupportSection({ t }: ProfessionalSupportSectionProp
       }}
     >
       <div className="container-app" style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+        <div
+          style={{
+            marginBottom: "2rem",
+            borderRadius: "26px",
+            padding: "clamp(1.5rem, 4vw, 2.25rem)",
+            background: "linear-gradient(140deg, var(--brand-navy) 0%, var(--brand-navy-light) 55%, var(--brand-teal-dark) 100%)",
+            boxShadow: "0 24px 60px -28px rgba(27,42,74,0.45)",
+          }}
+        >
           <div
             style={{
               display: "inline-flex",
@@ -27,23 +35,23 @@ export function ProfessionalSupportSection({ t }: ProfessionalSupportSectionProp
               fontWeight: 700,
               letterSpacing: "0.12em",
               textTransform: "uppercase",
-              color: "#0d7377",
-              marginBottom: "0.875rem",
+              color: "rgba(255,255,255,0.86)",
+              marginBottom: "1rem",
             }}
           >
-            <span style={{ width: "20px", height: "1.5px", background: "#0d7377", display: "inline-block" }} />
+            <span style={{ width: "22px", height: "1.5px", background: "rgba(255,255,255,0.86)", display: "inline-block" }} />
             {t("twoSided.contractorsTitle")}
-            <span style={{ width: "20px", height: "1.5px", background: "#0d7377", display: "inline-block" }} />
+            <span style={{ width: "22px", height: "1.5px", background: "rgba(255,255,255,0.86)", display: "inline-block" }} />
           </div>
           <h2
             style={{
-              fontSize: "clamp(1.75rem, 3vw, 2.5rem)",
-              fontWeight: 700,
-              color: "var(--brand-navy)",
+              fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)",
+              fontWeight: 800,
+              color: "var(--brand-white)",
               letterSpacing: "-0.025em",
               lineHeight: 1.15,
-              maxWidth: "880px",
-              margin: "0 auto 1rem",
+              maxWidth: "900px",
+              margin: "0 0 1rem",
             }}
           >
             {t("professionalSection.headline")}
@@ -51,10 +59,10 @@ export function ProfessionalSupportSection({ t }: ProfessionalSupportSectionProp
           <p
             style={{
               fontSize: "1.05rem",
-              color: "var(--brand-charcoal)",
+              color: "rgba(255,255,255,0.92)",
               lineHeight: 1.8,
-              maxWidth: "920px",
-              margin: "0 auto",
+              maxWidth: "940px",
+              margin: 0,
             }}
           >
             {t("professionalSection.mainCopy")}
@@ -62,7 +70,16 @@ export function ProfessionalSupportSection({ t }: ProfessionalSupportSectionProp
         </div>
 
         <div style={{ borderTop: "1px solid var(--brand-ivory-dark)", borderBottom: "1px solid var(--brand-ivory-dark)", padding: "2rem 0" }}>
-          <div style={{ paddingBottom: "1.5rem", marginBottom: "1.5rem", borderBottom: "1px solid var(--brand-ivory-dark)" }}>
+          <div
+            style={{
+              padding: "1.5rem",
+              marginBottom: "1.5rem",
+              borderRadius: "20px",
+              border: "1px solid rgba(13,115,119,0.14)",
+              background: "linear-gradient(135deg, #ffffff 0%, #f7fbfb 100%)",
+              boxShadow: "0 16px 40px -30px rgba(27,42,74,0.3)",
+            }}
+          >
             <h3 style={{ fontSize: "1.12rem", fontWeight: 700, color: "#0d7377", marginBottom: "0.9rem" }}>
               {t("professionalSection.whyJoinTitle")}
             </h3>
@@ -70,7 +87,21 @@ export function ProfessionalSupportSection({ t }: ProfessionalSupportSectionProp
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "0.75rem 1.25rem" }}>
               {whyJoinItems.map((i) => (
                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: "0.7rem" }}>
-                  <CheckCircle2 style={{ width: "18px", height: "18px", color: "var(--brand-teal)", flexShrink: 0, marginTop: "0.22rem" }} />
+                  <span
+                    style={{
+                      width: "22px",
+                      height: "22px",
+                      borderRadius: "999px",
+                      background: "rgba(13,115,119,0.12)",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginTop: "0.18rem",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <CheckCircle2 style={{ width: "14px", height: "14px", color: "var(--brand-teal)" }} />
+                  </span>
                   <p style={{ margin: 0, color: "var(--brand-charcoal)", lineHeight: 1.6, fontSize: "0.94rem" }}>
                     {t(`professionalSection.whyJoin.${i}`)}
                   </p>
@@ -80,7 +111,15 @@ export function ProfessionalSupportSection({ t }: ProfessionalSupportSectionProp
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem 2rem" }}>
-            <div>
+            <div
+              style={{
+                borderRadius: "20px",
+                border: "1px solid rgba(13,115,119,0.14)",
+                background: "linear-gradient(145deg, #ffffff 0%, #f8fbfb 100%)",
+                boxShadow: "0 16px 40px -30px rgba(27,42,74,0.3)",
+                padding: "1.4rem",
+              }}
+            >
               <h3 style={{ fontSize: "1.12rem", fontWeight: 700, color: "#0d7377", marginBottom: "0.9rem" }}>
                 {t("professionalSection.contractorsTitle")}
               </h3>
@@ -90,7 +129,15 @@ export function ProfessionalSupportSection({ t }: ProfessionalSupportSectionProp
               </p>
             </div>
 
-            <div>
+            <div
+              style={{
+                borderRadius: "20px",
+                border: "1px solid rgba(13,115,119,0.14)",
+                background: "linear-gradient(145deg, #ffffff 0%, #f8fbfb 100%)",
+                boxShadow: "0 16px 40px -30px rgba(27,42,74,0.3)",
+                padding: "1.4rem",
+              }}
+            >
               <h3 style={{ fontSize: "1.12rem", fontWeight: 700, color: "#0d7377", marginBottom: "0.9rem" }}>
                 {t("professionalSection.engineersTitle")}
               </h3>
@@ -101,7 +148,16 @@ export function ProfessionalSupportSection({ t }: ProfessionalSupportSectionProp
             </div>
           </div>
 
-          <div style={{ paddingTop: "1.5rem", marginTop: "1.5rem", borderTop: "1px solid var(--brand-ivory-dark)" }}>
+          <div
+            style={{
+              padding: "1.5rem",
+              marginTop: "1.5rem",
+              borderRadius: "20px",
+              border: "1px solid rgba(13,115,119,0.14)",
+              background: "linear-gradient(135deg, #ffffff 0%, #f7fbfb 100%)",
+              boxShadow: "0 16px 40px -30px rgba(27,42,74,0.3)",
+            }}
+          >
             <h3 style={{ fontSize: "1.12rem", fontWeight: 700, color: "#0d7377", marginBottom: "0.9rem" }}>
               {t("professionalSection.growthTitle")}
             </h3>
@@ -109,7 +165,21 @@ export function ProfessionalSupportSection({ t }: ProfessionalSupportSectionProp
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
               {growthItems.map((i) => (
                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: "0.7rem" }}>
-                  <CheckCircle2 style={{ width: "18px", height: "18px", color: "var(--brand-teal)", flexShrink: 0, marginTop: "0.22rem" }} />
+                  <span
+                    style={{
+                      width: "22px",
+                      height: "22px",
+                      borderRadius: "999px",
+                      background: "rgba(13,115,119,0.12)",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginTop: "0.18rem",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <CheckCircle2 style={{ width: "14px", height: "14px", color: "var(--brand-teal)" }} />
+                  </span>
                   <p style={{ margin: 0, color: "var(--brand-charcoal)", lineHeight: 1.6, fontSize: "0.94rem" }}>
                     {t(`professionalSection.growth.${i}`)}
                   </p>
