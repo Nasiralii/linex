@@ -1,88 +1,37 @@
-import { Shield, Eye, Award, Gem, Scale } from "lucide-react";
+import { Heart, BarChart3, Star, ShieldCheck, Scale } from "lucide-react";
 
-interface OurValuesSectionProps {
-  t: (key: string) => string;
-}
-
-export function OurValuesSection({ t }: OurValuesSectionProps) {
-  const values = [
-    { icon: Shield, color: "var(--brand-teal)", bg: "var(--brand-teal-light)" },
-    { icon: Eye, color: "var(--brand-navy)", bg: "#e8ecf4" },
-    { icon: Award, color: "var(--brand-copper)", bg: "var(--brand-copper-light)" },
-    { icon: Gem, color: "#B85C38", bg: "#fdf2ef" },
-    { icon: Scale, color: "var(--brand-teal-dark)", bg: "#e0f0f2" },
-  ];
-
+export function OurValuesSection() {
   return (
-    <section style={{ background: "var(--brand-ivory)", padding: "5rem 0" }}>
+    <section style={{ background: "var(--surface)", borderTop: "1px solid var(--border-light)", borderBottom: "1px solid var(--border-light)", padding: "4rem 0" }}>
       <div className="container-app">
         <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-          <h2
-            style={{
-              fontSize: "clamp(1.75rem, 3vw, 2.25rem)",
-              fontWeight: 800,
-              color: "var(--brand-navy)",
-              letterSpacing: "-0.02em",
-            }}
-          >
-            {t("ourValues.title")}
+          <h2 style={{ fontSize: "2rem", fontWeight: 800, color: "var(--text)", marginBottom: "0.75rem" }}>
+            Our Values
           </h2>
+          <div style={{ width: "48px", height: "4px", borderRadius: "2px", background: "var(--primary)", margin: "0 auto" }} />
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: "1.5rem",
-            maxWidth: "1100px",
-            margin: "0 auto",
-          }}
-        >
-          {values.map((value, i) => (
-            <div
-              key={i}
-              style={{
-                background: "var(--brand-white)",
-                padding: "1.75rem",
-                borderRadius: "16px",
-                border: "1px solid var(--brand-ivory-dark)",
-                textAlign: "center",
-                boxShadow: "0 2px 12px rgba(27,42,74,0.04)",
-              }}
-            >
-              <div
-                style={{
-                  width: "52px",
-                  height: "52px",
-                  borderRadius: "14px",
-                  background: value.bg,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  margin: "0 auto 1rem",
-                }}
-              >
-                <value.icon style={{ width: "24px", height: "24px", color: value.color }} />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1.5rem", maxWidth: "1100px", margin: "0 auto" }}>
+          {[
+            { icon: Heart,      label: "Trust First",      desc: "Every feature is built on a foundation of verified trust." },
+            { icon: BarChart3,  label: "Transparency",     desc: "Full visibility on information, criteria, and offers." },
+            { icon: Star,       label: "Professionalism",  desc: "Projects and profiles presented with clarity and precision." },
+            { icon: ShieldCheck,label: "Quality",          desc: "Rigorous qualification of every professional on the platform." },
+            { icon: Scale,      label: "Neutrality",       desc: "We equip the owner to choose — we never recommend a specific party." },
+          ].map((v, i) => (
+            <div key={i} style={{ textAlign: "center", padding: "1.75rem 1.25rem" }}>
+              <div style={{
+                width: "52px", height: "52px", borderRadius: "var(--radius-xl)",
+                background: "var(--primary-light)", margin: "0 auto 1rem",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <v.icon style={{ width: "24px", height: "24px", color: "var(--primary)" }} />
               </div>
-              <h4
-                style={{
-                  fontSize: "1.125rem",
-                  fontWeight: 700,
-                  color: "var(--brand-navy)",
-                  marginBottom: "0.5rem",
-                }}
-              >
-                {t(`ourValues.items.${i}.title`)}
-              </h4>
-              <p
-                style={{
-                  fontSize: "0.875rem",
-                  lineHeight: 1.5,
-                  color: "var(--brand-warm-grey)",
-                  margin: 0,
-                }}
-              >
-                {t(`ourValues.items.${i}.description`)}
+              <h3 style={{ fontSize: "0.9375rem", fontWeight: 700, color: "var(--text)", marginBottom: "0.5rem" }}>
+                {v.label}
+              </h3>
+              <p style={{ fontSize: "0.8125rem", color: "var(--text-muted)", lineHeight: 1.65 }}>
+                {v.desc}
               </p>
             </div>
           ))}

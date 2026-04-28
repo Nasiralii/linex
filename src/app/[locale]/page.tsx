@@ -51,10 +51,10 @@ export default async function HomePage() {
       {/* About Us Sections */}
       <WhoWeAreSection t={tAbout} />
       <WhatDeliversSection t={tAbout} />
-      <WhatIsNotSection t={tAbout} />
-      <VisionMissionSection t={tAbout} />
+      <WhatIsNotSection />
+      <VisionMissionSection />
       <OurStorySection t={tAbout} />
-      <OurValuesSection t={tAbout} />
+      <OurValuesSection />
     </div>
   );
 }

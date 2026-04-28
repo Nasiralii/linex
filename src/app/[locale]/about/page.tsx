@@ -17,10 +17,10 @@ export default async function AboutPage() {
       <AboutHeroSection t={t} />
       <WhoWeAreSection t={t} />
       <WhatDeliversSection t={t} />
-      <WhatIsNotSection t={t} />
-      <VisionMissionSection t={t} />
+      <WhatIsNotSection />
+      <VisionMissionSection />
       <OurStorySection t={t} />
-      <OurValuesSection t={t} />
+      <OurValuesSection />
 
       {/* Tagline / CTA Section */}
       <section
