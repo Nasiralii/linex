@@ -300,6 +300,31 @@
       "trustTitle": "Trust Message",
       "trustMessage": "Rasi does not choose the executing party for you, does not guarantee execution outcomes, and does not monitor work quality after award. Our role is to prepare a better decision — with clearer information. You award, and you contract — we make sure you reach that moment with confidence and reliable data.",
       "cta": "Post Your Project Now"
+    },
+    "professionalSection": {
+      "headline": "Real projects are looking for your expertise.",
+      "mainCopy": "If you are a licensed contractor or specialized engineer, Rasi gives you a structured channel to reach serious project owners. Instead of relying on relationships or random advertising, you build a verified professional profile and compete for the projects that match your specialty and area.",
+      "whyJoinTitle": "Why Join",
+      "whyJoin": [
+        "Access real projects with clear specifications.",
+        "A professional profile that showcases your portfolio, experience, and ratings.",
+        "Competition based on capability and record — not connections alone.",
+        "Progression across four trust tiers with transparently published criteria.",
+        "Build a measurable digital reputation in the construction sector.",
+        "Aligned with ZATCA e-invoicing and data protection standards."
+      ],
+      "contractorsTitle": "For Contractors",
+      "contractorsCopy": "Showcase your company, specializations, and contractor classification — and bid on execution projects within your scope. Qualification before competition means every project you see is from a serious owner.",
+      "engineersTitle": "For Engineers",
+      "engineersCopy": "Whether you are an architect, interior designer, supervising engineer, or engineering office, present your specialty and bid on design, supervision, or consulting projects that match your experience.",
+      "growthTitle": "Career Growth",
+      "growth": [
+        "Complete your first projects on Rasi and build up your ratings.",
+        "Auto-progress to higher tiers when published criteria are met.",
+        "Establish a documented record that strengthens your candidacy for larger projects."
+      ],
+      "cta": "Join as a Contractor or Engineer",
+      "microcopy": "Joining requires completing your verification profile — only qualified professionals receive offers."
     }
   },
   "notifications": {
