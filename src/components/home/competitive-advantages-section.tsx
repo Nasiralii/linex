@@ -26,7 +26,7 @@ export function CompetitiveAdvantagesSection({ t }: CompetitiveAdvantagesSection
       }}
     >
       <div className="container-app" style={{ maxWidth: "1120px", margin: "0 auto" }}>
-        <header style={{ marginBottom: "1.5rem" }}>
+        <header style={{ marginBottom: "2.25rem", textAlign: "center" }}>
           <div
             style={{
               display: "inline-flex",
@@ -37,32 +37,44 @@ export function CompetitiveAdvantagesSection({ t }: CompetitiveAdvantagesSection
               letterSpacing: "0.22em",
               textTransform: "uppercase",
               color: "var(--brand-teal)",
-              marginBottom: "0.6rem",
+              marginBottom: "0.85rem",
             }}
           >
-            <span aria-hidden style={{ width: "26px", height: "2px", background: "var(--brand-teal)", display: "inline-block" }} />
+            <span aria-hidden style={{ width: "22px", height: "2px", background: "var(--brand-teal)", display: "inline-block" }} />
             {t("decisionJourney.advantagesEyebrow")}
+            <span aria-hidden style={{ width: "22px", height: "2px", background: "var(--brand-teal)", display: "inline-block" }} />
           </div>
           <h2
             style={{
-              fontSize: "clamp(2rem, 5.5vw, 3.4rem)",
-              fontWeight: 900,
+              fontSize: "clamp(1.85rem, 4.2vw, 2.75rem)",
+              fontWeight: 600,
               color: "var(--brand-navy)",
               margin: 0,
-              lineHeight: 1.05,
-              letterSpacing: "-0.035em",
+              lineHeight: 1.15,
+              letterSpacing: "-0.02em",
             }}
           >
             {t("decisionJourney.advantagesTitle")}
             <span style={{ color: "var(--brand-teal)" }}>.</span>
           </h2>
+          <p
+            style={{
+              margin: "0.85rem auto 0",
+              maxWidth: "640px",
+              fontSize: "1.02rem",
+              lineHeight: 1.65,
+              color: "#4a5568",
+            }}
+          >
+            {t("decisionJourney.advantagesSubtitle")}
+          </p>
           <div
             aria-hidden
             style={{
               width: "70px",
               height: "4px",
               background: "linear-gradient(90deg, var(--brand-teal) 0%, var(--brand-copper) 100%)",
-              marginTop: "1rem",
+              margin: "1.1rem auto 0",
               borderRadius: "999px",
             }}
           />
