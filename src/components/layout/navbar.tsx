@@ -147,6 +147,7 @@ export function Navbar({ initialUser }: NavbarProps) {
   const homeBaseHref = locale === "ar" ? "/ar" : "/";
   const marketingNavLinks = [
     { href: homeBaseHref, label: t("home") },
+    { href: "/blog" as const, label: locale === "ar" ? "المدونة" : "Blog" },
     { href: `${homeBaseHref}#how-it-works`, label: locale === "ar" ? "كيف تعمل" : "How It Works" },
     { href: `${homeBaseHref}#about`, label: locale === "ar" ? "من نحن" : "About" },
     { href: `${homeBaseHref}#owners`, label: locale === "ar" ? "لأصحاب المشاريع" : "For Owners" },

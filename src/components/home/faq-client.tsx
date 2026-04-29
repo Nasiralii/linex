@@ -189,7 +189,7 @@ export function FaqClient({
   initialVisible,
 }: FaqClientProps) {
   const [expanded, setExpanded] = useState(false);
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openIndex, setOpenIndex] = useState<number>(0);
   const visible = expanded ? faqs : faqs.slice(0, initialVisible);
 
   return (
@@ -241,7 +241,7 @@ export function FaqClient({
             item={item}
             index={idx}
             open={openIndex === idx}
-            onToggle={() => setOpenIndex((prev) => (prev === idx ? null : idx))}
+            onToggle={() => setOpenIndex((prev) => (prev === idx ? 0 : idx))}
           />
         ))}
       </div>
@@ -253,6 +253,7 @@ export function FaqClient({
           onClick={() => {
             setExpanded((p) => !p);
             if (expanded) {
+              setOpenIndex(0);
               document.getElementById("faq-contact-section")?.scrollIntoView({ behavior: "smooth" });
             }
           }}

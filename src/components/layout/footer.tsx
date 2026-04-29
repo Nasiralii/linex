@@ -49,6 +49,9 @@ export function Footer() {
               <Link href="/" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", textDecoration: "none", transition: "color 150ms ease" }}>
                 {t("homepage")}
               </Link>
+              <Link href="/blog" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", textDecoration: "none", transition: "color 150ms ease" }}>
+                {isRtl ? "المدونة" : "Blog"}
+              </Link>
               {PUBLIC_CONTENT_PAGES.map((page) => (
                 <Link key={page.key} href={`/${page.slug}` as never} style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", textDecoration: "none", transition: "color 150ms ease" }}>
                   {page.key === "about-us" ? t("about") :
