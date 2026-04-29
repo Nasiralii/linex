@@ -97,7 +97,7 @@ export function TwoSidedSnapshotSection({ t }: TwoSidedSnapshotSectionProps) {
         {/* Cards Grid */}
         <div
           className="grid grid-cols-1 md:grid-cols-2"
-          style={{ gap: "2rem", maxWidth: "1100px", margin: "0 auto" }}
+          style={{ gap: "2rem", width: "100%" }}
         >
           {sides.map((side) => (
             <article

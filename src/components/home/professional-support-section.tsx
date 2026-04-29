@@ -22,7 +22,7 @@ export function ProfessionalSupportSection({ t }: ProfessionalSupportSectionProp
             marginBottom: "2rem",
             borderRadius: "26px",
             padding: "clamp(1.5rem, 4vw, 2.25rem)",
-            background: "linear-gradient(140deg, var(--brand-navy) 0%, var(--brand-navy-light) 55%, var(--brand-teal-dark) 100%)",
+            background: "var(--brand-teal)",
             boxShadow: "0 24px 60px -28px rgba(27,42,74,0.45)",
           }}
         >

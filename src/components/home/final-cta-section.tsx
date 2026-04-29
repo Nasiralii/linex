@@ -18,7 +18,7 @@ export function FinalCtaSection({ t, showOwnerCta, ownerCtaHref }: FinalCtaSecti
   return (
     <section
       style={{
-        background: "linear-gradient(150deg, var(--brand-navy) 0%, var(--brand-navy-light) 55%, var(--brand-teal-dark) 100%)",
+        background: "var(--brand-teal)",
         position: "relative",
         overflow: "hidden",
       }}
