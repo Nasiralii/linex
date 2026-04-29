@@ -51,21 +51,11 @@ export function WhatDeliversSection({ t }: WhatDeliversSectionProps) {
               letterSpacing: "-0.025em",
               lineHeight: 1.15,
               maxWidth: "780px",
-              margin: "0 auto 1rem",
+              margin: "0 auto",
             }}
           >
             {t("whatDelivers.title")}
           </h2>
-          
-          <p style={{ 
-            fontSize: "1.125rem", 
-            color: "#475569",
-            maxWidth: "640px",
-            margin: "0 auto",
-            lineHeight: 1.7,
-          }}>
-            {t("whatDelivers.subtitle")}
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
