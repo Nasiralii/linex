@@ -12,12 +12,8 @@ export function HowItWorksSection({ t }: HowItWorksSectionProps) {
   ];
 
   return (
-    <section id="how-it-works" className="!py-8 md:!py-20"
-      style={{
-        background: "var(--brand-white)",
-        borderTop: `1px solid var(--brand-ivory-dark)`,
-        borderBottom: `1px solid var(--brand-ivory-dark)`,
-      }}
+    <section id="how-it-works" className="!py-8"
+     
     >
       <div className="container-app">
         {/* Section header */}

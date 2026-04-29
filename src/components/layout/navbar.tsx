@@ -164,7 +164,7 @@ export function Navbar({ initialUser }: NavbarProps) {
     }}>
       <div className="container-app">
         <div className="flex items-center justify-between" style={{ height: "64px" }}>
-          <Link href="/" className="flex items-center gap-3" style={{ textDecoration: "none" }}>
+          <Link href="/" className="flex items-center gap-3 shrink-0" style={{ textDecoration: "none" }}>
             <img src="/logo.jpg" alt="Rasi" style={{ width: "40px", height: "40px" }} />
             <div style={{ display: "flex", flexDirection: "column" }}>
               <span style={{ fontSize: "1.125rem", fontWeight: 700, color: "var(--text)", lineHeight: 1.2 }}>
@@ -176,7 +176,7 @@ export function Navbar({ initialUser }: NavbarProps) {
             </div>
           </Link>
 
-          <nav className="hidden lg:flex items-center" style={{ gap: "4px" }}>
+          <nav className="hidden xl:flex items-center" style={{ gap: "4px" }}>
             {(effectiveUser ? appNavLinks : marketingNavLinks).map((link) => (
               <Link className="xl:text-sm text-sm 2xl:gap-x-2 gap-x-1" key={link.href} href={link.href} onClick={() => {
                 if (!effectiveUser && link.href.includes("#")) {
@@ -206,7 +206,7 @@ export function Navbar({ initialUser }: NavbarProps) {
             ))}
           </nav>
 
-          <div className="hidden md:flex items-center" style={{ gap: "8px" }}>
+          <div className="hidden xl:flex items-center" style={{ gap: "8px" }}>
             <button onClick={switchLocale} style={{
               display: "flex", alignItems: "center", gap: "6px",
               padding: "0.5rem 0.75rem", borderRadius: "var(--radius-lg)",
@@ -281,7 +281,7 @@ export function Navbar({ initialUser }: NavbarProps) {
             )}
           </div>
 
-          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="lg:hidden" style={{
+          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="xl:hidden" style={{
             padding: "0.5rem", borderRadius: "var(--radius-lg)", color: "var(--text)",
             background: "transparent", border: "1px solid var(--border-light)", cursor: "pointer",
           }}>
@@ -290,7 +290,7 @@ export function Navbar({ initialUser }: NavbarProps) {
         </div>
 
         {mobileMenuOpen && (
-          <div className="lg:hidden animate-fade-in" style={{ padding: "1rem 0", borderTop: "1px solid var(--border-light)" }}>
+          <div className="xl:hidden animate-fade-in" style={{ padding: "1rem 0", borderTop: "1px solid var(--border-light)" }}>
             <nav style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
               {(effectiveUser ? appNavLinks : marketingNavLinks).map((link) => (
                 <Link key={link.href} href={link.href} onClick={() => {

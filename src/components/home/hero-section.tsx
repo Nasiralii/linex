@@ -9,6 +9,13 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSectionProps) {
+  const stats = [
+    { value: "500+", label: t("stats.projects") },
+    { value: "200+", label: t("stats.contractors") },
+    { value: "1,200+", label: t("stats.bids") },
+    { value: "350+", label: t("stats.awards") },
+  ];
+
   return (
     <section
       style={{
@@ -102,11 +109,11 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
       />
 
       <div
-        className="container-app mx-auto text-center"
+        className="container-app mx-auto"
         style={{
           position: "relative",
           zIndex: 1,
-          padding: "clamp(4rem, 10vw, 6rem) 1rem clamp(5rem, 11vw, 7rem)",
+          padding: "clamp(3.4rem, 9vw, 5.2rem) 1rem clamp(3.4rem, 7vw, 4.2rem)",
         }}
       >
         {/* Eyebrow badge */}
@@ -145,17 +152,14 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
 
         {/* Headline */}
         <h1
-          className="uppercase"
           style={{
-            fontSize: "clamp(2rem, 10vw, 3.75rem)",
+            fontSize: "clamp(2rem, 7vw, 3.35rem)",
             fontWeight: 700,
             color: "var(--brand-white)",
-            lineHeight: 1.1,
+            lineHeight: 1.14,
             letterSpacing: "-0.03em",
-            marginBottom: "1.5rem",
-            marginLeft: "auto",
-            marginRight: "auto",
-            maxWidth: "960px",
+            marginBottom: "1.15rem",
+            maxWidth: "780px",
           }}
         >
           {t("hero.title")}
@@ -168,9 +172,7 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
             color: "rgba(255,255,255,0.78)",
             lineHeight: 1.7,
             fontWeight: 400,
-            marginLeft: "auto",
-            marginRight: "auto",
-            maxWidth: "800px",
+            maxWidth: "860px",
           }}
         >
           {t("hero.subtitle")}
@@ -179,6 +181,7 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
         {/* Intro paragraph */}
         {t("hero.intro") && (
           <div
+            className="hidden"
             style={{
               width: "min(100%, 680px)",
               padding: "1.25rem 0",
@@ -202,7 +205,7 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
         )}
 
         {/* CTA row */}
-        <div style={{ display: "flex", gap: "0.875rem", justifyContent: "center", flexWrap: "wrap" }}>
+        <div className="lg:mt-0 !mt-3" style={{ display: "flex", gap: "0.875rem", flexWrap: "wrap" }}>
           {showOwnerCta && (
             <Link
               className="w-full justify-center hover:scale-105 sm:w-auto"
@@ -217,9 +220,10 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
                 fontSize: "0.9375rem",
                 fontWeight: 500,
                 textDecoration: "none",
-                background: "var(--brand-copper)",
+                background: "rgba(255,255,255,0.14)",
                 color: "var(--brand-white)",
-                boxShadow: `0 4px 20px rgba(184,115,51,0.45), inset 0 1px 0 rgba(255,255,255,0.12)`,
+                border: "1.5px solid rgba(255,255,255,0.3)",
+                boxShadow: `inset 0 1px 0 rgba(255,255,255,0.12)`,
                 transition: "all 200ms ease",
                 letterSpacing: "0.01em",
               }}
@@ -242,8 +246,8 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
               fontWeight: 500,
               textDecoration: "none",
               color: "var(--brand-white)",
-              border: "1.5px solid rgba(255,255,255,0.28)",
-              background: "rgba(255,255,255,0.07)",
+              border: "1.5px solid rgba(255,255,255,0.32)",
+              background: "rgba(0,0,0,0.24)",
               backdropFilter: "blur(4px)",
               transition: "all 200ms ease",
             }}
@@ -254,17 +258,31 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
         </div>
         <p
           style={{
-            margin: "0.75rem auto 0",
-            width: "fit-content",
-            padding: "0.35rem 0.65rem",
-            borderRadius: "8px",
+            margin: "0.85rem 0 0",
             fontSize: "0.72rem",
-            color: "rgba(255,255,255,0.98)",
+            color: "rgba(255,255,255,0.88)",
             lineHeight: 1.5,
           }}
         >
           {t("hero.microcopy")}
         </p>
+
+        <div style={{ marginTop: "1.45rem",paddingBottom: "1.2rem", borderTop: "1px solid rgba(255,255,255,0.15)", paddingTop: "1.2rem" }}>
+          <div className="grid-cols-2 grid md:grid-cols-4 gap-2"
+           
+          >
+            {stats.map((s) => (
+              <div key={s.label} style={{ minWidth: 0 }}>
+                <div style={{ color: "#fff", fontSize: "clamp(1.25rem, 3vw, 2rem)", fontWeight: 800, lineHeight: 1.05 }}>
+                  {s.value}
+                </div>
+                <div style={{ color: "rgba(255,255,255,0.85)", fontSize: "clamp(0.76rem, 1.8vw, 1rem)", marginTop: "0.18rem" }}>
+                  {s.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Curved bottom edge */}

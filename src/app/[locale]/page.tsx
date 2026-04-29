@@ -2,7 +2,6 @@ import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/auth";
 import {
   HeroSection,
-  StatsSection,
   HowItWorksSection,
   TwoSidedSnapshotSection,
   TrustPillarsSection,
@@ -42,8 +41,6 @@ export default async function HomePage() {
         showOwnerCta={showOwnerCta}
         ownerCtaHref={ownerCtaHref}
       />
-
-      <StatsSection t={t} />
 
       <HowItWorksSection t={t} />
 

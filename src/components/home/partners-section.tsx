@@ -7,9 +7,10 @@ interface PartnersSectionProps {
 }
 
 export function PartnersSection({ t }: PartnersSectionProps) {
-  const partnerLabels = Array.from({ length: 12 }, (_, i) =>
-    t(`partnersSection.partnerFoot${i + 1}`),
-  );
+  const partnerItems = [
+    { src: "/ITIS.png", label: "ITIS" },
+    { src: "/soroh-theqa.png", label: "Soroh Theqa" },
+  ];
   return (
     <section
       id="partners"
@@ -17,7 +18,7 @@ export function PartnersSection({ t }: PartnersSectionProps) {
         position: "relative",
         background:
           "linear-gradient(180deg, var(--brand-ivory) 0%, var(--brand-white) 50%, var(--brand-ivory) 100%)",
-        padding: "5rem 0",
+        padding: "clamp(2.25rem, 6vw, 5rem) 0 clamp(2.75rem, 7vw, 5rem)",
         borderTop: "1px solid var(--brand-ivory-dark)",
         overflow: "hidden",
       }}
@@ -66,7 +67,7 @@ export function PartnersSection({ t }: PartnersSectionProps) {
               color: "var(--brand-navy)",
               fontWeight: 900,
               letterSpacing: "-0.025em",
-              fontSize: "clamp(1.9rem, 4vw, 2.8rem)",
+              fontSize: "clamp(2.05rem, 4.2vw, 3rem)",
               lineHeight: 1.15,
             }}
           >
@@ -76,8 +77,8 @@ export function PartnersSection({ t }: PartnersSectionProps) {
             style={{
               margin: "0 0 1.25rem",
               color: "var(--brand-charcoal)",
-              fontSize: "1rem",
-              lineHeight: 1.75,
+              fontSize: "1.08rem",
+              lineHeight: 1.8,
             }}
           >
             {t("partnersSection.copy")}
@@ -86,15 +87,15 @@ export function PartnersSection({ t }: PartnersSectionProps) {
             style={{
               margin: 0,
               color: "var(--brand-warm-grey)",
-              fontSize: "0.9rem",
-              lineHeight: 1.65,
+              fontSize: "0.98rem",
+              lineHeight: 1.68,
             }}
           >
             {t("partnersSection.gridSubtitle")}
           </p>
         </div>
 
-        <PartnerLogosCarousel labels={partnerLabels} />
+        <PartnerLogosCarousel items={partnerItems} />
 
         <div
           style={{

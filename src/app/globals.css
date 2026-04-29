@@ -1,4 +1,4 @@
-﻿@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
 
 @import "tailwindcss";
 
@@ -552,14 +552,14 @@ textarea:invalid:not(:placeholder-shown) {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 0.28rem 0.55rem;
-  background: linear-gradient(180deg, #727478 0%, #6a6c70 100%);
+  padding: 0.34rem 0.62rem;
+  background: linear-gradient(180deg, #1b7480 0%, #0f6169 100%);
   color: rgba(255, 255, 255, 0.97);
-  font-size: clamp(0.54rem, 0.9vw, 0.6rem);
-  font-weight: 500;
-  letter-spacing: 0.01em;
+  font-size: clamp(0.62rem, 1vw, 0.72rem);
+  font-weight: 600;
+  letter-spacing: 0.015em;
   text-transform: none;
-  line-height: 1.2;
+  line-height: 1.28;
   clip-path: polygon(
     0 0,
     calc(100% - 64px) 0,

@@ -3,30 +3,13 @@
 import { Building2 } from "lucide-react";
 import { useState } from "react";
 
-const EXTS = [".webp", ".png", ".jpg", ".jpeg"] as const;
-
 type PartnerLogoCardProps = {
-  index: number;
+  src: string;
   label: string;
 };
 
-export function PartnerLogoCard({ index, label }: PartnerLogoCardProps) {
-  const [extIdx, setExtIdx] = useState(0);
+export function PartnerLogoCard({ src, label }: PartnerLogoCardProps) {
   const [hidden, setHidden] = useState(false);
-  const [useDefaultLogo, setUseDefaultLogo] = useState(false);
-  const src = useDefaultLogo ? "/logo.jpg" : `/partners/${index}${EXTS[extIdx]}`;
-
-  function onImgError() {
-    if (useDefaultLogo) {
-      setHidden(true);
-      return;
-    }
-    if (extIdx < EXTS.length - 1) {
-      setExtIdx((x) => x + 1);
-    } else {
-      setUseDefaultLogo(true);
-    }
-  }
 
   return (
     <article
@@ -45,7 +28,7 @@ export function PartnerLogoCard({ index, label }: PartnerLogoCardProps) {
         className="partner-logo-card-body"
         style={{
           flex: 1,
-          minHeight: "106px",
+          minHeight: "156px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -55,13 +38,12 @@ export function PartnerLogoCard({ index, label }: PartnerLogoCardProps) {
       >
         {!hidden ? (
           <img
-            key={extIdx}
             src={src}
             alt=""
             className="max-h-[52px] w-auto max-w-[85%] object-contain transition-transform duration-200 group-hover:scale-[1.03]"
             loading="lazy"
             decoding="async"
-            onError={onImgError}
+            onError={() => setHidden(true)}
           />
         ) : (
           <div

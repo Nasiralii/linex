@@ -4,11 +4,16 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { PartnerLogoCard } from "@/components/home/partner-logo-card";
 
-type PartnerLogosCarouselProps = {
-  labels: string[];
+type PartnerItem = {
+  src: string;
+  label: string;
 };
 
-export function PartnerLogosCarousel({ labels }: PartnerLogosCarouselProps) {
+type PartnerLogosCarouselProps = {
+  items: PartnerItem[];
+};
+
+export function PartnerLogosCarousel({ items }: PartnerLogosCarouselProps) {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const pausedRef = useRef(false);
 
@@ -57,9 +62,9 @@ export function PartnerLogosCarousel({ labels }: PartnerLogosCarouselProps) {
       }}
     >
       <div ref={trackRef} className="partner-logos-track">
-        {labels.map((label, i) => (
-          <div key={`${label}-${i}`} className="partner-logos-slide">
-            <PartnerLogoCard index={i + 1} label={label} />
+        {items.map((item, i) => (
+          <div key={`${item.label}-${i}`} className="partner-logos-slide">
+            <PartnerLogoCard src={item.src} label={item.label} />
           </div>
         ))}
       </div>
