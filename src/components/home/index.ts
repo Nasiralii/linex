@@ -7,3 +7,4 @@ export { FinalCtaSection } from "./final-cta-section";
 export { OwnerSupportSection } from "./owner-support-section";
 export { ProfessionalSupportSection } from "./professional-support-section";
 export { DecisionJourneySection } from "./decision-journey-section";
+export { CompetitiveAdvantagesSection } from "./competitive-advantages-section";

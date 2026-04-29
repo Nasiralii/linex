@@ -10,6 +10,7 @@ import {
   OwnerSupportSection,
   ProfessionalSupportSection,
   DecisionJourneySection,
+  CompetitiveAdvantagesSection,
 } from "@/components/home";
 import {
   WhoWeAreSection,
@@ -62,6 +63,7 @@ export default async function HomePage() {
       <OwnerSupportSection t={t} showOwnerCta={showOwnerCta} ownerCtaHref={ownerCtaHref} />
       <ProfessionalSupportSection t={t} />
       <DecisionJourneySection t={t} />
+      <CompetitiveAdvantagesSection t={t} />
     </div>
   );
 }

@@ -339,7 +339,18 @@
       "shortUiLabel": "Short UI Version:",
       "shortUiValue": "Post. Compare. Decide with confidence.",
       "afterAwardTitle": "After Award:",
-      "afterAward": "Once awarded, your project moves from the selection phase to execution — outside Rasi's scope. After the engagement closes, you can return to rate the awarded party, contributing to a stronger market for the next project owner."
+      "afterAward": "Once awarded, your project moves from the selection phase to execution — outside Rasi's scope. After the engagement closes, you can return to rate the awarded party, contributing to a stronger market for the next project owner.",
+      "advantagesEyebrow": "The Rasi Edge",
+      "advantageLabel": "Advantage",
+      "advantagesTitle": "Competitive Advantages",
+      "adv1Title": "Construction-Specific by Design",
+      "adv1Desc": "Rasi is not a generic services directory or an open marketplace for every profession. Every feature — from the professional profile to the comparison dashboard — is engineered around the realities of construction, design, finishing, and renovation projects.",
+      "adv2Title": "Qualification Before Competition",
+      "adv2Desc": "Offers appear on the platform only from professionals who have cleared profile, specialization, and experience review. Verification is the condition for entering the competition — not a marketing label awarded after sign-up.",
+      "adv3Title": "Structured Comparison, Not Scattered Messages",
+      "adv3Desc": "We convert offers from fragmented WhatsApp conversations and phone calls into structured, comparable data on unified criteria. The decision becomes clearer, and the real differences actually surface.",
+      "adv4Title": "Built for the Saudi Market",
+      "adv4Desc": "From verification flows to communication patterns to professional classifications, Rasi is built on a real understanding of Saudi contracting norms, local contractor workflows, and the role of engineers in raising decision quality. We comply with the Personal Data Protection Law (PDPL), ZATCA e-invoicing, the E-Commerce Law, and applicable cybersecurity standards."
     }
   },
   "notifications": {
