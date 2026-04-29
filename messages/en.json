@@ -326,6 +326,20 @@
       ],
       "cta": "Join as a Contractor or Engineer",
       "microcopy": "Joining requires completing your verification profile — only qualified professionals receive offers."
+    },
+    "decisionJourney": {
+      "badge": "Decision Journey",
+      "headline": "From brief to award — in three steps.",
+      "step1Title": "Post Your Project",
+      "step1Desc": "Add project details, location, service type, estimated budget, and timeline. Upload drawings or photos if available.",
+      "step2Title": "Receive & Compare Offers",
+      "step2Desc": "Offers arrive from qualified contractors or engineers. Compare price, timeline, track record, and ratings on one dashboard.",
+      "step3Title": "Decide with Confidence",
+      "step3Desc": "Ask questions, request clarifications, and award your decision. The contractual relationship begins directly between you and the awarded party.",
+      "shortUiLabel": "Short UI Version:",
+      "shortUiValue": "Post. Compare. Decide with confidence.",
+      "afterAwardTitle": "After Award:",
+      "afterAward": "Once awarded, your project moves from the selection phase to execution — outside Rasi's scope. After the engagement closes, you can return to rate the awarded party, contributing to a stronger market for the next project owner."
     }
   },
   "notifications": {
@@ -370,7 +384,7 @@
     },
     "whatDelivers": {
       "badge": "Services",
-      "title": "Services designed to support the contracting decision — before execution begins.",
+      "title": "What rasi is",
       "subtitle": "A complete workflow for posting, comparing, verifying, communicating, documenting, and building trust.",
       "summaryItems": [
         "A structured digital environment for posting projects and receiving offers from qualified parties.",

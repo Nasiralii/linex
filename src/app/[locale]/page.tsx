@@ -9,6 +9,7 @@ import {
   FinalCtaSection,
   OwnerSupportSection,
   ProfessionalSupportSection,
+  DecisionJourneySection,
 } from "@/components/home";
 import {
   WhoWeAreSection,
@@ -60,6 +61,7 @@ export default async function HomePage() {
       <WhatDeliversSection t={tAbout} />
       <OwnerSupportSection t={t} showOwnerCta={showOwnerCta} ownerCtaHref={ownerCtaHref} />
       <ProfessionalSupportSection t={t} />
+      <DecisionJourneySection t={t} />
     </div>
   );
 }
