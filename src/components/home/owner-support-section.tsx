@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/routing";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, ShieldCheck } from "lucide-react";
 
 interface OwnerSupportSectionProps {
   t: (key: string) => string;
@@ -68,6 +68,62 @@ export function OwnerSupportSection({ t, showOwnerCta, ownerCtaHref }: OwnerSupp
             <p style={{ margin: 0, color: "rgba(255,255,255,0.9)", lineHeight: 1.75, fontSize: "0.95rem" }}>
               {t("ownerSection.mainCopy")}
             </p>
+
+            <div
+              style={{
+                marginTop: "1.5rem",
+                padding: "1rem 1.1rem",
+                borderRadius: "14px",
+                background: "rgba(255,255,255,0.08)",
+                border: "1px solid rgba(255,255,255,0.18)",
+                backdropFilter: "blur(2px)",
+                display: "flex",
+                gap: "0.75rem",
+                alignItems: "flex-start",
+              }}
+            >
+              <span
+                aria-hidden
+                style={{
+                  flexShrink: 0,
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "10px",
+                  background: "rgba(255,255,255,0.14)",
+                  color: "var(--brand-white)",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginTop: "0.1rem",
+                }}
+              >
+                <ShieldCheck size={18} strokeWidth={1.9} />
+              </span>
+              <div style={{ minWidth: 0 }}>
+                <div
+                  style={{
+                    fontSize: "0.7rem",
+                    fontWeight: 800,
+                    letterSpacing: "0.14em",
+                    textTransform: "uppercase",
+                    color: "rgba(255,255,255,0.78)",
+                    marginBottom: "0.35rem",
+                  }}
+                >
+                  {t("ownerSection.trustTitle")}
+                </div>
+                <p
+                  style={{
+                    margin: 0,
+                    color: "rgba(255,255,255,0.92)",
+                    lineHeight: 1.65,
+                    fontSize: "0.85rem",
+                  }}
+                >
+                  {t("ownerSection.trustMessage")}
+                </p>
+              </div>
+            </div>
 
             {showOwnerCta && (
               <div style={{ marginTop: "1.5rem" }}>
