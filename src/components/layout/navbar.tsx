@@ -32,6 +32,7 @@ export function Navbar({ initialUser }: NavbarProps) {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(initialUser);
+  const [activeHash, setActiveHash] = useState("");
   const isAuthRoute = pathname.includes("/auth/");
 
   const user = currentUser;
@@ -113,6 +114,13 @@ export function Navbar({ initialUser }: NavbarProps) {
       cancelled = true;
     };
   }, [initialUser, isAuthRoute, pathname]);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const syncHash = () => setActiveHash(window.location.hash || "");
+    syncHash();
+    window.addEventListener("hashchange", syncHash);
+    return () => window.removeEventListener("hashchange", syncHash);
+  }, []);
   const isRtl = locale === "ar";
   const otherLocale = locale === "ar" ? "en" : "ar";
 
@@ -124,7 +132,7 @@ export function Navbar({ initialUser }: NavbarProps) {
     router.refresh();
   };
 
-  const navLinks = [
+  const appNavLinks = [
     { href: "/" as const, label: t("home") },
     ...(effectiveUser ? [{ href: "/marketplace" as const, label: t("marketplace") }] : []),
     ...(effectiveUser && effectiveUser.role !== "ADMIN" ? [{ href: "/dashboard" as const, label: t("dashboard") }] : []),
@@ -134,6 +142,18 @@ export function Navbar({ initialUser }: NavbarProps) {
     ...(effectiveUser && effectiveUser.role !== "ADMIN" ? [{ href: "/dashboard/wallet" as const, label: isRtl ? "المحفظة" : "Wallet" }] : []),
     ...(effectiveUser?.role === "ADMIN" ? [{ href: "/admin" as const, label: t("dashboard") }] : []),
     ...(effectiveUser?.role === "ADMIN" ? [{ href: "/admin/reports" as const, label: locale === "ar" ? "التقارير" : "Reports" }] : []),
+  ];
+
+  const homeBaseHref = locale === "ar" ? "/ar" : "/";
+  const marketingNavLinks = [
+    { href: homeBaseHref, label: t("home") },
+    { href: `${homeBaseHref}#how-it-works`, label: locale === "ar" ? "كيف تعمل" : "How It Works" },
+    { href: `${homeBaseHref}#about`, label: locale === "ar" ? "من نحن" : "About" },
+    { href: `${homeBaseHref}#owners`, label: locale === "ar" ? "لأصحاب المشاريع" : "For Owners" },
+    { href: `${homeBaseHref}#professionals`, label: locale === "ar" ? "للمقاولين والمهندسين" : "For Professionals" },
+    { href: `${homeBaseHref}#verification`, label: locale === "ar" ? "التحقق والتأهيل" : "Verification" },
+    { href: `${homeBaseHref}#partners`, label: locale === "ar" ? "الشركاء" : "Partners" },
+    { href: `${homeBaseHref}#faq-contact-section`, label: locale === "ar" ? "تواصل معنا" : "Contact" },
   ];
 
   return (
@@ -156,12 +176,29 @@ export function Navbar({ initialUser }: NavbarProps) {
           </Link>
 
           <nav className="hidden lg:flex items-center" style={{ gap: "4px" }}>
-            {navLinks.map((link) => (
-              <Link className="xl:text-sm text-sm 2xl:gap-x-2 gap-x-1" key={link.href} href={link.href} style={{
+            {(effectiveUser ? appNavLinks : marketingNavLinks).map((link) => (
+              <Link className="xl:text-sm text-sm 2xl:gap-x-2 gap-x-1" key={link.href} href={link.href} onClick={() => {
+                if (!effectiveUser && link.href.includes("#")) {
+                  const nextHash = `#${link.href.split("#")[1] || ""}`;
+                  setActiveHash(nextHash);
+                }
+              }} style={{
                 padding: "0.5rem", borderRadius: "var(--radius-lg)",
                 fontWeight: 500, textDecoration: "none",
-                color: pathname === link.href ? "var(--primary)" : "var(--text-secondary)",
-                background: pathname === link.href ? "var(--primary-light)" : "transparent",
+                color: (() => {
+                  if (!effectiveUser && link.href.includes("#")) {
+                    const hash = `#${link.href.split("#")[1] || ""}`;
+                    return activeHash === hash ? "var(--primary)" : "var(--text-secondary)";
+                  }
+                  return pathname === link.href ? "var(--primary)" : "var(--text-secondary)";
+                })(),
+                background: (() => {
+                  if (!effectiveUser && link.href.includes("#")) {
+                    const hash = `#${link.href.split("#")[1] || ""}`;
+                    return activeHash === hash ? "var(--primary-light)" : "transparent";
+                  }
+                  return pathname === link.href ? "var(--primary-light)" : "transparent";
+                })(),
               }}>
                 {link.label}
               </Link>
@@ -254,12 +291,30 @@ export function Navbar({ initialUser }: NavbarProps) {
         {mobileMenuOpen && (
           <div className="lg:hidden animate-fade-in" style={{ padding: "1rem 0", borderTop: "1px solid var(--border-light)" }}>
             <nav style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-              {navLinks.map((link) => (
-                <Link key={link.href} href={link.href} onClick={() => setMobileMenuOpen(false)} style={{
+              {(effectiveUser ? appNavLinks : marketingNavLinks).map((link) => (
+                <Link key={link.href} href={link.href} onClick={() => {
+                  if (!effectiveUser && link.href.includes("#")) {
+                    const nextHash = `#${link.href.split("#")[1] || ""}`;
+                    setActiveHash(nextHash);
+                  }
+                  setMobileMenuOpen(false);
+                }} style={{
                   padding: "0.75rem 1rem", borderRadius: "var(--radius-lg)",
                   fontSize: "0.9375rem", fontWeight: 500, textDecoration: "none",
-                  color: pathname === link.href ? "var(--primary)" : "var(--text-secondary)",
-                  background: pathname === link.href ? "var(--primary-light)" : "transparent",
+                  color: (() => {
+                    if (!effectiveUser && link.href.includes("#")) {
+                      const hash = `#${link.href.split("#")[1] || ""}`;
+                      return activeHash === hash ? "var(--primary)" : "var(--text-secondary)";
+                    }
+                    return pathname === link.href ? "var(--primary)" : "var(--text-secondary)";
+                  })(),
+                  background: (() => {
+                    if (!effectiveUser && link.href.includes("#")) {
+                      const hash = `#${link.href.split("#")[1] || ""}`;
+                      return activeHash === hash ? "var(--primary-light)" : "transparent";
+                    }
+                    return pathname === link.href ? "var(--primary-light)" : "transparent";
+                  })(),
                 }}>
                   {link.label}
                 </Link>

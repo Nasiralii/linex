@@ -11,6 +11,7 @@ export function ProfessionalSupportSection({ t }: ProfessionalSupportSectionProp
 
   return (
     <section
+      id="professionals"
       style={{
         background: "var(--brand-ivory)",
         padding: "4.5rem 0",

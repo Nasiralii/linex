@@ -14,6 +14,7 @@ export function OwnerSupportSection({ t, showOwnerCta, ownerCtaHref }: OwnerSupp
 
   return (
     <section
+      id="owners"
       style={{
         background: "linear-gradient(180deg, var(--brand-white) 0%, var(--brand-ivory) 100%)",
         padding: "5rem 0",

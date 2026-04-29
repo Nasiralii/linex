@@ -57,6 +57,7 @@ const PANEL_RADIUS = "14px";
 export function VerificationTrustSection({ t }: VerificationTrustSectionProps) {
   return (
     <section
+      id="verification"
       style={{
         background: "var(--brand-ivory)",
         padding: "5rem 0",

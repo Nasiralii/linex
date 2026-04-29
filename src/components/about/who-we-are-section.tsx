@@ -10,6 +10,7 @@ export function WhoWeAreSection({ t }: WhoWeAreSectionProps) {
 
   return (
     <section
+      id="about"
       style={{
         background: "linear-gradient(180deg, var(--brand-ivory) 0%, #f5f1ea 100%)",
         padding: "5rem 0",

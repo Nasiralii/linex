@@ -12,7 +12,7 @@ export function HowItWorksSection({ t }: HowItWorksSectionProps) {
   ];
 
   return (
-    <section className="!py-8 md:!py-20"
+    <section id="how-it-works" className="!py-8 md:!py-20"
       style={{
         background: "var(--brand-white)",
         borderTop: `1px solid var(--brand-ivory-dark)`,

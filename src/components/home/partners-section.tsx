@@ -12,6 +12,7 @@ import {
   ArrowRight,
   Handshake,
 } from "lucide-react";
+import { Link } from "@/i18n/routing";
 
 interface PartnersSectionProps {
   t: (key: string) => string;
@@ -36,6 +37,7 @@ const WHY_REASONS = [
 export function PartnersSection({ t }: PartnersSectionProps) {
   return (
     <section
+      id="partners"
       style={{
         position: "relative",
         background: "linear-gradient(180deg, var(--brand-ivory) 0%, var(--brand-white) 50%, var(--brand-ivory) 100%)",
@@ -327,8 +329,8 @@ export function PartnersSection({ t }: PartnersSectionProps) {
             </p>
 
             {/* CTA — translucent fill that reads as part of the teal card */}
-            <a
-              href="/contact?topic=partnerships"
+            <Link
+              href="/#faq-contact-section"
               style={{
                 marginTop: "auto",
                 display: "inline-flex",
@@ -350,7 +352,7 @@ export function PartnersSection({ t }: PartnersSectionProps) {
             >
               {t("partnersSection.cta")}
               <ArrowRight style={{ width: "15px", height: "15px" }} />
-            </a>
+            </Link>
           </div>
         </div>
       </div>
