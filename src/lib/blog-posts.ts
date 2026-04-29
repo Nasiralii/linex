@@ -1,133 +1,212 @@
-export type BlogCategory =
-  | "Construction"
-  | "Engineering"
-  | "Project Management"
-  | "Procurement"
-  | "Compliance";
+import { getContentPageByKey } from "@/lib/content-page-service";
+import { type BlogCategory, type BlogPost } from "@/lib/blog-types";
 
-export interface BlogPost {
-  slug: string;
+export interface BlogPostInput {
+  slug?: string;
   title: string;
-  excerpt: string;
-  content: string[];
-  author: string;
-  role: string;
-  publishedAt: string;
-  readTimeMinutes: number;
-  category: BlogCategory;
-  tags: string[];
-  coverImage: string;
+  description?: string;
+  excerpt?: string;
+  content?: string[];
+  author?: string;
+  role?: string;
+  publishedAt?: string;
+  readTimeMinutes?: number;
+  category?: BlogCategory;
+  tags?: string[];
+  coverImage?: string;
   featured?: boolean;
 }
 
-export const BLOG_POSTS: BlogPost[] = [
-  {
-    slug: "how-to-prepare-a-construction-brief",
-    title: "How to Prepare a Construction Brief That Attracts Better Offers",
-    excerpt:
-      "A clear brief improves offer quality, shortens decision time, and reduces post-award disputes.",
-    content: [
-      "Most owners lose time before execution even starts because their project brief is incomplete. Contractors and engineers cannot price unknowns, so they either avoid the project or add risk buffers.",
-      "Start by defining your scope in plain language: what is being built, what is excluded, and what success looks like. Include dimensions, quality expectations, and any authority constraints.",
-      "Then specify your budget band and preferred timeline. Transparency here helps professionals respond with realistic plans rather than generic proposals.",
-      "Finally, attach drawings, site photos, and any references that reduce ambiguity. Better context means better proposals and cleaner contract conversations.",
-    ],
-    author: "Rasi Editorial Team",
-    role: "Platform Insights",
-    publishedAt: "2026-04-11",
-    readTimeMinutes: 6,
-    category: "Project Management",
-    tags: ["briefing", "owners", "procurement"],
-    coverImage: "/globe.svg",
-    featured: true,
-  },
-  {
-    slug: "bid-comparison-framework-for-owners",
-    title: "A Practical Bid Comparison Framework for Project Owners",
-    excerpt:
-      "Compare offers on value, risk, and readiness instead of price alone.",
-    content: [
-      "Award decisions based only on the lowest number usually create expensive corrections later. A professional comparison model balances cost with capability and execution certainty.",
-      "Score each bid across five lenses: technical fit, commercial structure, delivery timeline, team quality, and documentation completeness.",
-      "Use weighted scoring to reflect project priorities. For example, timeline reliability may matter more than marginal price savings in high-impact projects.",
-      "Keep your final decision rationale documented. This creates fairness, protects the owner, and improves future procurement quality.",
-    ],
-    author: "Eng. Layla Hassan",
-    role: "Procurement Advisor",
-    publishedAt: "2026-03-29",
-    readTimeMinutes: 7,
-    category: "Procurement",
-    tags: ["bids", "evaluation", "owners"],
-    coverImage: "/globe.svg",
-  },
-  {
-    slug: "verification-standards-for-contractors",
-    title: "Verification Standards Every Contractor Profile Should Meet",
-    excerpt:
-      "Strong profiles increase trust, improve win-rate, and reduce clarification cycles.",
-    content: [
-      "Verification is not a badge for marketing; it is a baseline for market trust. Owners need enough confidence to invite and compare professional proposals.",
-      "At minimum, contractor profiles should include legal identity, specialization areas, team capacity, and recent project evidence with measurable outcomes.",
-      "A complete profile reduces repetitive pre-award questions and enables faster shortlisting by project owners.",
-      "Contractors who keep records current are consistently viewed as lower risk and more reliable delivery partners.",
-    ],
-    author: "Rasi Trust & Safety",
-    role: "Verification Unit",
-    publishedAt: "2026-03-17",
-    readTimeMinutes: 5,
-    category: "Compliance",
-    tags: ["verification", "contractors", "trust"],
-    coverImage: "/globe.svg",
-  },
-  {
-    slug: "early-risk-signals-in-project-planning",
-    title: "Early Risk Signals in Project Planning You Should Not Ignore",
-    excerpt:
-      "Spotting planning risks before award can prevent schedule drift and budget overruns.",
-    content: [
-      "Risk management starts before contract signature. During planning, repeated scope changes, unclear assumptions, and missing dependencies are key warning signals.",
-      "If multiple bidders ask the same clarification question, that is usually a brief-quality issue and should be corrected centrally.",
-      "Map each major assumption to an owner or contractor responsibility. Undefined ownership causes delays and commercial conflict later.",
-      "Treat pre-award risk reviews as a standard gate, not an optional exercise.",
-    ],
-    author: "Omar Al-Mutairi",
-    role: "Project Controls Lead",
-    publishedAt: "2026-02-22",
-    readTimeMinutes: 8,
-    category: "Engineering",
-    tags: ["risk", "planning", "controls"],
-    coverImage: "/globe.svg",
-  },
-  {
-    slug: "digital-documentation-for-construction-teams",
-    title: "Digital Documentation Habits for High-Performing Teams",
-    excerpt:
-      "Consistent documentation improves coordination, dispute prevention, and accountability.",
-    content: [
-      "Documentation is often treated as an administrative burden, but top-performing teams treat it as a project control tool.",
-      "Standardize templates for scope clarifications, pricing assumptions, and communication logs. This saves time and improves traceability.",
-      "Store decisions in one trusted project context where all stakeholders can review what was agreed and when.",
-      "When disputes happen, documented context is your strongest protection.",
-    ],
-    author: "Rasi Editorial Team",
-    role: "Operations Insights",
-    publishedAt: "2026-02-08",
-    readTimeMinutes: 5,
-    category: "Construction",
-    tags: ["documentation", "teams", "quality"],
-    coverImage: "/globe.svg",
-  },
-];
+const DEFAULT_AUTHOR = "Rasi Editorial Team";
+const DEFAULT_ROLE = "Platform Insights";
+const DEFAULT_CATEGORY: BlogCategory = "Construction";
+const DEFAULT_COVER_IMAGE = "/globe.svg";
 
-export const BLOG_CATEGORIES: Array<"All" | BlogCategory> = [
-  "All",
-  "Construction",
-  "Engineering",
-  "Project Management",
-  "Procurement",
-  "Compliance",
-];
+function slugifyTitle(title: string) {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+function estimateReadTimeMinutes(text: string) {
+  const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.ceil(wordCount / 200));
+}
+
+function normalizeBlogPost(post: BlogPostInput, index: number): BlogPost {
+  const excerpt = (post.excerpt || post.description || "").trim();
+  const fallbackSlug = `post-${index + 1}`;
+  const generatedSlug = slugifyTitle(post.title) || fallbackSlug;
+
+  return {
+    slug: post.slug?.trim() || generatedSlug,
+    title: post.title,
+    excerpt,
+    content: post.content && post.content.length > 0 ? post.content : (excerpt ? [excerpt] : []),
+    author: post.author?.trim() || DEFAULT_AUTHOR,
+    role: post.role?.trim() || DEFAULT_ROLE,
+    publishedAt: post.publishedAt || new Date().toISOString().slice(0, 10),
+    readTimeMinutes: post.readTimeMinutes || estimateReadTimeMinutes(excerpt || post.title),
+    category: post.category || DEFAULT_CATEGORY,
+    tags: post.tags || [],
+    coverImage: post.coverImage || DEFAULT_COVER_IMAGE,
+    featured: post.featured,
+  };
+}
+
+const BLOG_POSTS_INPUT: BlogPostInput[] = [];
+
+export const BLOG_POSTS: BlogPost[] = BLOG_POSTS_INPUT.map(normalizeBlogPost);
 
 export function getBlogPostBySlug(slug: string) {
   return BLOG_POSTS.find((post) => post.slug === slug) ?? null;
+}
+
+function estimateReadTimeFromParagraphs(paragraphs: string[]) {
+  const text = paragraphs.join(" ");
+  return estimateReadTimeMinutes(text);
+}
+
+function toParagraphs(content: string, excerpt: string) {
+  const paragraphs = content
+    .split(/\n\s*\n/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  if (paragraphs.length > 0) return paragraphs;
+  return excerpt ? [excerpt] : [];
+}
+
+type FaqItem = { question: string; answer: string; category?: BlogCategory; image?: string; publishedAt?: string };
+
+function parseFaqItems(content: string): FaqItem[] {
+  const lines = content.split("\n").map((line) => line.trim());
+  const items: FaqItem[] = [];
+  let question = "";
+  let answer = "";
+  let category: BlogCategory | undefined = undefined;
+  let image = "";
+  let publishedAt = "";
+
+  for (const line of lines) {
+    if (!line) continue;
+    if (line.startsWith("Q:")) {
+      if (question || answer) items.push({ question: question.trim(), answer: answer.trim(), category, image, publishedAt });
+      question = line.slice(2).trim();
+      answer = "";
+      category = undefined;
+      image = "";
+      publishedAt = "";
+      continue;
+    }
+    if (line.startsWith("A:")) {
+      answer = line.slice(2).trim();
+      continue;
+    }
+    if (line.startsWith("C:")) {
+      category = line.slice(2).trim() as BlogCategory;
+      continue;
+    }
+    if (line.startsWith("I:")) {
+      image = line.slice(2).trim();
+      continue;
+    }
+    if (line.startsWith("D:")) {
+      publishedAt = line.slice(2).trim();
+      continue;
+    }
+    if (!question && !answer) continue;
+    answer = `${answer}\n${line}`.trim();
+  }
+
+  if (question || answer) items.push({ question: question.trim(), answer: answer.trim(), category, image, publishedAt });
+  return items.filter((item) => item.question || item.answer);
+}
+
+function buildFaqBlogPosts(
+  faqPage: Awaited<ReturnType<typeof getContentPageByKey>>,
+  locale: string,
+): BlogPost[] {
+  const isRtl = locale === "ar";
+  const localizedItems = parseFaqItems(isRtl ? faqPage.contentAr : faqPage.content);
+  const englishItems = parseFaqItems(faqPage.content);
+  const total = Math.max(localizedItems.length, englishItems.length);
+
+  if (total === 0) {
+    const title = isRtl ? faqPage.titleAr : faqPage.title;
+    const excerpt = (isRtl ? faqPage.excerptAr || faqPage.excerpt : faqPage.excerpt) || "";
+    const contentRaw = isRtl ? faqPage.contentAr : faqPage.content;
+    const content = toParagraphs(contentRaw, excerpt);
+    return [{
+      slug: faqPage.slug || "faq",
+      title,
+      excerpt,
+      content,
+      author: "Rasi Blog Team",
+      role: "Editorial",
+      publishedAt: new Date((faqPage as any).updatedAt || new Date()).toISOString().slice(0, 10),
+      readTimeMinutes: estimateReadTimeFromParagraphs(content),
+      category: "Project Management",
+      tags: [],
+      coverImage: DEFAULT_COVER_IMAGE,
+      featured: true,
+    }];
+  }
+
+  const items = Array.from({ length: total }, (_, index) => {
+    const localItem = localizedItems[index] || { question: "", answer: "" };
+    const enItem = englishItems[index] || { question: "", answer: "" };
+    const slugSuffix = slugifyTitle(enItem.question || `item-${index + 1}`) || `item-${index + 1}`;
+    const title = localItem.question || enItem.question || `${isRtl ? "سؤال" : "Question"} ${index + 1}`;
+    const answer = localItem.answer || enItem.answer || "";
+    const content = toParagraphs(answer, answer);
+
+    const dateValue = enItem.publishedAt || localItem.publishedAt || new Date((faqPage as any).updatedAt || new Date()).toISOString();
+    return {
+      slug: `${faqPage.slug || "faq"}-${slugSuffix}`,
+      title,
+      excerpt: answer,
+      content,
+      author: "Rasi Blog Team",
+      role: "Editorial",
+      publishedAt: dateValue,
+      readTimeMinutes: estimateReadTimeFromParagraphs(content),
+      category: enItem.category || localItem.category || "Project Management",
+      tags: [],
+      coverImage: enItem.image || localItem.image || DEFAULT_COVER_IMAGE,
+      featured: false,
+    };
+  });
+
+  // Latest item (by stored date) should appear first and be featured.
+  return items
+    .sort((a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt))
+    .map((item, index) => ({
+    ...item,
+    featured: index === 0,
+    }));
+}
+
+export async function getBlogPosts(locale: string): Promise<BlogPost[]> {
+  const posts = [...BLOG_POSTS];
+
+  const faqPage = await getContentPageByKey("faq");
+  const isPublished = !("isPublished" in faqPage) || Boolean((faqPage as any).isPublished);
+  if (!isPublished) return posts;
+
+  return [...buildFaqBlogPosts(faqPage, locale), ...posts];
+}
+
+export async function getBlogPostBySlugLive(slug: string, locale: string): Promise<BlogPost | null> {
+  const fromStatic = getBlogPostBySlug(slug);
+  if (fromStatic) return fromStatic;
+
+  const faqPage = await getContentPageByKey("faq");
+  const isPublished = !("isPublished" in faqPage) || Boolean((faqPage as any).isPublished);
+  if (!isPublished) return null;
+
+  return buildFaqBlogPosts(faqPage, locale).find((post) => post.slug === slug) || null;
 }

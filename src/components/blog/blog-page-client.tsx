@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "@/i18n/routing";
 import { Search, ArrowRight, CalendarDays, Clock3, Tag, SlidersHorizontal, Grid3X3 } from "lucide-react";
-import { BLOG_CATEGORIES, type BlogPost } from "@/lib/blog-posts";
+import { BLOG_CATEGORIES, type BlogPost } from "@/lib/blog-types";
 
 interface BlogPageClientProps {
   posts: BlogPost[];
@@ -39,7 +39,7 @@ export function BlogPageClient({ posts, locale }: BlogPageClientProps) {
 
   const totalPages = Math.max(1, Math.ceil(filteredPosts.length / POSTS_PER_PAGE));
   const currentPosts = filteredPosts.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE);
-  const featuredPost = posts.find((post) => post.featured) ?? posts[0];
+  const featuredPost = filteredPosts[0] ?? posts[0];
 
   return (
     <div className="bg-(--brand-ivory)">
@@ -62,15 +62,15 @@ export function BlogPageClient({ posts, locale }: BlogPageClientProps) {
         </div>
       </section>
 
-      <section className="container-app !mt-6 relative z-20 pb-14 md:pb-16">
+      <section className="container-app !mt-6 !mb-6 relative z-20 pb-14 md:pb-16">
         <div className="card !p-6 md:!p-8 shadow-lg rounded-2xl md:rounded-3xl border border-(--border-light)">
           <div className="mb-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-(--text-muted)">
             <SlidersHorizontal className="h-3.5 w-3.5 text-(--primary)" />
             {isRtl ? "تصفية وبحث" : "Filter & Search"}
           </div>
 
-          <div className="grid gap-6 !mt-2 md:gap-7 md:grid-cols-3">
-            <div className="relative md:col-span-2">
+          <div className="mt-2 flex flex-col gap-4 md:flex-row md:items-center">
+            <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-(--text-muted)" />
               <input
                 type="search"
@@ -83,7 +83,7 @@ export function BlogPageClient({ posts, locale }: BlogPageClientProps) {
                 className="!h-12 !rounded-2xl !border-[1.5px] !border-(--border-light) !bg-(--surface) !pl-11 !text-sm placeholder:!text-(--text-muted) focus:!border-(--primary)"
               />
             </div>
-            <div className="relative !my-2">
+            <div className="relative w-full md:w-[260px]">
               <Grid3X3 className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-(--text-muted)" />
               <select
                 value={sortBy}
@@ -98,9 +98,6 @@ export function BlogPageClient({ posts, locale }: BlogPageClientProps) {
                 <option value="read-time">{isRtl ? "مدة القراءة" : "By Read Time"}</option>
               </select>
             </div>
-          </div>
-
-          <div className="mt-4 flex justify-end">
             <button
               type="button"
               onClick={() => {
@@ -109,17 +106,17 @@ export function BlogPageClient({ posts, locale }: BlogPageClientProps) {
                 setSortBy("newest");
                 setCurrentPage(1);
               }}
-              className="btn-secondary !px-4 !py-2 !text-xs !rounded-xl"
+              className="btn-secondary !h-12 !px-4 !text-xs !rounded-xl whitespace-nowrap md:self-stretch"
             >
               {isRtl ? "مسح الفلاتر" : "Clear Filters"}
             </button>
           </div>
 
-          <div className="  rounded-2xl bg-(--surface-2) !p-5 md:!p-6 !mb-3 m-2">
+          <div className="rounded-2xl bg-(--surface-2) !p-5 md:!p-6 !mt-4">
             <div className="mb-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-(--text-muted)">
               {isRtl ? "التصنيفات" : "Categories"}
             </div>
-            <div className="flex flex-wrap gap-4 md:gap-4.5 !mb-3 m-2">
+            <div className="flex flex-wrap gap-4 md:gap-4.5 !mb-3 !m-2">
             {BLOG_CATEGORIES.map((category) => (
               <button
                 key={category}
@@ -159,7 +156,18 @@ export function BlogPageClient({ posts, locale }: BlogPageClientProps) {
                   {isRtl ? "مقال مميز" : "Featured Article"}
                 </p>
                 <h2 className="mt-3 text-2xl md:text-4xl leading-tight">{featuredPost.title}</h2>
-                <p className="mt-4 text-base leading-8">{featuredPost.excerpt}</p>
+                <p
+                  className="mt-4 text-base leading-8"
+                  style={{
+                    display: "-webkit-box",
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {featuredPost.excerpt}
+                </p>
                 <div className="mt-5 flex flex-wrap gap-3 text-xs text-(--text-muted)">
                   <span className="inline-flex items-center gap-1">
                     <CalendarDays className="h-3.5 w-3.5" />
@@ -170,7 +178,7 @@ export function BlogPageClient({ posts, locale }: BlogPageClientProps) {
                     {featuredPost.readTimeMinutes} {isRtl ? "دقائق" : "min read"}
                   </span>
                 </div>
-                <Link href={`/blog/${featuredPost.slug}`} className="btn-primary mt-7 !rounded-xl !px-6 !py-3">
+                <Link href={`/blog/${featuredPost.slug}`} className="btn-primary !mt-7 !mb-1 !rounded-xl !px-7 !py-3">
                   {isRtl ? "اقرأ المقال" : "Read Article"} <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
@@ -179,23 +187,43 @@ export function BlogPageClient({ posts, locale }: BlogPageClientProps) {
         </section>
       )}
 
-      <section className="container-app pb-24">
-        <div className="mb-6 text-sm text-(--text-muted)">
+      <section className="container-app !pb-32 md:!pb-36">
+        <div className="!my-6 text-sm text-(--text-muted)">
           {filteredPosts.length} {isRtl ? "مقال متاح" : "articles available"}
         </div>
         <div className="grid gap-7 md:gap-8 md:grid-cols-2">
           {currentPosts.map((post) => (
             <article key={post.slug} className="card !p-6 md:!p-7 shadow-sm hover:shadow-lg rounded-2xl">
+              <div style={{ marginBottom: "0.9rem", borderRadius: "12px", overflow: "hidden", background: "var(--surface-2)" }}>
+                <img
+                  src={post.coverImage || "/globe.svg"}
+                  alt={post.title}
+                  style={{ width: "100%", height: "180px", objectFit: "cover", display: "block" }}
+                />
+              </div>
               <div className="flex items-center justify-between gap-2 text-xs">
                 <span className="chip chip-info">{post.category}</span>
                 <span className="text-(--text-muted)">{new Date(post.publishedAt).toLocaleDateString(locale)}</span>
               </div>
               <h3 className="mt-4 text-xl md:text-2xl leading-tight min-h-[64px]">{post.title}</h3>
-              <p className="mt-4 min-h-[92px] text-[0.98rem] leading-7">{post.excerpt}</p>
-              <div className="mt-5 flex items-center gap-2 text-xs text-(--text-muted)">
-                <Tag className="h-3.5 w-3.5" />
-                {post.tags.join(" • ")}
-              </div>
+              <p
+                className="mt-4 min-h-[92px] text-[0.98rem] leading-7"
+                style={{
+                  display: "-webkit-box",
+                  WebkitLineClamp: 3,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {post.excerpt}
+              </p>
+              {post.tags.length > 0 ? (
+                <div className="mt-5 flex items-center gap-2 text-xs text-(--text-muted)">
+                  <Tag className="h-3.5 w-3.5" />
+                  {post.tags.join(" • ")}
+                </div>
+              ) : null}
               <div className="mt-6 flex items-center justify-between">
                 <span className="text-xs text-(--text-muted)">
                   {post.author} - {post.readTimeMinutes} {isRtl ? "دقائق" : "min"}

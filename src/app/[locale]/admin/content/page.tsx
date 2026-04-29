@@ -7,6 +7,7 @@ import { MANAGED_CONTENT_PAGES, type ManagedContentPageKey } from "@/lib/content
 import { getManagedContentPages } from "@/lib/content-page-service";
 import { FileText, Save } from "lucide-react";
 import { isFullAccessAdmin } from "@/lib/admin-config";
+import FaqItemsEditor from "./faq-items-editor";
 
 export const dynamic = "force-dynamic";
 
@@ -95,6 +96,9 @@ export default async function AdminContentPage({ searchParams }: { searchParams:
   const pages = await getManagedContentPages();
   const activeKey = (params.page as ManagedContentPageKey) || "homepage";
   const activePage = pages.find((page) => page.key === activeKey) || pages[0];
+  const successToastMessage = activePage.key === "faq"
+    ? (isRtl ? "تم حفظ/إضافة المدونة بنجاح" : "Blog item saved successfully")
+    : (isRtl ? "تم حفظ الصفحة بنجاح" : "Page saved successfully");
 
   return (
     <div style={{ background: "var(--bg)", minHeight: "calc(100vh - 64px)" }}>
@@ -111,6 +115,25 @@ export default async function AdminContentPage({ searchParams }: { searchParams:
       </div>
 
       <div className="container-app" style={{ padding: "2rem 1.5rem" }}>
+        {showSavedBanner ? (
+          <div
+            style={{
+              position: "fixed",
+              bottom: 24,
+              right: 24,
+              background: "var(--success)",
+              color: "white",
+              padding: "0.7rem 0.95rem",
+              borderRadius: "10px",
+              fontSize: "0.85rem",
+              fontWeight: 700,
+              boxShadow: "0 10px 24px rgba(0,0,0,0.22)",
+              zIndex: 70,
+            }}
+          >
+            {successToastMessage}
+          </div>
+        ) : null}
         {showSavedBanner && (
           <div
             className="card"
@@ -151,7 +174,7 @@ export default async function AdminContentPage({ searchParams }: { searchParams:
                     fontWeight: 600,
                   }}
                 >
-                  {isRtl ? page.titleAr : page.title}
+                  {page.key === "faq" ? (isRtl ? "المدونة" : "Blog") : (isRtl ? page.titleAr : page.title)}
                 </a>
               ))}
             </div>
@@ -160,73 +183,112 @@ export default async function AdminContentPage({ searchParams }: { searchParams:
           <div className="card" style={{ padding: "1.5rem" }}>
             <form action={saveContentPageAction} style={{ display: "grid", gap: "1rem" }}>
               <input type="hidden" name="key" value={activePage.key} />
+              {activePage.key === "faq" ? (
+                <>
+                  <input type="hidden" name="title" value={activePage.title} />
+                  <input type="hidden" name="titleAr" value={activePage.titleAr} />
+                  <input type="hidden" name="excerpt" value={(activePage as any).excerpt || ""} />
+                  <input type="hidden" name="excerptAr" value={(activePage as any).excerptAr || ""} />
+                  <input type="hidden" name="seoTitle" value={(activePage as any).seoTitle || ""} />
+                  <input type="hidden" name="seoTitleAr" value={(activePage as any).seoTitleAr || ""} />
+                  <input type="hidden" name="seoDescription" value={(activePage as any).seoDescription || ""} />
+                  <input type="hidden" name="seoDescriptionAr" value={(activePage as any).seoDescriptionAr || ""} />
+                </>
+              ) : null}
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                <div>
-                  <label>{isRtl ? "العنوان (إنجليزي)" : "Title (English)"}</label>
-                  <input name="title" defaultValue={activePage.title} />
+              {activePage.key !== "faq" ? (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <div>
+                    <label>{isRtl ? "العنوان (إنجليزي)" : "Title (English)"}</label>
+                    <input name="title" defaultValue={activePage.title} />
+                  </div>
+                  <div>
+                    <label>{isRtl ? "العنوان (عربي)" : "Title (Arabic)"}</label>
+                    <input name="titleAr" defaultValue={activePage.titleAr} dir="rtl" />
+                  </div>
                 </div>
-                <div>
-                  <label>{isRtl ? "العنوان (عربي)" : "Title (Arabic)"}</label>
-                  <input name="titleAr" defaultValue={activePage.titleAr} dir="rtl" />
-                </div>
-              </div>
+              ) : null}
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                <div>
-                  <label>{isRtl ? "وصف مختصر (إنجليزي)" : "Excerpt (English)"}</label>
-                  <textarea name="excerpt" defaultValue={(activePage as any).excerpt || ""} style={{ minHeight: "80px" }} />
+              {activePage.key !== "faq" ? (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <div>
+                    <label>{isRtl ? "وصف مختصر (إنجليزي)" : "Excerpt (English)"}</label>
+                    <textarea name="excerpt" defaultValue={(activePage as any).excerpt || ""} style={{ minHeight: "80px" }} />
+                  </div>
+                  <div>
+                    <label>{isRtl ? "وصف مختصر (عربي)" : "Excerpt (Arabic)"}</label>
+                    <textarea name="excerptAr" defaultValue={(activePage as any).excerptAr || ""} dir="rtl" style={{ minHeight: "80px" }} />
+                  </div>
                 </div>
-                <div>
-                  <label>{isRtl ? "وصف مختصر (عربي)" : "Excerpt (Arabic)"}</label>
-                  <textarea name="excerptAr" defaultValue={(activePage as any).excerptAr || ""} dir="rtl" style={{ minHeight: "80px" }} />
-                </div>
-              </div>
+              ) : null}
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                <div>
-                  <label>{isRtl ? "المحتوى (إنجليزي)" : "Content (English)"}</label>
-                  <textarea name="content" defaultValue={activePage.content} style={{ minHeight: "260px" }} />
+              {activePage.key !== "faq" ? (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <div>
+                    <label>{isRtl ? "المحتوى (إنجليزي)" : "Content (English)"}</label>
+                    <textarea name="content" defaultValue={activePage.content} style={{ minHeight: "260px" }} />
+                  </div>
+                  <div>
+                    <label>{isRtl ? "المحتوى (عربي)" : "Content (Arabic)"}</label>
+                    <textarea name="contentAr" defaultValue={activePage.contentAr} dir="rtl" style={{ minHeight: "260px" }} />
+                  </div>
                 </div>
-                <div>
-                  <label>{isRtl ? "المحتوى (عربي)" : "Content (Arabic)"}</label>
-                  <textarea name="contentAr" defaultValue={activePage.contentAr} dir="rtl" style={{ minHeight: "260px" }} />
-                </div>
-              </div>
+              ) : null}
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                <div>
-                  <label>{isRtl ? "SEO Title (إنجليزي)" : "SEO Title (English)"}</label>
-                  <input name="seoTitle" defaultValue={(activePage as any).seoTitle || ""} />
+              {activePage.key !== "faq" ? (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <div>
+                    <label>{isRtl ? "SEO Title (إنجليزي)" : "SEO Title (English)"}</label>
+                    <input name="seoTitle" defaultValue={(activePage as any).seoTitle || ""} />
+                  </div>
+                  <div>
+                    <label>{isRtl ? "SEO Title (عربي)" : "SEO Title (Arabic)"}</label>
+                    <input name="seoTitleAr" defaultValue={(activePage as any).seoTitleAr || ""} dir="rtl" />
+                  </div>
                 </div>
-                <div>
-                  <label>{isRtl ? "SEO Title (عربي)" : "SEO Title (Arabic)"}</label>
-                  <input name="seoTitleAr" defaultValue={(activePage as any).seoTitleAr || ""} dir="rtl" />
-                </div>
-              </div>
+              ) : null}
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                <div>
-                  <label>{isRtl ? "SEO Description (إنجليزي)" : "SEO Description (English)"}</label>
-                  <textarea name="seoDescription" defaultValue={(activePage as any).seoDescription || ""} style={{ minHeight: "100px" }} />
+              {activePage.key !== "faq" ? (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <div>
+                    <label>{isRtl ? "SEO Description (إنجليزي)" : "SEO Description (English)"}</label>
+                    <textarea name="seoDescription" defaultValue={(activePage as any).seoDescription || ""} style={{ minHeight: "100px" }} />
+                  </div>
+                  <div>
+                    <label>{isRtl ? "SEO Description (عربي)" : "SEO Description (Arabic)"}</label>
+                    <textarea name="seoDescriptionAr" defaultValue={(activePage as any).seoDescriptionAr || ""} dir="rtl" style={{ minHeight: "100px" }} />
+                  </div>
                 </div>
-                <div>
-                  <label>{isRtl ? "SEO Description (عربي)" : "SEO Description (Arabic)"}</label>
-                  <textarea name="seoDescriptionAr" defaultValue={(activePage as any).seoDescriptionAr || ""} dir="rtl" style={{ minHeight: "100px" }} />
-                </div>
-              </div>
+              ) : null}
 
               <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: 0 }}>
                 <input type="checkbox" name="isPublished" defaultChecked={(activePage as any).isPublished ?? true} style={{ width: "auto" }} />
                 <span>{isRtl ? "منشور للعامة" : "Published publicly"}</span>
               </label>
 
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <button type="submit" className="btn-primary">
-                  <Save style={{ width: "16px", height: "16px" }} />
-                  {isRtl ? "حفظ الصفحة" : "Save Page"}
-                </button>
-              </div>
+              {activePage.key === "faq" ? (
+                <div className="card" style={{ padding: "1rem", border: "1px solid var(--border-light)" }}>
+                  <div style={{ fontWeight: 700, marginBottom: "0.9rem" }}>
+                    {isRtl ? "محرر عناصر المدونة" : "Blog Items Editor"}
+                  </div>
+                  <FaqItemsEditor
+                    initialContent={activePage.content}
+                    initialContentAr={activePage.contentAr}
+                    isRtl={isRtl}
+                    locale={locale}
+                    closeEditorOnLoad={showSavedBanner}
+                  />
+                </div>
+              ) : null}
+
+              {activePage.key !== "faq" ? (
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <button type="submit" className="btn-primary">
+                    <Save style={{ width: "16px", height: "16px" }} />
+                    {isRtl ? "حفظ الصفحة" : "Save Page"}
+                  </button>
+                </div>
+              ) : null}
             </form>
           </div>
         </div>

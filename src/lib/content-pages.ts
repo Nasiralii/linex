@@ -122,10 +122,10 @@ export const MANAGED_CONTENT_PAGES: ManagedContentPageDefinition[] = [
   {
     key: "faq",
     slug: "faq",
-    title: "FAQ",
-    titleAr: "الأسئلة الشائعة",
-    excerpt: "Frequently asked questions.",
-    excerptAr: "الأسئلة الأكثر شيوعاً.",
+    title: "Blog",
+    titleAr: "المدونة",
+    excerpt: "Blog posts and updates.",
+    excerptAr: "مقالات وتحديثات المدونة.",
     content:
       "Add common questions and answers here. In version 1, this page is managed as plain content.",
     contentAr:
