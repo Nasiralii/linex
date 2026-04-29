@@ -78,6 +78,9 @@ export function Footer() {
               <Link href="/auth/register" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", textDecoration: "none" }}>
                 {isRtl ? "إنشاء حساب" : "Register"}
               </Link>
+              <Link href="/terms-and-conditions" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", textDecoration: "none" }}>
+                {isRtl ? "الشروط والأحكام" : "Terms & Conditions"}
+              </Link>
             </div>
           </div>
         </div>
