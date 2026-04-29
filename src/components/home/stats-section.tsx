@@ -13,12 +13,11 @@ export function StatsSection({ t }: StatsSectionProps) {
   ];
 
   return (
-    <section style={{ background: "var(--brand-ivory)", padding: "5rem 0" }}>
+    <section className="bg-(--brand-ivory) !py-8 md:!py-20">
       <div className="container-app">
         <div
+          className="grid grid-cols-2 md:grid-cols-4"
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
             gap: "1px",
             maxWidth: "960px",
             margin: "0 auto",

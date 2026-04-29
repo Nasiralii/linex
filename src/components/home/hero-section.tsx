@@ -252,6 +252,19 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
             {t("hero.contractorCta")}
           </Link>
         </div>
+        <p
+          style={{
+            margin: "0.75rem auto 0",
+            width: "fit-content",
+            padding: "0.35rem 0.65rem",
+            borderRadius: "8px",
+            fontSize: "0.72rem",
+            color: "rgba(255,255,255,0.98)",
+            lineHeight: 1.5,
+          }}
+        >
+          {t("hero.microcopy")}
+        </p>
       </div>
 
       {/* Curved bottom edge */}
