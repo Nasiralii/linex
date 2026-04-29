@@ -255,7 +255,10 @@ export function PartnersSection({ t }: PartnersSectionProps) {
             style={{
               padding: "2rem",
               borderRadius: "20px",
-              background: "linear-gradient(155deg, var(--brand-navy) 0%, #0d2240 100%)",
+              background:
+                "linear-gradient(155deg, var(--brand-teal) 0%, #0a5a5d 100%)",
+              border: "1px solid rgba(255,255,255,0.18)",
+              boxShadow: "0 22px 48px -28px rgba(13,115,119,0.55)",
               position: "relative",
               overflow: "hidden",
               display: "flex",
@@ -271,13 +274,14 @@ export function PartnersSection({ t }: PartnersSectionProps) {
                 width: "240px",
                 height: "240px",
                 borderRadius: "999px",
-                background: "radial-gradient(circle, rgba(42,123,136,0.28) 0%, transparent 70%)",
+                background:
+                  "radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%)",
               }}
             />
             <p
               style={{
                 margin: "0 0 0.7rem",
-                color: "var(--brand-teal)",
+                color: "rgba(255,255,255,0.78)",
                 fontSize: "0.7rem",
                 fontWeight: 800,
                 letterSpacing: "0.18em",
@@ -291,21 +295,30 @@ export function PartnersSection({ t }: PartnersSectionProps) {
               style={{
                 margin: "0 0 0.7rem",
                 color: "#fff",
-                fontWeight: 900,
+                fontWeight: 800,
                 fontSize: "1.3rem",
-                lineHeight: 1.2,
+                lineHeight: 1.25,
                 letterSpacing: "-0.02em",
                 position: "relative",
               }}
             >
               {t("partnersSection.modelTitle")}
             </h3>
-            <div style={{ width: "32px", height: "3px", borderRadius: "999px", background: "var(--brand-teal)", marginBottom: "1rem", position: "relative" }} />
+            <div
+              style={{
+                width: "32px",
+                height: "3px",
+                borderRadius: "999px",
+                background: "rgba(255,255,255,0.65)",
+                marginBottom: "1rem",
+                position: "relative",
+              }}
+            />
             <p
               style={{
                 margin: "0 0 1.8rem",
-                color: "rgba(255,255,255,0.7)",
-                fontSize: "0.88rem",
+                color: "rgba(255,255,255,0.85)",
+                fontSize: "0.9rem",
                 lineHeight: 1.7,
                 position: "relative",
               }}
@@ -313,7 +326,7 @@ export function PartnersSection({ t }: PartnersSectionProps) {
               {t("partnersSection.modelDesc")}
             </p>
 
-            {/* CTA */}
+            {/* CTA — translucent fill that reads as part of the teal card */}
             <a
               href="/contact?topic=partnerships"
               style={{
@@ -324,13 +337,15 @@ export function PartnersSection({ t }: PartnersSectionProps) {
                 gap: "0.6rem",
                 padding: "0.85rem 1.2rem",
                 borderRadius: "12px",
-                background: "var(--brand-teal)",
+                background: "rgba(255,255,255,0.12)",
                 color: "#fff",
+                border: "1.5px solid rgba(255,255,255,0.45)",
                 fontWeight: 700,
                 fontSize: "0.9rem",
                 textDecoration: "none",
                 position: "relative",
-                transition: "opacity 160ms ease, transform 160ms ease",
+                transition:
+                  "background 160ms ease, border-color 160ms ease, transform 160ms ease",
               }}
             >
               {t("partnersSection.cta")}
