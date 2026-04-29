@@ -62,11 +62,15 @@ export function OurValuesSection({ t }: OurValuesSectionProps) {
           </h2>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.25rem", margin: "0 auto" }}>
+        <div
+          className="our-values-grid"
+          style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "1.25rem", margin: "0 auto" }}
+        >
           {[0, 1, 2, 3, 4, 5].map((i) => {
             const Icon = icons[i];
             return (
               <div
+                className="our-values-card"
                 key={i}
                 style={{
                   background: "rgba(255,255,255,0.86)",
@@ -94,6 +98,17 @@ export function OurValuesSection({ t }: OurValuesSectionProps) {
             );
           })}
         </div>
+        <style>{`
+          @media (min-width: 1100px) {
+            .our-values-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+          }
+          @media (max-width: 640px) {
+            .our-values-grid { gap: 0.75rem !important; }
+            .our-values-card { padding: 1rem !important; min-height: 150px !important; border-radius: 16px !important; }
+            .our-values-card h3 { font-size: 0.95rem !important; margin-bottom: 0.45rem !important; }
+            .our-values-card p { font-size: 0.82rem !important; line-height: 1.45 !important; }
+          }
+        `}</style>
       </div>
     </section>
   );

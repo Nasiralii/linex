@@ -17,10 +17,10 @@ export function OwnerSupportSection({ t, showOwnerCta, ownerCtaHref }: OwnerSupp
       id="owners"
       style={{
         background: "linear-gradient(180deg, var(--brand-white) 0%, var(--brand-ivory) 100%)",
-        padding: "5rem 0",
+        padding: "0.5rem 0",
       }}
     >
-      <div className="container-app" style={{ maxWidth: "1200px", margin: "0 auto" }}>
+      <div className="container-app">
         <div
           style={{
             display: "grid",

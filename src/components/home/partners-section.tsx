@@ -62,7 +62,7 @@ export function PartnersSection({ t }: PartnersSectionProps) {
         }}
       />
 
-      <div className="container-app" style={{ maxWidth: "1200px", margin: "0 auto", position: "relative" }}>
+      <div className="container-app" style={{ position: "relative" }}>
         {/* ── Header ── */}
         <div style={{ textAlign: "center", marginBottom: "3.5rem", maxWidth: "780px", marginInline: "auto" }}>
           <div

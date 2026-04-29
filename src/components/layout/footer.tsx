@@ -17,7 +17,7 @@ export function Footer() {
       background: "#1a2332",
       borderTop: "1px solid rgba(255,255,255,0.08)",
     }}>
-      <div className="container-app" style={{ padding: "3rem 1.5rem" }}>
+      <div className="container-app" style={{ padding: "3rem 0" }}>
         <div className="grid md:grid-cols-3 grid-cols-2 gap-4">
           {/* Brand */}
           <div>

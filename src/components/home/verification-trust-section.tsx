@@ -64,7 +64,7 @@ export function VerificationTrustSection({ t }: VerificationTrustSectionProps) {
         position: "relative",
       }}
     >
-      <div className="container-app" style={{ maxWidth: "1120px", margin: "0 auto" }}>
+      <div className="container-app">
         <Hero t={t} />
         <TierStrip t={t} />
 

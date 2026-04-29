@@ -17,7 +17,7 @@ export function ProfessionalSupportSection({ t }: ProfessionalSupportSectionProp
         padding: "4.5rem 0",
       }}
     >
-      <div className="container-app" style={{ maxWidth: "1200px", margin: "0 auto" }}>
+      <div className="container-app">
         <div
           style={{
             marginBottom: "2rem",

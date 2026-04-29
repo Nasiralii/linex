@@ -27,7 +27,7 @@ export function DecisionJourneySection({ t }: DecisionJourneySectionProps) {
         borderTop: "1px solid var(--brand-ivory-dark)",
       }}
     >
-      <div className="container-app" style={{ maxWidth: "1120px", margin: "0 auto" }}>
+      <div className="container-app">
         <SectionHeader t={t} />
         <Timeline t={t} />
         <AfterAwardStrip t={t} />

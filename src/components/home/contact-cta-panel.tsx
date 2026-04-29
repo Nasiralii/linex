@@ -493,7 +493,7 @@ export function ContactActionsStrip({
           }}
         >
           <a
-            href="/dashboard/projects/new"
+            href="/auth/register?role=owner"
             style={{
               display: "flex",
               alignItems: "center",
@@ -521,7 +521,7 @@ export function ContactActionsStrip({
             <ArrowRight style={{ width: "15px", height: "15px" }} />
           </a>
           <a
-            href="/auth/register?role=professional"
+            href="/auth/register?role=contractor"
             style={{
               display: "flex",
               alignItems: "center",

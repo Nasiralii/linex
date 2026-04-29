@@ -61,6 +61,7 @@ export function FinalCtaSection({ t, showOwnerCta, ownerCtaHref }: FinalCtaSecti
 
       <div
         className="container-app"
+        id="why-rasi"
         style={{
           position: "relative",
           zIndex: 1,
@@ -82,6 +83,7 @@ export function FinalCtaSection({ t, showOwnerCta, ownerCtaHref }: FinalCtaSecti
             {t("whyRasi.title")}
           </h2>
           <div
+            className="why-rasi-grid"
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(2, 1fr)",
@@ -93,7 +95,7 @@ export function FinalCtaSection({ t, showOwnerCta, ownerCtaHref }: FinalCtaSecti
             {whyRasiItems.map((item, i) => (
               <div
                 key={i}
-                className={`rounded-xl ${i === 0 ? "md:rounded-br-3xl" : i === 1 ? "md:rounded-bl-3xl" : i === 2 ? "md:rounded-tr-3xl" : "md:rounded-tl-3xl"}`}
+                className={`why-rasi-card rounded-xl ${i === 0 ? "md:rounded-br-3xl" : i === 1 ? "md:rounded-bl-3xl" : i === 2 ? "md:rounded-tr-3xl" : "md:rounded-tl-3xl"}`}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -146,7 +148,7 @@ export function FinalCtaSection({ t, showOwnerCta, ownerCtaHref }: FinalCtaSecti
         >
           {showOwnerCta && (
             <Link
-             className="hover:scale-105"
+             className="hover:scale-105 why-rasi-cta"
               href={ownerCtaHref as "/auth/register" | "/dashboard/projects/new"}
               style={{
                 display: "inline-flex",
@@ -169,7 +171,7 @@ export function FinalCtaSection({ t, showOwnerCta, ownerCtaHref }: FinalCtaSecti
             </Link>
           )}
           <Link
-           className="hover:scale-105"
+           className="hover:scale-105 why-rasi-cta"
             href="/auth/register?role=contractor"
             style={{
               display: "inline-flex",
@@ -203,6 +205,33 @@ export function FinalCtaSection({ t, showOwnerCta, ownerCtaHref }: FinalCtaSecti
           {t("whyRasi.microcopy")}
         </p>
       </div>
+      <style>{`
+        @media (min-width: 768px) and (max-width: 1024px) {
+          .why-rasi-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 1rem !important;
+            max-width: 100% !important;
+          }
+          .why-rasi-card {
+            padding: 1rem 1.1rem !important;
+          }
+        }
+        @media (max-width: 767px) {
+          .why-rasi-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.9rem !important;
+            max-width: 100% !important;
+          }
+          .why-rasi-card {
+            padding: 1rem !important;
+            gap: 0.75rem !important;
+          }
+          .why-rasi-cta {
+            width: 100% !important;
+            justify-content: center !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }

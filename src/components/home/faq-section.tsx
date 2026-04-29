@@ -33,8 +33,6 @@ export function FaqSection({ t }: FaqSectionProps) {
       <div
         className="container-app"
         style={{
-          maxWidth: "1200px",
-          margin: "0 auto",
           display: "flex",
           flexDirection: "column",
           gap: "2rem",

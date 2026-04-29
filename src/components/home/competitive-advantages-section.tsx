@@ -25,7 +25,7 @@ export function CompetitiveAdvantagesSection({ t }: CompetitiveAdvantagesSection
         padding: "5rem 0",
       }}
     >
-      <div className="container-app" style={{ maxWidth: "1120px", margin: "0 auto" }}>
+      <div className="container-app">
         <header style={{ marginBottom: "2.25rem", textAlign: "center" }}>
           <div
             style={{
@@ -33,7 +33,7 @@ export function CompetitiveAdvantagesSection({ t }: CompetitiveAdvantagesSection
               alignItems: "center",
               gap: "0.6rem",
               fontSize: "0.74rem",
-              fontWeight: 800,
+              fontWeight: 500,
               letterSpacing: "0.22em",
               textTransform: "uppercase",
               color: "var(--brand-teal)",

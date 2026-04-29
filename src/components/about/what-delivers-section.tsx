@@ -1,10 +1,23 @@
-import { FolderPlus, Users, BarChartHorizontal, ShieldCheck, MessageSquare, FileCheck, Star } from "lucide-react";
+"use client";
 
-interface WhatDeliversSectionProps {
-  t: (key: string) => string;
-}
+import { useRef } from "react";
+import { useTranslations } from "next-intl";
+import { FolderPlus, Users, BarChartHorizontal, ShieldCheck, MessageSquare, FileCheck, Star, ChevronLeft, ChevronRight } from "lucide-react";
 
-export function WhatDeliversSection({ t }: WhatDeliversSectionProps) {
+export function WhatDeliversSection() {
+  const t = useTranslations("about");
+  const mobileCarouselRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollByCard = (direction: "prev" | "next") => {
+    const el = mobileCarouselRef.current;
+    if (!el) return;
+    const card = el.querySelector<HTMLElement>(".what-delivers-card");
+    const gap = parseFloat(window.getComputedStyle(el).columnGap || window.getComputedStyle(el).gap || "14");
+    const cardWidth = (card?.offsetWidth ?? el.clientWidth * 0.84) + gap;
+    const delta = direction === "next" ? cardWidth : -cardWidth;
+    el.scrollBy({ left: delta, behavior: "smooth" });
+  };
+
   const services = [
     { icon: FolderPlus },
     { icon: Users },
@@ -58,10 +71,11 @@ export function WhatDeliversSection({ t }: WhatDeliversSectionProps) {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div ref={mobileCarouselRef} className="what-delivers-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {services.map((s, i) => (
             <div
               key={i}
+              className="what-delivers-card"
               style={{
                 background: "#ffffff",
                 borderRadius: "22px",
@@ -139,7 +153,87 @@ export function WhatDeliversSection({ t }: WhatDeliversSectionProps) {
             </div>
           ))}
         </div>
+        <div className="what-delivers-mobile-nav">
+          <button
+            type="button"
+            onClick={() => scrollByCard("prev")}
+            className="what-delivers-nav-btn"
+            aria-label="Previous service"
+          >
+            <ChevronLeft style={{ width: "18px", height: "18px" }} />
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollByCard("next")}
+            className="what-delivers-nav-btn"
+            aria-label="Next service"
+          >
+            <ChevronRight style={{ width: "18px", height: "18px" }} />
+          </button>
+        </div>
       </div>
+      <style>{`
+        .what-delivers-mobile-nav {
+          display: none;
+        }
+        .what-delivers-nav-btn {
+          width: 36px;
+          height: 36px;
+          border-radius: 999px;
+          border: 1px solid var(--brand-ivory-dark);
+          background: var(--brand-white);
+          color: var(--brand-teal);
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+        @media (max-width: 767px) {
+          .what-delivers-mobile-nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.65rem;
+            margin-top: 0.9rem;
+          }
+          .what-delivers-grid {
+            display: flex !important;
+            overflow-x: auto;
+            gap: 0.9rem !important;
+            scroll-snap-type: x mandatory;
+            padding-bottom: 0.4rem;
+            -webkit-overflow-scrolling: touch;
+          }
+          .what-delivers-grid::-webkit-scrollbar {
+            display: none;
+          }
+          .what-delivers-card {
+            min-width: 84%;
+            scroll-snap-align: start;
+          }
+        }
+        @media (min-width: 768px) and (max-width: 1024px) {
+          .what-delivers-mobile-nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.65rem;
+            margin-top: 0.9rem;
+          }
+          .what-delivers-grid {
+            display: flex !important;
+            overflow-x: auto;
+            gap: 0.9rem !important;
+            scroll-snap-type: x mandatory;
+            padding-bottom: 0.4rem;
+            -webkit-overflow-scrolling: touch;
+          }
+          .what-delivers-grid::-webkit-scrollbar {
+            display: none;
+          }
+          .what-delivers-card {
+            min-width: calc((100% - 0.9rem) / 2);
+            scroll-snap-align: start;
+          }
+        }
+      `}</style>
     </section>
   );
 }

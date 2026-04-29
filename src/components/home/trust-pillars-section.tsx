@@ -1,10 +1,23 @@
-import { BadgeCheck, Layers, GitCompare, FileText } from "lucide-react";
+"use client";
 
-interface TrustPillarsSectionProps {
-  t: (key: string) => string;
-}
+import { useRef } from "react";
+import { useTranslations } from "next-intl";
+import { BadgeCheck, Layers, GitCompare, FileText, ChevronLeft, ChevronRight } from "lucide-react";
 
-export function TrustPillarsSection({ t }: TrustPillarsSectionProps) {
+export function TrustPillarsSection() {
+  const t = useTranslations("home");
+  const carouselRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollByCard = (direction: "prev" | "next") => {
+    const container = carouselRef.current;
+    if (!container) return;
+    const card = container.querySelector<HTMLElement>(".trust-card");
+    const step = card ? card.offsetWidth + 14 : container.clientWidth * 0.86;
+    container.scrollBy({
+      left: direction === "next" ? step : -step,
+      behavior: "smooth",
+    });
+  };
   const pillars = [
     {
       icon: BadgeCheck,
@@ -82,12 +95,16 @@ export function TrustPillarsSection({ t }: TrustPillarsSectionProps) {
           </h2>
         </div>
 
-        <div style={{
+        <div
+          ref={carouselRef}
+          className="trust-grid"
+          style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
           gap: "2rem",
           alignItems: "start"
-        }}>
+        }}
+        >
           {pillars.map((item, i) => (
             <div
               key={i}
@@ -148,6 +165,23 @@ export function TrustPillarsSection({ t }: TrustPillarsSectionProps) {
             </div>
           ))}
         </div>
+
+        <div className="trust-carousel-controls" aria-hidden>
+          <button
+            type="button"
+            className="trust-carousel-btn"
+            onClick={() => scrollByCard("prev")}
+          >
+            <ChevronLeft size={18} strokeWidth={2.2} />
+          </button>
+          <button
+            type="button"
+            className="trust-carousel-btn"
+            onClick={() => scrollByCard("next")}
+          >
+            <ChevronRight size={18} strokeWidth={2.2} />
+          </button>
+        </div>
       </div>
 
       <style>{`
@@ -156,8 +190,60 @@ export function TrustPillarsSection({ t }: TrustPillarsSectionProps) {
           box-shadow: 0 30px 60px -12px rgba(27,42,74,0.12);
           border-color: #0d737740;
         }
-        @media (max-width: 768px) {
+        .trust-carousel-controls { display: none; }
+        @media (min-width: 768px) and (max-width: 1024px) {
+          .trust-grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 1rem !important;
+          }
+          .trust-card {
+            margin-top: 0 !important;
+            min-width: 0 !important;
+            padding: 1.6rem !important;
+            border-radius: 18px !important;
+          }
+        }
+        @media (max-width: 767px) {
+          .trust-grid {
+            display: flex !important;
+            overflow-x: auto;
+            gap: 0.9rem !important;
+            scroll-snap-type: x mandatory;
+            padding-bottom: 0.35rem;
+            -webkit-overflow-scrolling: touch;
+          }
+          .trust-grid::-webkit-scrollbar { display: none; }
           .trust-card { margin-top: 0 !important; }
+          .trust-card {
+            min-width: 84%;
+            scroll-snap-align: start;
+            padding: 1.25rem !important;
+            border-radius: 16px !important;
+          }
+          .trust-card h3 { font-size: 1rem !important; margin-bottom: 0.55rem !important; }
+          .trust-card p { font-size: 0.84rem !important; line-height: 1.45 !important; }
+          .trust-card > div:first-child { width: 50px !important; height: 50px !important; border-radius: 14px !important; }
+          .trust-card > div:first-child svg { width: 24px !important; height: 24px !important; }
+          .trust-carousel-controls {
+            margin-top: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.65rem;
+          }
+          .trust-carousel-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 999px;
+            border: 1px solid rgba(13,115,119,0.26);
+            background: var(--brand-white);
+            color: var(--brand-teal);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px -14px rgba(27,42,74,0.35);
+          }
         }
       `}</style>
     </section>

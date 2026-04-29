@@ -49,7 +49,7 @@ export default async function HomePage() {
 
       <TwoSidedSnapshotSection t={t} />
 
-      <TrustPillarsSection t={t} />
+      <TrustPillarsSection />
 
       <FinalCtaSection
         t={t}
@@ -62,7 +62,7 @@ export default async function HomePage() {
       <VisionMissionSection t={tAbout} />
       <OurStorySection t={tAbout} />
       <OurValuesSection t={tAbout} />
-      <WhatDeliversSection t={tAbout} />
+      <WhatDeliversSection />
       <OwnerSupportSection t={t} showOwnerCta={showOwnerCta} ownerCtaHref={ownerCtaHref} />
       <ProfessionalSupportSection t={t} />
       <DecisionJourneySection t={t} />
