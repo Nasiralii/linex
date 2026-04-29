@@ -1,12 +1,12 @@
 import { FaqClient } from "./faq-client";
-import { ContactCtaPanel } from "./contact-cta-panel";
+import { ContactCtaPanel, ContactActionsStrip } from "./contact-cta-panel";
 
 interface FaqSectionProps {
   t: (key: string) => string;
 }
 
 const FAQ_COUNT = 15;
-const INITIAL_VISIBLE = 9;
+const INITIAL_VISIBLE = 5;
 
 export function FaqSection({ t }: FaqSectionProps) {
   const faqs = Array.from({ length: FAQ_COUNT }, (_, i) => ({
@@ -35,42 +35,62 @@ export function FaqSection({ t }: FaqSectionProps) {
         style={{
           maxWidth: "1200px",
           margin: "0 auto",
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "2.5rem",
-          alignItems: "stretch",
+          display: "flex",
+          flexDirection: "column",
+          gap: "2rem",
         }}
       >
-        {/* FAQ column */}
-        <FaqClient
-          badge={t("faqSection.badge")}
-          title={t("faqSection.title")}
-          showMore={t("faqSection.showMore")}
-          showLess={t("faqSection.showLess")}
-          faqs={faqs}
-          initialVisible={INITIAL_VISIBLE}
-        />
+        {/* Top — FAQ + Get Started panel */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "2.5rem",
+            alignItems: "start",
+          }}
+          className="faq-grid"
+        >
+          {/* FAQ column */}
+          <FaqClient
+            badge={t("faqSection.badge")}
+            title={t("faqSection.title")}
+            showMore={t("faqSection.showMore")}
+            showLess={t("faqSection.showLess")}
+            faqs={faqs}
+            initialVisible={INITIAL_VISIBLE}
+          />
 
-        {/* Contact column */}
-        <ContactCtaPanel
-          badge={t("contactSection.badge")}
-          headline={t("contactSection.headline")}
-          copy={t("contactSection.copy")}
+          {/* Contact column */}
+          <ContactCtaPanel
+            badge={t("contactSection.badge")}
+            headline={t("contactSection.headline")}
+            copy={t("contactSection.copy")}
+            formTitle={t("contactSection.formTitle")}
+            fieldName={t("contactSection.fieldName")}
+            fieldEmail={t("contactSection.fieldEmail")}
+            fieldMessage={t("contactSection.fieldMessage")}
+            fieldMessagePlaceholder={t("contactSection.fieldMessagePlaceholder")}
+            submit={t("contactSection.submit")}
+            submitSending={t("contactSection.submitSending")}
+            submitSuccess={t("contactSection.submitSuccess")}
+          />
+        </div>
+
+        {/* Bottom — full-width "How to reach us" + CTAs */}
+        <ContactActionsStrip
           channelsTitle={t("contactSection.channelsTitle")}
           channels={channels}
           ctaOwner={t("contactSection.ctaOwner")}
           ctaPro={t("contactSection.ctaPro")}
           ctaSupport={t("contactSection.ctaSupport")}
-          formTitle={t("contactSection.formTitle")}
-          fieldName={t("contactSection.fieldName")}
-          fieldEmail={t("contactSection.fieldEmail")}
-          fieldMessage={t("contactSection.fieldMessage")}
-          fieldMessagePlaceholder={t("contactSection.fieldMessagePlaceholder")}
-          submit={t("contactSection.submit")}
-          submitSending={t("contactSection.submitSending")}
-          submitSuccess={t("contactSection.submitSuccess")}
         />
       </div>
+
+      <style>{`
+        @media (max-width: 900px) {
+          .faq-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </section>
   );
 }

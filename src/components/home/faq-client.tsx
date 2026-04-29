@@ -17,28 +17,49 @@ interface FaqClientProps {
   initialVisible: number;
 }
 
-function FaqRow({ item, index }: { item: FaqItem; index: number }) {
-  const [open, setOpen] = useState(false);
+function FaqRow({
+  item,
+  index,
+  open,
+  onToggle,
+}: {
+  item: FaqItem;
+  index: number;
+  open: boolean;
+  onToggle: () => void;
+}) {
+  const [hover, setHover] = useState(false);
+
+  const restingBorder = hover ? "rgba(42,123,136,0.28)" : "var(--brand-ivory-dark)";
+  const restingBg = hover
+    ? "linear-gradient(135deg, rgba(42,123,136,0.025) 0%, var(--brand-white) 70%)"
+    : "var(--brand-white)";
+  const restingShadow = hover
+    ? "0 8px 22px -16px rgba(42,123,136,0.22)"
+    : "0 3px 14px -10px rgba(27,42,74,0.12)";
 
   return (
     <article
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
       style={{
         borderRadius: "14px",
-        border: `1px solid ${open ? "rgba(42,123,136,0.38)" : "var(--brand-ivory-dark)"}`,
+        border: `1px solid ${open ? "rgba(42,123,136,0.38)" : restingBorder}`,
         background: open
           ? "linear-gradient(135deg, rgba(42,123,136,0.055) 0%, var(--brand-white) 65%)"
-          : "var(--brand-white)",
+          : restingBg,
         overflow: "hidden",
-        transition: "border-color 220ms ease, background 220ms ease, box-shadow 220ms ease",
+        transition: "border-color 220ms ease, background 220ms ease, box-shadow 220ms ease, transform 220ms ease",
+        transform: hover && !open ? "translateY(-1px)" : "translateY(0)",
         boxShadow: open
           ? "0 14px 36px -22px rgba(42,123,136,0.28)"
-          : "0 3px 14px -10px rgba(27,42,74,0.12)",
+          : restingShadow,
       }}
     >
       {/* Question row / button */}
       <button
         type="button"
-        onClick={() => setOpen((p) => !p)}
+        onClick={onToggle}
         aria-expanded={open}
         style={{
           width: "100%",
@@ -168,10 +189,11 @@ export function FaqClient({
   initialVisible,
 }: FaqClientProps) {
   const [expanded, setExpanded] = useState(false);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
   const visible = expanded ? faqs : faqs.slice(0, initialVisible);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+    <div style={{ display: "flex", flexDirection: "column" }}>
       {/* Header */}
       <div style={{ marginBottom: "1.5rem" }}>
         <div
@@ -212,14 +234,20 @@ export function FaqClient({
       </div>
 
       {/* FAQ list */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", flex: 1 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
         {visible.map((item, idx) => (
-          <FaqRow key={item.q} item={item} index={idx} />
+          <FaqRow
+            key={item.q}
+            item={item}
+            index={idx}
+            open={openIndex === idx}
+            onToggle={() => setOpenIndex((prev) => (prev === idx ? null : idx))}
+          />
         ))}
       </div>
 
-      {/* View more / Show less toggle */}
-      <div style={{ marginTop: "1.2rem" }}>
+      {/* View more / Show less toggle — sits right under the last FAQ */}
+      <div style={{ marginTop: "0.5rem" }}>
         <button
           type="button"
           onClick={() => {
@@ -228,21 +256,33 @@ export function FaqClient({
               document.getElementById("faq-contact-section")?.scrollIntoView({ behavior: "smooth" });
             }
           }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = "rgba(13,115,119,0.45)";
+            e.currentTarget.style.color = "var(--brand-teal)";
+            e.currentTarget.style.transform = "translateY(-2px)";
+            e.currentTarget.style.boxShadow = "0 10px 24px -10px rgba(13,115,119,0.32)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = "var(--brand-ivory-dark)";
+            e.currentTarget.style.color = "var(--brand-navy)";
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = "0 4px 16px -10px rgba(27,42,74,0.18)";
+          }}
           style={{
             display: "inline-flex",
             alignItems: "center",
-            gap: "0.45rem",
+            gap: "0.5rem",
             border: "1px solid var(--brand-ivory-dark)",
             background: "var(--brand-white)",
             color: "var(--brand-navy)",
             fontWeight: 700,
             fontSize: "0.85rem",
             borderRadius: "999px",
-            padding: "0.6rem 1.1rem",
+            padding: "0.6rem 1.15rem",
             cursor: "pointer",
             fontFamily: "inherit",
             boxShadow: "0 4px 16px -10px rgba(27,42,74,0.18)",
-            transition: "box-shadow 180ms ease",
+            transition: "transform 220ms cubic-bezier(0.4,0,0.2,1), box-shadow 220ms ease, border-color 220ms ease, color 220ms ease",
           }}
         >
           {expanded ? showLess : showMore}
