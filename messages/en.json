@@ -255,11 +255,18 @@
       "documentedJourneyDesc": "Complete audit trail from project brief to award — every step tracked and recorded"
     },
     "twoSided": {
-      "title": "Two-Sided Snapshot",
+      "title": "Two-Sided Marketplace",
+      "headline": "Built for both sides of every project.",
       "ownersTitle": "For Project Owners",
       "ownersDesc": "Post your project and receive qualified offers — without the random search.",
       "contractorsTitle": "For Contractors & Engineers",
-      "contractorsDesc": "Showcase your expertise to serious projects looking for your specialty."
+      "contractorsDesc": "Showcase your expertise to serious projects looking for your specialty.",
+      "ownerBullet1": "Post in minutes with clear specifications.",
+      "ownerBullet2": "Compare verified offers on one dashboard.",
+      "ownerBullet3": "Award your decision with confidence.",
+      "proBullet1": "Build a verified professional profile.",
+      "proBullet2": "Compete for projects that match your specialty.",
+      "proBullet3": "Grow your reputation with every project."
     },
     "whyRasi": {
       "title": "Why Rasi",
@@ -272,6 +279,8 @@
       "microcopy": "Post in minutes — no documents required to start."
     },
     "ownerSection": {
+      "badge": "For Project Owners",
+      "cta": "Post Your Project",
       "headline": "Stop searching alone. Let qualified professionals come to your project.",
       "mainCopy": "Whether you are building a villa, designing a space, finishing an office, renovating a home, or developing a commercial project — Rasi turns your idea into a structured project request that reaches the right contractors and engineers, and brings back comparable offers.",
       "howWeHelpTitle": "How We Help You",
@@ -304,6 +313,8 @@
       "cta": "Post Your Project Now"
     },
     "professionalSection": {
+      "badge": "For Contractors & Engineers",
+      "cta": "Join as a Professional",
       "headline": "Real projects are looking for your expertise.",
       "mainCopy": "If you are a licensed contractor or specialized engineer, Rasi gives you a structured channel to reach serious project owners. Instead of relying on relationships or random advertising, you build a verified professional profile and compete for the projects that match your specialty and area.",
       "whyJoinTitle": "Why Join",
