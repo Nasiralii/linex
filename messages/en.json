@@ -481,6 +481,31 @@
         }
       ]
     },
+    "partnersSection": {
+      "badge": "Partnerships",
+      "headline": "Building partnerships that raise the quality of the construction sector.",
+      "copy": "We welcome strategic partnerships with engineering offices, qualified contractors, real estate developers, brokers, financing partners, technology providers, and construction-related service providers. Our shared goal is one: a trusted digital infrastructure that gets project owners to the right professional — and raises the efficiency of the sector as a whole.",
+      "whoTitle": "Who can partner with us",
+      "who1": "Engineering and consulting offices",
+      "who2": "Qualified contractors with approved classifications",
+      "who3": "Real estate developers and brokers",
+      "who4": "Technology and software solution providers",
+      "who5": "Financing and banking partners",
+      "who6": "Training and capacity-building partners in the sector",
+      "whyTitle": "Why partner with Rasi",
+      "why1Title": "Real intent audience",
+      "why1Desc": "Reach owners ready to contract — not casual browsers.",
+      "why2Title": "Brand trust uplift",
+      "why2Desc": "Visibility on a specialized platform that reinforces credibility.",
+      "why3Title": "Referral channels",
+      "why3Desc": "Long-term collaboration opportunities across the construction value chain.",
+      "why4Title": "Sector impact",
+      "why4Desc": "A direct contribution to a more transparent and organized construction market.",
+      "modelLabel": "Partnership Model",
+      "modelTitle": "Preferred Partners — not exclusivity.",
+      "modelDesc": "We respect the Saudi Competition Law and preserve strategic flexibility for both partnership sides.",
+      "cta": "Contact Our Partnerships Team"
+    },
     "contactSection": {
       "badge": "Get Started",
       "headline": "Ready to start with confidence?",
