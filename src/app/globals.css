@@ -534,3 +534,108 @@ textarea:invalid:not(:placeholder-shown) {
 .legal-doc-toc-link:hover {
   background: var(--brand-ivory);
 }
+
+/* Partners grid — storefront-style logo cards (Jarir-inspired) */
+.partner-logo-card {
+  transition: border-color 160ms ease;
+  box-shadow: none;
+  border-radius: 1px;
+}
+
+.partner-logo-card:hover {
+  border-color: #d8d8d8;
+}
+
+.partner-logo-card-footer {
+  min-height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.28rem 0.55rem;
+  background: linear-gradient(180deg, #727478 0%, #6a6c70 100%);
+  color: rgba(255, 255, 255, 0.97);
+  font-size: clamp(0.54rem, 0.9vw, 0.6rem);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  line-height: 1.2;
+  clip-path: polygon(
+    0 0,
+    calc(100% - 64px) 0,
+    calc(100% - 42px) 10px,
+    100% 10px,
+    100% 100%,
+    0 100%
+  );
+}
+
+[dir="rtl"] .partner-logo-card-footer {
+  clip-path: polygon(
+    0 10px,
+    42px 10px,
+    64px 0,
+    100% 0,
+    100% 100%,
+    0 100%
+  );
+}
+
+.partner-logos-track {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.partner-logos-slide {
+  min-width: 0;
+}
+
+.partner-logos-nav {
+  display: none;
+  justify-content: center;
+  gap: 0.65rem;
+  margin-top: 0.95rem;
+}
+
+.partner-logos-nav-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--brand-teal) 30%, var(--brand-ivory-dark));
+  background: var(--brand-white);
+  color: var(--brand-teal);
+}
+
+@media (max-width: 1024px) {
+  .partner-logos-track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0.9rem;
+  }
+  .partner-logos-track::-webkit-scrollbar {
+    display: none;
+  }
+  .partner-logos-slide {
+    scroll-snap-align: start;
+    min-width: calc((100% - 0.9rem) / 2);
+    max-width: calc((100% - 0.9rem) / 2);
+    flex: 0 0 auto;
+  }
+  .partner-logos-nav {
+    display: flex;
+  }
+}
+
+@media (max-width: 767px) {
+  .partner-logos-slide {
+    min-width: 100%;
+    max-width: 100%;
+  }
+}
