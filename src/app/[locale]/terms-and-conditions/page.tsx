@@ -183,10 +183,10 @@ export default async function TermsAndConditionsPage() {
         </div>
 
         {/* ── Two-column layout: TOC sidebar + content ── */}
-        <div className="terms-layout">
+        <div className="legal-doc-layout">
 
           {/* Sidebar TOC */}
-          <aside className="terms-toc" style={{ alignSelf: "start", position: "sticky", top: "6rem" }}>
+          <aside className="legal-doc-toc" style={{ alignSelf: "start", position: "sticky", top: "6rem" }}>
             <div style={{
               background: "var(--brand-white)", borderRadius: "16px",
               border: "1px solid var(--brand-ivory-dark)",
@@ -203,7 +203,7 @@ export default async function TermsAndConditionsPage() {
                   <a
                     key={c.n}
                     href={`#clause-${c.n}`}
-                    className={`toc-link${c.important ? " toc-link--key" : ""}`}
+                    className={`legal-doc-toc-link${c.important ? " legal-doc-toc-link--key" : ""}`}
                   >
                     <span style={{
                       width: "20px", height: "20px", borderRadius: "6px", flexShrink: 0,
@@ -345,39 +345,6 @@ export default async function TermsAndConditionsPage() {
           </div>
         </div>
       </div>
-
-      <style>{`
-        .terms-layout {
-          display: grid;
-          grid-template-columns: 280px 1fr;
-          gap: 2rem;
-          align-items: start;
-          position: relative;
-        }
-        .terms-toc { display: block; }
-        @media (max-width: 900px) {
-          .terms-layout { grid-template-columns: 1fr; }
-          .terms-toc { display: none; }
-        }
-        .toc-link {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.35rem 0.55rem;
-          border-radius: 8px;
-          text-decoration: none;
-          font-size: 0.78rem;
-          line-height: 1.4;
-          color: var(--brand-charcoal);
-          font-weight: 400;
-          transition: background 140ms ease;
-        }
-        .toc-link--key {
-          color: var(--brand-teal);
-          font-weight: 700;
-        }
-        .toc-link:hover { background: var(--brand-ivory); }
-      `}</style>
     </main>
   );
 }

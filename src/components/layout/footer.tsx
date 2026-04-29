@@ -81,6 +81,9 @@ export function Footer() {
               <Link href="/terms-and-conditions" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", textDecoration: "none" }}>
                 {isRtl ? "الشروط والأحكام" : "Terms & Conditions"}
               </Link>
+              <Link href="/privacy-policy" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", textDecoration: "none" }}>
+                {isRtl ? "سياسة الخصوصية" : "Privacy Policy"}
+              </Link>
             </div>
           </div>
         </div>

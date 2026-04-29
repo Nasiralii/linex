@@ -489,3 +489,48 @@ textarea:invalid:not(:placeholder-shown) {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Legal pages: Terms & Conditions, Privacy Policy — shared TOC + grid */
+.legal-doc-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2rem;
+  align-items: start;
+  position: relative;
+}
+
+.legal-doc-toc {
+  display: block;
+}
+
+@media (max-width: 900px) {
+  .legal-doc-layout {
+    grid-template-columns: 1fr;
+  }
+  .legal-doc-toc {
+    display: none;
+  }
+}
+
+.legal-doc-toc-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--brand-charcoal);
+  font-weight: 400;
+  transition: background 140ms ease;
+}
+
+.legal-doc-toc-link--key {
+  color: var(--brand-teal);
+  font-weight: 700;
+}
+
+.legal-doc-toc-link:hover {
+  background: var(--brand-ivory);
+}
