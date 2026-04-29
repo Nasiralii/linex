@@ -351,6 +351,67 @@
       "adv3Desc": "We convert offers from fragmented WhatsApp conversations and phone calls into structured, comparable data on unified criteria. The decision becomes clearer, and the real differences actually surface.",
       "adv4Title": "Built for the Saudi Market",
       "adv4Desc": "From verification flows to communication patterns to professional classifications, Rasi is built on a real understanding of Saudi contracting norms, local contractor workflows, and the role of engineers in raising decision quality. We comply with the Personal Data Protection Law (PDPL), ZATCA e-invoicing, the E-Commerce Law, and applicable cybersecurity standards."
+    },
+    "verificationTrust": {
+      "badge": "Verification & Qualification",
+      "headlinePrefix": "Trust starts before the",
+      "headlineAccent": "first offer.",
+      "whyTitle": "Why Verification?",
+      "whyCopy": "Platform quality is not measured by registration counts, but by the quality of those allowed to compete. We designed a multi-stage process to raise the trust baseline, reduce decision ambiguity, and shield both sides from known operational risks.",
+      "reviewTitle": "What We Review",
+      "reviewItems": [
+        "Legal information and commercial registration",
+        "Licensing and professional classification",
+        "Declared specialization and scope of work",
+        "Prior work and documented projects",
+        "Profile completeness and supporting documents",
+        "Ratings and on-platform behavior",
+        "Fit between professional and project type/area"
+      ],
+      "whyMattersTitle": "Why this matters",
+      "whyMatters": [
+        {
+          "title": "Raises the trust baseline",
+          "desc": "Every professional shown has already passed a documented review"
+        },
+        {
+          "title": "Reduces decision ambiguity",
+          "desc": "Owners compare verified, comparable professionals — not unknowns"
+        },
+        {
+          "title": "Shields both sides",
+          "desc": "Known operational risks reduced before the first offer is submitted"
+        }
+      ],
+      "whoGetsTitle": "Who gets verified",
+      "whoGets": [
+        "Contractors — all trade types and classifications",
+        "Engineering offices — design and supervision",
+        "Finishing and renovation specialists",
+        "Independent licensed engineers"
+      ],
+      "tiersTitle": "The Four-Tier Trust System",
+      "tiers": [
+        {
+          "name": "Registered",
+          "desc": "Completed registration and basic verification. Can browse projects and begin building a professional profile."
+        },
+        {
+          "name": "Qualified",
+          "desc": "Complete profile with documented experience in declared specialty. Eligible to submit project offers."
+        },
+        {
+          "name": "Preferred",
+          "desc": "Strong performance record and accumulated positive ratings. Higher visibility in search results."
+        },
+        {
+          "name": "Elite",
+          "desc": "Sustained high performance, continuous commitment, and a documented track record on the platform. Highest trust level and priority in major project recommendations."
+        }
+      ],
+      "noteTitle": "Important Note",
+      "noteCopy": "Verification reduces randomness and improves comparison quality — but it does not guarantee execution outcomes. Contractual obligations, schedule adherence, and final work quality remain the responsibility of the awarded party.",
+      "noteEmphasis": "Rasi prepares the decision; it does not execute the project."
     }
   },
   "notifications": {

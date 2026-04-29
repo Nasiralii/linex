@@ -8,3 +8,4 @@ export { OwnerSupportSection } from "./owner-support-section";
 export { ProfessionalSupportSection } from "./professional-support-section";
 export { DecisionJourneySection } from "./decision-journey-section";
 export { CompetitiveAdvantagesSection } from "./competitive-advantages-section";
+export { VerificationTrustSection } from "./verification-trust-section";
