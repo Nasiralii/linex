@@ -23,7 +23,7 @@ export function DecisionJourneySection({ t }: DecisionJourneySectionProps) {
     <section
       style={{
         background: "linear-gradient(180deg, var(--brand-white) 0%, var(--brand-ivory) 100%)",
-        padding: "5rem 0",
+        padding: "3rem 0",
         borderTop: "1px solid var(--brand-ivory-dark)",
       }}
     >

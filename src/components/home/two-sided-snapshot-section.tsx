@@ -49,7 +49,7 @@ export function TwoSidedSnapshotSection({ t }: TwoSidedSnapshotSectionProps) {
 
   return (
     <section
-      className="!py-12 md:!py-20"
+      className="!py-8"
       style={{
         background: "var(--brand-ivory)",
         position: "relative",

@@ -22,7 +22,7 @@ export function CompetitiveAdvantagesSection({ t }: CompetitiveAdvantagesSection
     <section
       style={{
         background: "var(--brand-ivory)",
-        padding: "5rem 0",
+        padding: "1rem 0",
       }}
     >
       <div className="container-app">

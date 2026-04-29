@@ -18,7 +18,7 @@ export function PartnersSection({ t }: PartnersSectionProps) {
         position: "relative",
         background:
           "linear-gradient(180deg, var(--brand-ivory) 0%, var(--brand-white) 50%, var(--brand-ivory) 100%)",
-        padding: "clamp(2.25rem, 6vw, 5rem) 0 clamp(2.75rem, 7vw, 5rem)",
+        padding: "clamp(2.25rem, 6vw, 2rem) 0 clamp(2.75rem, 7vw, 5rem)",
         borderTop: "1px solid var(--brand-ivory-dark)",
         overflow: "hidden",
       }}

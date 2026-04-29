@@ -60,7 +60,7 @@ export function VerificationTrustSection({ t }: VerificationTrustSectionProps) {
       id="verification"
       style={{
         background: "var(--brand-ivory)",
-        padding: "5rem 0",
+        padding: "3rem 0",
         position: "relative",
       }}
     >
