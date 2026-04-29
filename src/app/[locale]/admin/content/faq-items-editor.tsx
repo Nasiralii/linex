@@ -123,7 +123,7 @@ export default function FaqItemsEditor({ initialContent, initialContentAr, isRtl
   const [faqEn, setFaqEn] = useState<FaqItem[]>(() => {
     return initialParsedEn.length > 0
       ? initialParsedEn
-      : [{ question: "", answer: "", category: "Project Management", image: "", publishedAt: new Date().toISOString() }];
+      : [{ question: "", answer: "", category: "Project Management" as BlogCategory, image: "", publishedAt: new Date().toISOString() }];
   });
 
   const [faqAr, setFaqAr] = useState<FaqItem[]>(() => {
@@ -142,7 +142,14 @@ export default function FaqItemsEditor({ initialContent, initialContentAr, isRtl
     () =>
       Array.from(
         { length: syncedLength },
-        (_, i) => faqEn[i] || { question: "", answer: "", category: "Project Management", image: "", publishedAt: new Date().toISOString() },
+        (_, i) =>
+          faqEn[i] || {
+            question: "",
+            answer: "",
+            category: "Project Management" as BlogCategory,
+            image: "",
+            publishedAt: new Date().toISOString(),
+          },
       ),
     [faqEn, syncedLength],
   );
@@ -192,7 +199,7 @@ export default function FaqItemsEditor({ initialContent, initialContentAr, isRtl
           className="btn-secondary"
           onClick={() => {
             setFaqEn((prev) => {
-              const next = [...prev, { question: "", answer: "", category: "Project Management" }];
+              const next = [...prev, { question: "", answer: "", category: "Project Management" as BlogCategory }];
               next[next.length - 1].image = "";
               next[next.length - 1].publishedAt = new Date().toISOString();
               setActiveIndex(next.length - 1);
