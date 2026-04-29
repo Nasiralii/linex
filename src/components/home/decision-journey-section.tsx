@@ -1,3 +1,5 @@
+import { FilePlus2, GitCompare, Award, Star, type LucideIcon } from "lucide-react";
+
 interface DecisionJourneySectionProps {
   t: (key: string) => string;
 }
@@ -5,12 +7,13 @@ interface DecisionJourneySectionProps {
 interface JourneyItem {
   titleKey: string;
   descKey: string;
+  icon: LucideIcon;
 }
 
 const STEPS: JourneyItem[] = [
-  { titleKey: "decisionJourney.step1Title", descKey: "decisionJourney.step1Desc" },
-  { titleKey: "decisionJourney.step2Title", descKey: "decisionJourney.step2Desc" },
-  { titleKey: "decisionJourney.step3Title", descKey: "decisionJourney.step3Desc" },
+  { titleKey: "decisionJourney.step1Title", descKey: "decisionJourney.step1Desc", icon: FilePlus2 },
+  { titleKey: "decisionJourney.step2Title", descKey: "decisionJourney.step2Desc", icon: GitCompare },
+  { titleKey: "decisionJourney.step3Title", descKey: "decisionJourney.step3Desc", icon: Award },
 ];
 
 const TEAL_LINE = "linear-gradient(180deg, rgba(13,115,119,0.55) 0%, rgba(13,115,119,0.2) 100%)";
@@ -91,6 +94,7 @@ function Timeline({ t }: { t: (key: string) => string }) {
       />
       {STEPS.map((step, idx) => {
         const isLast = idx === STEPS.length - 1;
+        const StepIcon = step.icon;
         return (
           <article
             key={step.titleKey}
@@ -129,6 +133,22 @@ function Timeline({ t }: { t: (key: string) => string }) {
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.5rem" }}>
+                <span
+                  aria-hidden
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                    borderRadius: "9px",
+                    background: "rgba(13,115,119,0.08)",
+                    color: "var(--brand-teal)",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <StepIcon size={16} strokeWidth={1.9} />
+                </span>
                 <h3 style={{ margin: 0, color: "var(--brand-navy)", fontSize: "1.06rem", fontWeight: 700 }}>
                   {t(step.titleKey)}
                 </h3>
@@ -158,17 +178,35 @@ function AfterAwardStrip({ t }: { t: (key: string) => string }) {
         width: "100%",
         margin: 0,
         borderRadius: "14px",
-        padding: "1rem",
+        padding: "1rem 1.1rem",
         border: "1px solid rgba(13,115,119,0.2)",
         background: "linear-gradient(135deg, rgba(13,115,119,0.05) 0%, var(--brand-white) 68%)",
         display: "flex",
-        gap: "0.85rem",
+        gap: "0.9rem",
         alignItems: "flex-start",
         boxShadow: "0 14px 30px -24px rgba(27,42,74,0.35)",
       }}
     >
+      <span
+        aria-hidden
+        style={{
+          flexShrink: 0,
+          width: "38px",
+          height: "38px",
+          borderRadius: "11px",
+          background: "linear-gradient(135deg, #e6f4f1 0%, #d4e8eb 100%)",
+          color: "var(--brand-teal)",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginTop: "0.1rem",
+          boxShadow: "0 4px 14px -8px rgba(13,115,119,0.45)",
+        }}
+      >
+        <Star size={18} strokeWidth={1.9} />
+      </span>
       <p style={{ margin: 0, color: "var(--brand-charcoal)", lineHeight: 1.7, fontSize: "0.93rem" }}>
-        <strong>{t("decisionJourney.afterAwardTitle")} </strong>
+        <strong style={{ color: "var(--brand-navy)" }}>{t("decisionJourney.afterAwardTitle")} </strong>
         {t("decisionJourney.afterAward")}
       </p>
     </div>
