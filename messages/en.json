@@ -412,6 +412,99 @@
       "noteTitle": "Important Note",
       "noteCopy": "Verification reduces randomness and improves comparison quality — but it does not guarantee execution outcomes. Contractual obligations, schedule adherence, and final work quality remain the responsibility of the awarded party.",
       "noteEmphasis": "Rasi prepares the decision; it does not execute the project."
+    },
+    "faqSection": {
+      "badge": "FAQ",
+      "title": "Frequently Asked Questions",
+      "showMore": "View more",
+      "showLess": "Show less",
+      "items": [
+        {
+          "q": "What is Rasi?",
+          "a": "Rasi is Saudi Arabia's digital marketplace for construction and design. It connects project owners with qualified contractors and engineers, and organizes the decision journey from project posting to professional award."
+        },
+        {
+          "q": "Are you a construction company?",
+          "a": "No. Rasi is not a contracting company and does not execute construction work itself. Our role is to connect, verify, document, and structure the decision — the contractual relationship begins directly between the owner and the awarded party."
+        },
+        {
+          "q": "Does the platform monitor project execution?",
+          "a": "No. Rasi's role ends at the moment of award. Execution, supervision, and quality assurance fall outside the platform's scope and remain the responsibility of the contracting parties."
+        },
+        {
+          "q": "Who can post a project?",
+          "a": "Individuals, companies, and project-owning entities can post projects across construction, design, finishing, renovation, or commercial space development, provided they are at least 18 years old and have legal capacity."
+        },
+        {
+          "q": "Who can register as a service provider?",
+          "a": "Licensed contractors, specialized engineers, and engineering offices — after completing the verification and qualification requirements relevant to the account type and specialty."
+        },
+        {
+          "q": "Are contractors and engineers verified?",
+          "a": "Yes. We apply a multi-stage process covering legal information, specialization, experience, and prior work. The trust level (Registered / Qualified / Preferred / Elite) is displayed on every professional profile."
+        },
+        {
+          "q": "Does the platform guarantee execution quality?",
+          "a": "No. Verification, comparison, and documentation reduce risk — but execution outcomes remain the responsibility of the awarded party. This separation between the digital role and the execution role is intentional and clearly stated."
+        },
+        {
+          "q": "How do I choose the right offer?",
+          "a": "Compare offers on the comparison dashboard based on: total price, timeline, professional record, prior ratings, clarity of scope, and communication quality before award."
+        },
+        {
+          "q": "Can I communicate with professionals before choosing?",
+          "a": "Yes. The platform provides a structured communication channel for questions and clarifications before award — and every exchange is documented in the project context."
+        },
+        {
+          "q": "Can I upload drawings, photos, and files?",
+          "a": "Yes. You can attach drawings, specifications, photos, or any files that help professionals understand the project and submit accurate offers."
+        },
+        {
+          "q": "What are the fees?",
+          "a": "Fees are published on the platform at the time of use and may change from time to time as Rasi may determine. For details, please refer to the Terms & Conditions."
+        },
+        {
+          "q": "How is my personal data handled?",
+          "a": "We process your data in compliance with the Saudi Personal Data Protection Law (PDPL), and we do not share it with third parties except for the purposes set out in the Privacy Policy or as required by law or formal request."
+        },
+        {
+          "q": "What happens if a dispute arises with the awarded party?",
+          "a": "Execution disputes between parties are governed by their agreement and applicable Saudi laws. Rasi makes the on-platform message and document trail available as a reference tool, but is not a party to the dispute and bears no responsibility for it."
+        },
+        {
+          "q": "Can I withdraw my project before award?",
+          "a": "Yes. You can withdraw your project at any time before award without obligations toward bidders, subject to any usage fees specified in the Terms."
+        },
+        {
+          "q": "How do I start?",
+          "a": "If you are a project owner: click \"Post Your Project.\" If you are a contractor or engineer: click \"Join as a Professional\" and complete your profile to reach the appropriate verification level."
+        }
+      ]
+    },
+    "contactSection": {
+      "badge": "Get Started",
+      "headline": "Ready to start with confidence?",
+      "copy": "Whether you are a project owner looking for the right contractor or engineer, or a contractor or engineer looking for serious projects — the Rasi team is ready to guide you to the right next step. Send us a message and we will respond within one business day.",
+      "channelsTitle": "How to reach us",
+      "ch1Label": "Direct Form",
+      "ch1Value": "In-site contact form",
+      "ch2Label": "Email",
+      "ch2Value": "As displayed on the platform",
+      "ch3Label": "Response Hours",
+      "ch3Value": "Sun – Thu, 9 AM – 6 PM (Riyadh)",
+      "ch4Label": "Operator",
+      "ch4Value": "Information Technology Integrated Solutions Co. — Riyadh, KSA",
+      "ctaOwner": "Start Your Project",
+      "ctaPro": "Join as a Professional",
+      "ctaSupport": "Talk to Support",
+      "formTitle": "Send us a message",
+      "fieldName": "Full name",
+      "fieldEmail": "Email address",
+      "fieldMessage": "Your message",
+      "fieldMessagePlaceholder": "Tell us how we can help you...",
+      "submit": "Send Message",
+      "submitSending": "Sending...",
+      "submitSuccess": "Message sent — we'll be in touch within one business day."
     }
   },
   "notifications": {

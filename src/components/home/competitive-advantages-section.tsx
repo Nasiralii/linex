@@ -73,8 +73,8 @@ export function CompetitiveAdvantagesSection({ t }: CompetitiveAdvantagesSection
             borderRadius: "18px",
             overflow: "hidden",
             border: "1px solid rgba(255,255,255,0.12)",
-            background: "linear-gradient(145deg, var(--brand-navy) 0%, var(--brand-navy-light) 62%, var(--brand-teal-dark) 100%)",
-            boxShadow: "0 22px 48px -28px rgba(27,42,74,0.5)",
+            background: "linear-gradient(145deg, color-mix(in srgb, var(--primary) 72%, #0f172a) 0%, color-mix(in srgb, var(--primary) 88%, #0b1720) 100%)",
+            boxShadow: "0 22px 48px -28px rgba(42,123,136,0.45)",
           }}
         >
           <div className="grid grid-cols-1 md:grid-cols-2">

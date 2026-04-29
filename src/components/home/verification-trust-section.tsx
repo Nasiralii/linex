@@ -152,8 +152,8 @@ function TierStrip({ t }: { t: (key: string) => string }) {
     <div
       style={{
         borderRadius: PANEL_RADIUS,
-        border: PANEL_BORDER,
-        background: PANEL_BG,
+        border: "1px solid rgba(255,255,255,0.12)",
+        background: "linear-gradient(145deg, color-mix(in srgb, var(--primary) 72%, #0f172a) 0%, color-mix(in srgb, var(--primary) 88%, #0b1720) 100%)",
         padding: "1rem 0.6rem",
         display: "flex",
         alignItems: "center",
@@ -161,6 +161,7 @@ function TierStrip({ t }: { t: (key: string) => string }) {
         gap: "0.4rem",
         marginBottom: "1.25rem",
         flexWrap: "wrap",
+        boxShadow: "0 22px 48px -28px rgba(42,123,136,0.45)",
       }}
     >
       {[0, 1, 2, 3].map((i) => (
@@ -184,14 +185,14 @@ function TierStrip({ t }: { t: (key: string) => string }) {
             >
               {String(i + 1).padStart(2, "0")}
             </span>
-            <span style={{ color: "var(--brand-charcoal)", fontSize: "0.86rem", fontWeight: 600 }}>
+            <span style={{ color: "rgba(255,255,255,0.92)", fontSize: "0.86rem", fontWeight: 600 }}>
               {t(`verificationTrust.tiers.${i}.name`)}
             </span>
           </div>
           {i < 3 && (
             <ChevronRight
               aria-hidden
-              style={{ width: "16px", height: "16px", color: "var(--brand-warm-grey)", flexShrink: 0 }}
+              style={{ width: "16px", height: "16px", color: "rgba(255,255,255,0.48)", flexShrink: 0 }}
             />
           )}
         </Fragment>

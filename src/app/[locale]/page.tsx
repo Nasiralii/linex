@@ -12,6 +12,7 @@ import {
   DecisionJourneySection,
   CompetitiveAdvantagesSection,
   VerificationTrustSection,
+  FaqSection,
 } from "@/components/home";
 import {
   WhoWeAreSection,
@@ -66,6 +67,7 @@ export default async function HomePage() {
       <DecisionJourneySection t={t} />
       <CompetitiveAdvantagesSection t={t} />
       <VerificationTrustSection t={t} />
+      <FaqSection t={t} />
     </div>
   );
 }

@@ -1,0 +1,76 @@
+import { FaqClient } from "./faq-client";
+import { ContactCtaPanel } from "./contact-cta-panel";
+
+interface FaqSectionProps {
+  t: (key: string) => string;
+}
+
+const FAQ_COUNT = 15;
+const INITIAL_VISIBLE = 9;
+
+export function FaqSection({ t }: FaqSectionProps) {
+  const faqs = Array.from({ length: FAQ_COUNT }, (_, i) => ({
+    q: t(`faqSection.items.${i}.q`),
+    a: t(`faqSection.items.${i}.a`),
+  }));
+
+  const channels: { icon: "form" | "email" | "hours" | "operator"; label: string; value: string }[] = [
+    { icon: "form", label: t("contactSection.ch1Label"), value: t("contactSection.ch1Value") },
+    { icon: "email", label: t("contactSection.ch2Label"), value: t("contactSection.ch2Value") },
+    { icon: "hours", label: t("contactSection.ch3Label"), value: t("contactSection.ch3Value") },
+    { icon: "operator", label: t("contactSection.ch4Label"), value: t("contactSection.ch4Value") },
+  ];
+
+  return (
+    <section
+      id="faq-contact-section"
+      style={{
+        background: "linear-gradient(180deg, var(--brand-white) 0%, var(--brand-ivory) 100%)",
+        padding: "5rem 0 6rem",
+        borderTop: "1px solid var(--brand-ivory-dark)",
+      }}
+    >
+      <div
+        className="container-app"
+        style={{
+          maxWidth: "1200px",
+          margin: "0 auto",
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "2.5rem",
+          alignItems: "stretch",
+        }}
+      >
+        {/* FAQ column */}
+        <FaqClient
+          badge={t("faqSection.badge")}
+          title={t("faqSection.title")}
+          showMore={t("faqSection.showMore")}
+          showLess={t("faqSection.showLess")}
+          faqs={faqs}
+          initialVisible={INITIAL_VISIBLE}
+        />
+
+        {/* Contact column */}
+        <ContactCtaPanel
+          badge={t("contactSection.badge")}
+          headline={t("contactSection.headline")}
+          copy={t("contactSection.copy")}
+          channelsTitle={t("contactSection.channelsTitle")}
+          channels={channels}
+          ctaOwner={t("contactSection.ctaOwner")}
+          ctaPro={t("contactSection.ctaPro")}
+          ctaSupport={t("contactSection.ctaSupport")}
+          formTitle={t("contactSection.formTitle")}
+          fieldName={t("contactSection.fieldName")}
+          fieldEmail={t("contactSection.fieldEmail")}
+          fieldMessage={t("contactSection.fieldMessage")}
+          fieldMessagePlaceholder={t("contactSection.fieldMessagePlaceholder")}
+          submit={t("contactSection.submit")}
+          submitSending={t("contactSection.submitSending")}
+          submitSuccess={t("contactSection.submitSuccess")}
+        />
+      </div>
+    </section>
+  );
+}

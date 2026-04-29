@@ -9,3 +9,4 @@ export { ProfessionalSupportSection } from "./professional-support-section";
 export { DecisionJourneySection } from "./decision-journey-section";
 export { CompetitiveAdvantagesSection } from "./competitive-advantages-section";
 export { VerificationTrustSection } from "./verification-trust-section";
+export { FaqSection } from "./faq-section";
