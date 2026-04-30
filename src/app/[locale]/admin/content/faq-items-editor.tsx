@@ -11,6 +11,15 @@ type FaqItem = {
   publishedAt?: string;
 };
 
+function updateItemAt<T>(list: T[], index: number, factory: () => T, updater: (current: T) => T): T[] {
+  const next = [...list];
+  while (next.length <= index) {
+    next.push(factory());
+  }
+  next[index] = updater(next[index]);
+  return next;
+}
+
 interface FaqItemsEditorProps {
   initialContent: string;
   initialContentAr: string;
@@ -130,10 +139,9 @@ export default function FaqItemsEditor({ initialContent, initialContentAr, isRtl
     const parsed = parseFaqContent(initialContentAr);
     return parsed.length > 0 ? parsed : [{ question: "", answer: "" }];
   });
-  const [activeIndex, setActiveIndex] = useState<number | null>(() =>
-    closeEditorOnLoad ? null : (initialParsedEn.length > 0 ? 0 : null),
-  );
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [shouldAutoSave, setShouldAutoSave] = useState(false);
 
@@ -188,6 +196,41 @@ export default function FaqItemsEditor({ initialContent, initialContentAr, isRtl
     setShouldAutoSave(false);
   }, [shouldAutoSave, contentEn, contentAr]);
 
+  const handleSaveClick = () => {
+    const hasInvalidHeading = normalizedEn.some((enItem, index) => {
+      const arItem = normalizedAr[index] || { question: "", answer: "" };
+      const hasAnyContent = Boolean(
+        enItem.question.trim() ||
+          enItem.answer.trim() ||
+          arItem.question.trim() ||
+          arItem.answer.trim() ||
+          (enItem.image || "").trim(),
+      );
+      return hasAnyContent && !enItem.question.trim();
+    });
+
+    if (hasInvalidHeading) {
+      setToastMessage(isRtl ? "لا يمكن الحفظ: عنوان المدونة (English) مطلوب." : "Cannot save: blog heading (English) is required.");
+      setTimeout(() => setToastMessage(""), 5000);
+      return;
+    }
+
+    const hasAtLeastOneHeading = normalizedEn.some((item) => item.question.trim().length > 0);
+    if (!hasAtLeastOneHeading) {
+      setToastMessage(isRtl ? "أضف عنوان مدونة واحد على الأقل قبل الحفظ." : "Add at least one blog heading before saving.");
+      setTimeout(() => setToastMessage(""), 5000);
+      return;
+    }
+
+    setIsSaving(true);
+    setToastMessage(isRtl ? "تم حفظ المدونة بنجاح" : "Blog saved successfully");
+    setTimeout(() => setToastMessage(""), 5000);
+    const form = rootRef.current?.closest("form");
+    if (form && form instanceof HTMLFormElement) {
+      form.requestSubmit();
+    }
+  };
+
   return (
     <div ref={rootRef} style={{ display: "grid", gap: "1rem" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -206,8 +249,6 @@ export default function FaqItemsEditor({ initialContent, initialContentAr, isRtl
               return next;
             });
             setFaqAr((prev) => [...prev, { question: "", answer: "" }]);
-            setToastMessage(isRtl ? "تمت إضافة مدونة جديدة" : "New blog added");
-            setTimeout(() => setToastMessage(""), 2200);
           }}
         >
           {isRtl ? "+ إضافة مدونة جديدة" : "+ Add New Blog"}
@@ -218,7 +259,7 @@ export default function FaqItemsEditor({ initialContent, initialContentAr, isRtl
       <input type="hidden" name="contentAr" value={contentAr} />
 
       {activeIndex !== null && activeIndex >= 0 && activeIndex < syncedLength ? (
-        <div className="card" style={{ padding: "1rem", border: "1px solid var(--border-light)" }}>
+        <div className="crd" style={{ padding: "1rem"}}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
             <strong style={{ fontSize: "0.9rem" }}>{isRtl ? `تحرير العنصر #${activeIndex + 1}` : `Editing item #${activeIndex + 1}`}</strong>
             <button
@@ -252,14 +293,32 @@ export default function FaqItemsEditor({ initialContent, initialContentAr, isRtl
                 dir="ltr"
                 autoComplete="off"
                 value={normalizedEn[activeIndex].question}
-                onChange={(e) => setFaqEn((prev) => prev.map((item, i) => (i === activeIndex ? { ...item, question: e.target.value } : item)))}
+                onChange={(e) =>
+                  setFaqEn((prev) =>
+                    updateItemAt(
+                      prev,
+                      activeIndex,
+                      () => ({ question: "", answer: "", category: "Project Management", image: "", publishedAt: new Date().toISOString() }),
+                      (item) => ({ ...item, question: e.target.value }),
+                    ),
+                  )
+                }
                 placeholder={isRtl ? "اكتب السؤال بالإنجليزي" : "Write question in English"}
                 style={{ minHeight: "44px" }}
               />
               <label>{isRtl ? "الإجابة (إنجليزي)" : "Answer (English)"}</label>
               <textarea
                 value={normalizedEn[activeIndex].answer}
-                onChange={(e) => setFaqEn((prev) => prev.map((item, i) => (i === activeIndex ? { ...item, answer: e.target.value } : item)))}
+                onChange={(e) =>
+                  setFaqEn((prev) =>
+                    updateItemAt(
+                      prev,
+                      activeIndex,
+                      () => ({ question: "", answer: "", category: "Project Management", image: "", publishedAt: new Date().toISOString() }),
+                      (item) => ({ ...item, answer: e.target.value }),
+                    ),
+                  )
+                }
                 placeholder={isRtl ? "اكتب الإجابة بالإنجليزي" : "Write answer in English"}
                 style={{ minHeight: "110px" }}
               />
@@ -272,7 +331,16 @@ export default function FaqItemsEditor({ initialContent, initialContentAr, isRtl
                 dir="rtl"
                 autoComplete="off"
                 value={normalizedAr[activeIndex].question}
-                onChange={(e) => setFaqAr((prev) => prev.map((item, i) => (i === activeIndex ? { ...item, question: e.target.value } : item)))}
+                onChange={(e) =>
+                  setFaqAr((prev) =>
+                    updateItemAt(
+                      prev,
+                      activeIndex,
+                      () => ({ question: "", answer: "" }),
+                      (item) => ({ ...item, question: e.target.value }),
+                    ),
+                  )
+                }
                 placeholder={isRtl ? "اكتب السؤال بالعربي" : "Write question in Arabic"}
                 style={{ minHeight: "44px" }}
               />
@@ -280,7 +348,16 @@ export default function FaqItemsEditor({ initialContent, initialContentAr, isRtl
               <textarea
                 dir="rtl"
                 value={normalizedAr[activeIndex].answer}
-                onChange={(e) => setFaqAr((prev) => prev.map((item, i) => (i === activeIndex ? { ...item, answer: e.target.value } : item)))}
+                onChange={(e) =>
+                  setFaqAr((prev) =>
+                    updateItemAt(
+                      prev,
+                      activeIndex,
+                      () => ({ question: "", answer: "" }),
+                      (item) => ({ ...item, answer: e.target.value }),
+                    ),
+                  )
+                }
                 placeholder={isRtl ? "اكتب الإجابة بالعربي" : "Write answer in Arabic"}
                 style={{ minHeight: "110px" }}
               />
@@ -332,7 +409,7 @@ export default function FaqItemsEditor({ initialContent, initialContentAr, isRtl
                         prev.map((item, i) => (i === activeIndex ? { ...item, image: result.url } : item)),
                       );
                       setToastMessage(isRtl ? "تم رفع الصورة بنجاح" : "Image uploaded successfully");
-                      setTimeout(() => setToastMessage(""), 2200);
+                      setTimeout(() => setToastMessage(""), 5000);
                     } else {
                       alert(result?.error || (isRtl ? "فشل رفع الصورة" : "Image upload failed"));
                     }
@@ -349,8 +426,14 @@ export default function FaqItemsEditor({ initialContent, initialContentAr, isRtl
               ) : null}
             </div>
             <div style={{ display: "flex", justifyContent: isRtl ? "flex-start" : "flex-end" }}>
-              <button type="submit" className="btn-primary" style={{ whiteSpace: "nowrap" }}>
-                {isRtl ? "حفظ المدونة" : "Save Blog"}
+              <button
+                type="button"
+                className="btn-primary"
+                style={{ whiteSpace: "nowrap" }}
+                onClick={handleSaveClick}
+                disabled={isSaving}
+              >
+                {isSaving ? (isRtl ? "جارٍ الحفظ..." : "Saving...") : (isRtl ? "حفظ المدونة" : "Save Blog")}
               </button>
             </div>
             {isUploadingImage ? (
@@ -407,7 +490,7 @@ export default function FaqItemsEditor({ initialContent, initialContentAr, isRtl
         <div
           style={{
             position: "fixed",
-            bottom: 24,
+            top: 24,
             right: 24,
             background: "var(--success)",
             color: "white",

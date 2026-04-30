@@ -21,14 +21,14 @@ export default async function BlogPostPage({
 
   return (
     <div className="bg-(--brand-ivory)">
-      <section className="container-app pt-8 pb-5 md:pt-12 md:pb-7">
+      <section className="container-app !p-3">
         <Link href="/blog" className="inline-flex items-center gap-2 text-sm font-medium">
           <ArrowLeft className="h-4 w-4" />
           {isRtl ? "العودة إلى المدونة" : "Back to Blog"}
         </Link>
       </section>
 
-      <article className="container-app pb-18 md:pb-24">
+      <article className="container-app !pb-8">
         <header className="card !p-6 md:!p-8 lg:!p-10 shadow-sm">
           <span className="chip chip-info">{post.category}</span>
           <div
