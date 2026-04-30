@@ -277,7 +277,7 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
         </div>
 
         <div style={{ marginTop: "1.45rem",paddingBottom: "1.2rem", borderTop: "1px solid rgba(255,255,255,0.15)", paddingTop: "1.2rem" }}>
-          <div className="grid-cols-2 grid md:grid-cols-4 gap-2"
+          <div className="grid-cols-2 lg:text-start text-center grid md:grid-cols-4 gap-2"
            
           >
             {stats.map((s) => (
