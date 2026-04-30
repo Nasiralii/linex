@@ -1,5 +1,6 @@
 import { Link } from "@/i18n/routing";
 import { Building2, Search, ShieldCheck } from "lucide-react";
+import { HeroNetworkAnimation } from "@/components/home/hero-network-animation";
 
 interface HeroSectionProps {
   t: (key: string) => string;
@@ -116,96 +117,98 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
           padding: "clamp(3.4rem, 9vw, 5.2rem) 1rem clamp(3.4rem, 7vw, 4.2rem)",
         }}
       >
-        {/* Eyebrow badge */}
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            padding: "0.4rem 1rem 0.4rem 0.5rem",
-            borderRadius: "100px",
-            background: "rgba(255,255,255,0.08)",
-            border: "1px solid rgba(255,255,255,0.14)",
-            backdropFilter: "blur(8px)",
-            color: "rgba(255,255,255,0.88)",
-            fontSize: "0.8125rem",
-            fontWeight: 500,
-            marginBottom: "2rem",
-          }}
-        >
-          <span
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "22px",
-              height: "22px",
-              borderRadius: "50%",
-              background: "var(--brand-copper)",
-              flexShrink: 0,
-            }}
-          >
-            <ShieldCheck style={{ width: "12px", height: "12px", color: "white" }} />
-          </span>
-          {tCommon("tagline")}
-        </div>
-
-        {/* Headline */}
-        <h1
-          style={{
-            fontSize: "clamp(2rem, 7vw, 3.35rem)",
-            fontWeight: 700,
-            color: "var(--brand-white)",
-            lineHeight: 1.14,
-            letterSpacing: "-0.03em",
-            marginBottom: "1.15rem",
-            maxWidth: "780px",
-          }}
-        >
-          {t("hero.title")}
-        </h1>
-
-        {/* Subtitle */}
-        <p
-          style={{
-            fontSize: "clamp(1rem, 2.8vw, 1.1875rem)",
-            color: "rgba(255,255,255,0.78)",
-            lineHeight: 1.7,
-            fontWeight: 400,
-            maxWidth: "860px",
-          }}
-        >
-          {t("hero.subtitle")}
-        </p>
-
-        {/* Intro paragraph */}
-        {t("hero.intro") && (
-          <div
-            className="hidden"
-            style={{
-              width: "min(100%, 680px)",
-              padding: "1.25rem 0",
-              marginLeft: "auto",
-              marginRight: "auto",
-              marginBottom: "1.5rem",
-            }}
-          >
-            <p
+        <div className="grid items-center gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            {/* Eyebrow badge */}
+            <div
               style={{
-                fontSize: "0.9375rem",
-                color: "rgba(255,255,255,0.80)",
-                lineHeight: 1.8,
-                margin: 0,
-                fontStyle: "italic",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                padding: "0.4rem 1rem 0.4rem 0.5rem",
+                borderRadius: "100px",
+                background: "rgba(255,255,255,0.08)",
+                border: "1px solid rgba(255,255,255,0.14)",
+                backdropFilter: "blur(8px)",
+                color: "rgba(255,255,255,0.88)",
+                fontSize: "0.8125rem",
+                fontWeight: 500,
+                marginBottom: "2rem",
               }}
             >
-              {t("hero.intro")}
-            </p>
-          </div>
-        )}
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "22px",
+                  height: "22px",
+                  borderRadius: "50%",
+                  background: "var(--brand-copper)",
+                  flexShrink: 0,
+                }}
+              >
+                <ShieldCheck style={{ width: "12px", height: "12px", color: "white" }} />
+              </span>
+              {tCommon("tagline")}
+            </div>
 
-        {/* CTA row */}
-        <div className="lg:mt-0 !mt-3" style={{ display: "flex", gap: "0.875rem", flexWrap: "wrap" }}>
+            {/* Headline */}
+            <h1
+              style={{
+                fontSize: "clamp(2rem, 7vw, 3.35rem)",
+                fontWeight: 700,
+                color: "var(--brand-white)",
+                lineHeight: 1.14,
+                letterSpacing: "-0.03em",
+                marginBottom: "1.15rem",
+                maxWidth: "780px",
+              }}
+            >
+              {t("hero.title")}
+            </h1>
+
+            {/* Subtitle */}
+            <p
+              style={{
+                fontSize: "clamp(1rem, 2.8vw, 1.1875rem)",
+                color: "rgba(255,255,255,0.78)",
+                lineHeight: 1.7,
+                fontWeight: 400,
+                maxWidth: "860px",
+              }}
+            >
+              {t("hero.subtitle")}
+            </p>
+
+            {/* Intro paragraph */}
+            {t("hero.intro") && (
+              <div
+                className="hidden"
+                style={{
+                  width: "min(100%, 680px)",
+                  padding: "1.25rem 0",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                  marginBottom: "1.5rem",
+                }}
+              >
+                <p
+                  style={{
+                    fontSize: "0.9375rem",
+                    color: "rgba(255,255,255,0.80)",
+                    lineHeight: 1.8,
+                    margin: 0,
+                    fontStyle: "italic",
+                  }}
+                >
+                  {t("hero.intro")}
+                </p>
+              </div>
+            )}
+
+            {/* CTA row */}
+            <div className="lg:mt-0 !mt-3" style={{ display: "flex", gap: "0.875rem", flexWrap: "wrap" }}>
           {showOwnerCta && (
             <Link
               className="w-full justify-center hover:scale-105 sm:w-auto"
@@ -255,17 +258,23 @@ export function HeroSection({ t, tCommon, showOwnerCta, ownerCtaHref }: HeroSect
             <Search style={{ width: "18px", height: "18px" }} />
             {t("hero.contractorCta")}
           </Link>
+            </div>
+            <p
+              style={{
+                margin: "0.85rem 0 0",
+                fontSize: "0.72rem",
+                color: "rgba(255,255,255,0.88)",
+                lineHeight: 1.5,
+              }}
+            >
+              {t("hero.microcopy")}
+            </p>
+          </div>
+
+          <div className="mt-3 lg:mt-0">
+            <HeroNetworkAnimation />
+          </div>
         </div>
-        <p
-          style={{
-            margin: "0.85rem 0 0",
-            fontSize: "0.72rem",
-            color: "rgba(255,255,255,0.88)",
-            lineHeight: 1.5,
-          }}
-        >
-          {t("hero.microcopy")}
-        </p>
 
         <div style={{ marginTop: "1.45rem",paddingBottom: "1.2rem", borderTop: "1px solid rgba(255,255,255,0.15)", paddingTop: "1.2rem" }}>
           <div className="grid-cols-2 grid md:grid-cols-4 gap-2"
