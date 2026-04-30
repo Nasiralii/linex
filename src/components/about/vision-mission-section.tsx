@@ -6,9 +6,9 @@ interface VisionMissionSectionProps {
 
 export function VisionMissionSection({ t }: VisionMissionSectionProps) {
   return (
-    <section style={{
+    <section className="md:!py-8 !py-4" style={{
       background: "linear-gradient(135deg, #1C5963 0%, #2A7B88 50%, #3A8B98 100%)",
-      position: "relative", overflow: "hidden", padding: "5rem 0",
+      position: "relative", overflow: "hidden",
     }}>
       <div style={{
         position: "absolute", top: "-60px", right: "-60px",
@@ -27,8 +27,7 @@ export function VisionMissionSection({ t }: VisionMissionSectionProps) {
             { icon: Eye, label: t("vision.title"), text: t("vision.description") },
             { icon: Target, label: t("mission.title"), text: t("mission.description") },
           ].map((item, i) => (
-            <div key={i} style={{
-              padding: "clamp(2rem, 4vw, 3rem)",
+            <div className="!p-6 md:!p-8" key={i} style={{
               background: "rgba(255,255,255,0.1)",
               backdropFilter: "blur(12px)",
               border: "1px solid rgba(255,255,255,0.18)",

@@ -10,11 +10,10 @@ export function ProfessionalSupportSection({ t }: ProfessionalSupportSectionProp
   const growthItems = [0, 1, 2];
 
   return (
-    <section
+    <section className="md:!py-8 !py-4"
       id="professionals"
       style={{
         background: "var(--brand-ivory)",
-        padding: "4.5rem 0",
       }}
     >
       <div className="container-app">
@@ -44,10 +43,9 @@ export function ProfessionalSupportSection({ t }: ProfessionalSupportSectionProp
             {t("twoSided.contractorsTitle")}
             <span style={{ width: "22px", height: "1.5px", background: "rgba(255,255,255,0.86)", display: "inline-block" }} />
           </div>
-          <h2
+          <h2 className="!text-2xl md:!text-4xl"
             style={{
-              fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)",
-              fontWeight: 800,
+              fontWeight: 700,
               color: "var(--brand-white)",
               letterSpacing: "-0.025em",
               lineHeight: 1.15,

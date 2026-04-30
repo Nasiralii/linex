@@ -9,11 +9,10 @@ export function WhoWeAreSection({ t }: WhoWeAreSectionProps) {
   const notItems = [0, 1, 2, 3];
 
   return (
-    <section
+    <section className="md:!py-8 !py-4"
       id="about"
       style={{
         background: "linear-gradient(180deg, var(--brand-ivory) 0%, #f5f1ea 100%)",
-        padding: "5rem 0",
         position: "relative",
         overflow: "hidden",
       }}
@@ -104,12 +103,11 @@ export function WhoWeAreSection({ t }: WhoWeAreSectionProps) {
             </div>
           </div>
 
-          <div
+          <div className="!p-6 md:!p-8"
             style={{
               background: "rgba(255,255,255,0.74)",
               border: "1px solid rgba(27,42,74,0.08)",
               borderRadius: "28px",
-              padding: "clamp(2rem, 4vw, 3rem)",
               boxShadow: "0 24px 60px -32px rgba(27,42,74,0.28)",
               display: "flex",
               flexDirection: "column",
@@ -125,9 +123,8 @@ export function WhoWeAreSection({ t }: WhoWeAreSectionProps) {
                 marginBottom: "1.25rem",
               }}
             />
-            <h3
+            <h3 className="!text-2xl md:!text-3xl"
               style={{
-                fontSize: "1.5rem",
                 fontWeight: 800,
                 color: "var(--brand-navy)",
                 marginBottom: "1rem",
@@ -136,9 +133,8 @@ export function WhoWeAreSection({ t }: WhoWeAreSectionProps) {
             >
               {t("whoWeAre.title")}
             </h3>
-            <p
+            <p className="!text-base md:!text-xl"
               style={{
-                fontSize: "1.05rem",
                 lineHeight: 1.8,
                 color: "#1f2937",
                 margin: 0,

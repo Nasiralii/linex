@@ -29,9 +29,8 @@ export function WhatDeliversSection() {
   ];
 
   return (
-    <section
+    <section className="md:!py-8 !py-4"
       style={{
-        padding: "5rem 0",
         background: "linear-gradient(180deg, var(--brand-ivory) 0%, #ffffff 100%)",
         position: "relative",
         overflow: "hidden",

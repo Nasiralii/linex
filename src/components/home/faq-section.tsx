@@ -7,6 +7,8 @@ interface FaqSectionProps {
 
 const FAQ_COUNT = 15;
 const INITIAL_VISIBLE = 5;
+const FOOTER_EMAIL = "info@rasi.sa";
+const COMPANY_ADDRESS = "3286 al khaboob st, Al Malqa, Riyadh 13521";
 
 export function FaqSection({ t }: FaqSectionProps) {
   const faqs = Array.from({ length: FAQ_COUNT }, (_, i) => ({
@@ -16,17 +18,16 @@ export function FaqSection({ t }: FaqSectionProps) {
 
   const channels: { icon: "form" | "email" | "hours" | "operator"; label: string; value: string }[] = [
     { icon: "form", label: t("contactSection.ch1Label"), value: t("contactSection.ch1Value") },
-    { icon: "email", label: t("contactSection.ch2Label"), value: t("contactSection.ch2Value") },
+    { icon: "email", label: t("contactSection.ch2Label"), value: FOOTER_EMAIL },
     { icon: "hours", label: t("contactSection.ch3Label"), value: t("contactSection.ch3Value") },
-    { icon: "operator", label: t("contactSection.ch4Label"), value: t("contactSection.ch4Value") },
+    { icon: "operator", label: t("contactSection.ch4Label"), value: COMPANY_ADDRESS },
   ];
 
   return (
-    <section
+    <section className="md:!py-8 !py-4"
       id="faq-contact-section"
       style={{
         background: "linear-gradient(180deg, var(--brand-white) 0%, var(--brand-ivory) 100%)",
-        padding: "5rem 0 6rem",
         borderTop: "1px solid var(--brand-ivory-dark)",
       }}
     >

@@ -12,12 +12,12 @@ export function HowItWorksSection({ t }: HowItWorksSectionProps) {
   ];
 
   return (
-    <section id="how-it-works" className="!py-8"
+    <section id="how-it-works" className="md:!py-8 !py-4"
      
     >
       <div className="container-app">
         {/* Section header */}
-        <div style={{ textAlign: "center", marginBottom: "4rem" }}>
+        <div className="md:!mb-8 !mb-4 text-center">
           <div
             style={{
               display: "inline-flex",
@@ -35,9 +35,9 @@ export function HowItWorksSection({ t }: HowItWorksSectionProps) {
             {t("howItWorks.title")}
             <span style={{ width: "20px", height: "1.5px", background: "var(--brand-teal)", display: "inline-block" }} />
           </div>
-          <h2
+          <h2 className="!text-2xl md:!text-4xl"
             style={{
-              fontSize: "clamp(1.75rem, 3vw, 2.5rem)",
+             
               fontWeight: 700,
               color: "var(--brand-navy)",
               letterSpacing: "-0.025em",

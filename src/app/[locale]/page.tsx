@@ -8,7 +8,6 @@ import {
   FinalCtaSection,
   OwnerSupportSection,
   ProfessionalSupportSection,
-  DecisionJourneySection,
   CompetitiveAdvantagesSection,
   VerificationTrustSection,
   PartnersSection,
@@ -62,7 +61,6 @@ export default async function HomePage() {
       <WhatDeliversSection />
       <OwnerSupportSection t={t} showOwnerCta={showOwnerCta} ownerCtaHref={ownerCtaHref} />
       <ProfessionalSupportSection t={t} />
-      <DecisionJourneySection t={t} />
       <CompetitiveAdvantagesSection t={t} />
       <VerificationTrustSection t={t} />
       <PartnersSection t={t} />

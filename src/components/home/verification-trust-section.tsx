@@ -113,7 +113,7 @@ function Hero({ t }: { t: (key: string) => string }) {
           margin: "0 0 0.75rem",
           color: "var(--brand-warm-grey)",
           fontSize: "0.74rem",
-          fontWeight: 800,
+          fontWeight: 700,
           letterSpacing: "0.18em",
           textTransform: "uppercase",
         }}
@@ -124,7 +124,7 @@ function Hero({ t }: { t: (key: string) => string }) {
         style={{
           margin: "0 0 0.85rem",
           fontSize: "clamp(1.6rem, 3.4vw, 2.4rem)",
-          fontWeight: 800,
+          fontWeight: 700,
           color: "var(--brand-navy)",
           lineHeight: 1.15,
           letterSpacing: "-0.02em",

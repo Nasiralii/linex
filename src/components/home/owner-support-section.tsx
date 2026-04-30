@@ -57,7 +57,7 @@ export function OwnerSupportSection({ t, showOwnerCta, ownerCtaHref }: OwnerSupp
             <h2
               style={{
                 fontSize: "clamp(1.4rem, 5vw, 2.15rem)",
-                fontWeight: 800,
+                fontWeight: 700,
                 color: "var(--brand-white)",
                 lineHeight: 1.2,
                 letterSpacing: "-0.02em",

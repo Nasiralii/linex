@@ -49,7 +49,7 @@ export function TwoSidedSnapshotSection({ t }: TwoSidedSnapshotSectionProps) {
 
   return (
     <section
-      className="!py-8"
+      className="md:!py-8 !py-4"
       style={{
         background: "var(--brand-ivory)",
         position: "relative",
@@ -73,7 +73,7 @@ export function TwoSidedSnapshotSection({ t }: TwoSidedSnapshotSectionProps) {
       <div className="container-app" style={{ position: "relative", zIndex: 1 }}>
 
         {/* Header Section */}
-        <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
+        <div className="md:!mb-8 !mb-4 text-center">
           <div style={{
             display: "inline-flex", alignItems: "center", gap: "0.5rem",
             padding: "0.4rem 1rem", borderRadius: "999px",
@@ -85,8 +85,8 @@ export function TwoSidedSnapshotSection({ t }: TwoSidedSnapshotSectionProps) {
             {t("twoSided.title")}
             <span style={{ width: "12px", height: "2px", background: "#4a8c97", display: "inline-block" }} />
           </div>
-          <h2 style={{
-            fontSize: "clamp(2rem, 4vw, 2.75rem)",
+          <h2 className="!text-2xl md:!text-4xl" style={{
+            
             fontWeight: 700, color: "var(--brand-navy)",
             letterSpacing: "-0.03em", lineHeight: 1.1, margin: 0,
           }}>
@@ -102,7 +102,7 @@ export function TwoSidedSnapshotSection({ t }: TwoSidedSnapshotSectionProps) {
           {sides.map((side) => (
             <article
               key={side.title}
-              className="!p-6 md:!p-10"
+              className="!p-4 md:!p-8"
               style={{
                 background: side.cardBg,
                 borderRadius: "32px",

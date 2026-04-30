@@ -47,7 +47,7 @@ export function PartnersSection({ t }: PartnersSectionProps) {
               alignItems: "center",
               gap: "0.5rem",
               fontSize: "0.74rem",
-              fontWeight: 800,
+              fontWeight: 700,
               letterSpacing: "0.18em",
               textTransform: "uppercase",
               color: "var(--brand-teal)",
@@ -65,7 +65,7 @@ export function PartnersSection({ t }: PartnersSectionProps) {
             style={{
               margin: "0 0 1rem",
               color: "var(--brand-navy)",
-              fontWeight: 900,
+              fontWeight: 700,
               letterSpacing: "-0.025em",
               fontSize: "clamp(2.05rem, 4.2vw, 3rem)",
               lineHeight: 1.15,
@@ -131,7 +131,7 @@ export function PartnersSection({ t }: PartnersSectionProps) {
                   margin: "0 0 0.45rem",
                   color: "rgba(255,255,255,0.78)",
                   fontSize: "0.7rem",
-                  fontWeight: 800,
+                  fontWeight: 600,
                   letterSpacing: "0.18em",
                   textTransform: "uppercase",
                 }}
@@ -142,7 +142,7 @@ export function PartnersSection({ t }: PartnersSectionProps) {
                 style={{
                   margin: "0 0 0.65rem",
                   color: "#fff",
-                  fontWeight: 800,
+                  fontWeight: 700,
                   fontSize: "clamp(1.15rem, 2.8vw, 1.35rem)",
                   lineHeight: 1.28,
                   letterSpacing: "-0.02em",

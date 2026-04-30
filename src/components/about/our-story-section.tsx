@@ -6,8 +6,7 @@ interface OurStorySectionProps {
 
 export function OurStorySection({ t }: OurStorySectionProps) {
   return (
-    <section style={{ 
-      padding: "5rem 0", 
+    <section className="md:!py-8 !py-4" style={{ 
       background: "#FFFFFF", 
       position: "relative"
     }}>

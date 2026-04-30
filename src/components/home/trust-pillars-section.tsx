@@ -46,9 +46,8 @@ export function TrustPillarsSection() {
   ];
 
   return (
-    <section style={{ 
+    <section className="md:!py-8 !py-4" style={{ 
       background: "var(--brand-ivory)", 
-      padding: "4rem 0",
       overflow: "hidden",
       position: "relative" 
     }}>

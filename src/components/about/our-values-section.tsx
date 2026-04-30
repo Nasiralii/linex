@@ -8,10 +8,9 @@ export function OurValuesSection({ t }: OurValuesSectionProps) {
   const icons = [Heart, BarChart3, Star, ShieldCheck, Scale, Landmark];
 
   return (
-    <section
+    <section className="md:!py-8 !py-2"
       style={{
         background: "linear-gradient(180deg, #ffffff 0%, var(--brand-ivory) 100%)",
-        padding: "4rem 0",
         position: "relative",
         overflow: "hidden",
       }}

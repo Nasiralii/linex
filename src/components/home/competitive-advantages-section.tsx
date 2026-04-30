@@ -47,7 +47,7 @@ export function CompetitiveAdvantagesSection({ t }: CompetitiveAdvantagesSection
           <h2
             style={{
               fontSize: "clamp(1.85rem, 4.2vw, 2.75rem)",
-              fontWeight: 600,
+              fontWeight: 700,
               color: "var(--brand-navy)",
               margin: 0,
               lineHeight: 1.15,

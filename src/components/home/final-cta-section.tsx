@@ -60,12 +60,12 @@ export function FinalCtaSection({ t, showOwnerCta, ownerCtaHref }: FinalCtaSecti
       />
 
       <div
-        className="container-app"
+        className="container-app !p-4 md:!p-12"
         id="why-rasi"
         style={{
           position: "relative",
           zIndex: 1,
-          padding: "5.5rem 2rem",
+         
           textAlign: "center",
         }}
       >

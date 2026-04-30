@@ -20,10 +20,9 @@ const TEAL_LINE = "linear-gradient(180deg, rgba(13,115,119,0.55) 0%, rgba(13,115
 
 export function DecisionJourneySection({ t }: DecisionJourneySectionProps) {
   return (
-    <section
+    <section className="md:!py-8 !py-4"
       style={{
         background: "linear-gradient(180deg, var(--brand-white) 0%, var(--brand-ivory) 100%)",
-        padding: "3rem 0",
         borderTop: "1px solid var(--brand-ivory-dark)",
       }}
     >
@@ -59,7 +58,7 @@ function SectionHeader({ t }: { t: (key: string) => string }) {
       <h2
         style={{
           fontSize: "clamp(1.6rem, 3.5vw, 2.3rem)",
-          fontWeight: 800,
+          fontWeight: 700,
           color: "var(--brand-navy)",
           lineHeight: 1.2,
           letterSpacing: "-0.02em",
