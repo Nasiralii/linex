@@ -3,6 +3,30 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
+const imageRemotePatterns: Array<{
+  protocol: "https" | "http";
+  hostname: string;
+  pathname?: string;
+}> = [
+  { protocol: "https", hostname: "*.s3.*.amazonaws.com", pathname: "/**" },
+  { protocol: "https", hostname: "*.s3.amazonaws.com", pathname: "/**" },
+];
+
+const publicBase = process.env.NEXT_PUBLIC_S3_PUBLIC_BASE_URL;
+if (publicBase) {
+  try {
+    const u = new URL(publicBase);
+    const proto = u.protocol === "http:" ? "http" : "https";
+    imageRemotePatterns.push({
+      protocol: proto,
+      hostname: u.hostname,
+      pathname: "/**",
+    });
+  } catch {
+    /* invalid URL at build time — ignore */
+  }
+}
+
 const nextConfig: NextConfig = {
   // Security headers
   async headers() {
@@ -23,12 +47,7 @@ const nextConfig: NextConfig = {
   },
   // Image optimization
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "*.supabase.co",
-      },
-    ],
+    remotePatterns: imageRemotePatterns,
   },
   // Experimental features
   experimental: {

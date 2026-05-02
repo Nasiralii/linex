@@ -42,7 +42,7 @@ export async function GET() {
     checks,
     services: {
       email: process.env.RESEND_API_KEY ? "configured" : "not_configured",
-      storage: process.env.NEXT_PUBLIC_SUPABASE_URL ? "configured" : "not_configured",
+      storage: process.env.AWS_S3_BUCKET ? "configured" : "not_configured",
       ai: process.env.OPENAI_API_KEY ? "configured" : "not_configured",
       payment: process.env.DINERO_MERCHANT_KEY ? "configured" : "not_configured",
       rateLimiting: process.env.UPSTASH_REDIS_REST_URL ? "upstash" : "in-memory",

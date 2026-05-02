@@ -2,9 +2,10 @@ import { defineRouting } from "next-intl/routing";
 import { createNavigation } from "next-intl/navigation";
 
 export const routing = defineRouting({
-  // Arabic first (RTL primary market: Saudi Arabia)
-  locales: ["ar", "en"],
-  defaultLocale: "ar",
+  // English default for first-time visitors.
+  locales: ["en", "ar"],
+  defaultLocale: "en",
+  localeDetection: false,
   localePrefix: "always",
 });
 

@@ -1,34 +1,42 @@
-import { createClient } from "@supabase/supabase-js";
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl as awsGetSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 // ============================================================================
-// Supabase Storage — File Upload Service for LineX-Forsa
+// AWS S3 — File uploads (public reads via bucket policy or CloudFront base URL)
 // ============================================================================
 
-let _supabase: ReturnType<typeof createClient> | null = null;
-
-function getStorage() {
-  if (!_supabase) {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-    const isServer = typeof window === "undefined";
-    const supabaseKey = isServer
-      ? (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "")
-      : (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "");
-
-    _supabase = createClient(
-      supabaseUrl,
-      supabaseKey,
-      {
-        auth: {
-          persistSession: false,
-          autoRefreshToken: false,
-        },
-      }
-    );
-  }
-  return _supabase.storage;
+function getBucket(): string | null {
+  return process.env.AWS_S3_BUCKET || null;
 }
 
-const BUCKET = "uploads";
+function getRegion(): string | null {
+  return process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || null;
+}
+
+function getClient(): S3Client | null {
+  const region = getRegion();
+  if (!region) return null;
+  return new S3Client({ region });
+}
+
+function encodeKeyForUrl(key: string): string {
+  return key.split("/").filter(Boolean).map(encodeURIComponent).join("/");
+}
+
+function publicObjectUrl(key: string): string {
+  const base = process.env.NEXT_PUBLIC_S3_PUBLIC_BASE_URL?.replace(/\/$/, "");
+  if (base) return `${base}/${encodeKeyForUrl(key)}`;
+
+  const bucket = getBucket();
+  const region = getRegion();
+  if (!bucket || !region) return "";
+  return `https://${bucket}.s3.${region}.amazonaws.com/${encodeKeyForUrl(key)}`;
+}
 
 // ============================================================================
 // Upload File
@@ -39,39 +47,45 @@ export async function uploadFile(
   userId?: string
 ): Promise<{ url: string; path: string; error?: string }> {
   try {
-    if (typeof window === "undefined" && !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (typeof window !== "undefined") {
       return {
         url: "",
         path: "",
-        error: "SUPABASE_SERVICE_ROLE_KEY is missing on the server. Server-side uploads cannot bypass storage RLS without it.",
+        error: "Uploads must run on the server (server action or API route).",
+      };
+    }
+
+    const bucket = getBucket();
+    const client = getClient();
+    if (!bucket || !client) {
+      return {
+        url: "",
+        path: "",
+        error:
+          "S3 is not configured (set AWS_REGION and AWS_S3_BUCKET). On EC2 you can use an instance IAM role instead of access keys.",
       };
     }
 
     const ext = file.name.split(".").pop() || "bin";
-    const fileName = `${folder}/${userId || "anon"}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const key = `${folder}/${userId || "anon"}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
-    const { data, error } = await getStorage()
-      .from(BUCKET)
-      .upload(fileName, file, {
-        cacheControl: "3600",
-        upsert: false,
-        contentType: file.type,
-      });
+    const body = Buffer.from(await file.arrayBuffer());
 
-    if (error) {
-      console.error("Upload error:", error);
-      return { url: "", path: "", error: error.message };
-    }
+    await client.send(
+      new PutObjectCommand({
+        Bucket: bucket,
+        Key: key,
+        Body: body,
+        ContentType: file.type || "application/octet-stream",
+        CacheControl: "max-age=3600",
+      })
+    );
 
-    // Get public URL
-    const { data: urlData } = getStorage()
-      .from(BUCKET)
-      .getPublicUrl(data.path);
-
-    return { url: urlData.publicUrl, path: data.path };
-  } catch (error: any) {
-    console.error("Storage error:", error);
-    return { url: "", path: "", error: error?.message || "Upload failed" };
+    return { url: publicObjectUrl(key), path: key };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Upload failed";
+    console.error("S3 upload error:", error);
+    return { url: "", path: "", error: message };
   }
 }
 
@@ -80,24 +94,32 @@ export async function uploadFile(
 // ============================================================================
 export async function deleteFile(path: string): Promise<boolean> {
   try {
-    const { error } = await getStorage().from(BUCKET).remove([path]);
-    return !error;
+    const bucket = getBucket();
+    const client = getClient();
+    if (!bucket || !client) return false;
+    await client.send(
+      new DeleteObjectCommand({ Bucket: bucket, Key: path })
+    );
+    return true;
   } catch {
     return false;
   }
 }
 
 // ============================================================================
-// Get Signed URL (for private files)
+// Signed URL (private objects)
 // ============================================================================
-export async function getSignedUrl(path: string, expiresIn: number = 3600): Promise<string | null> {
+export async function getSignedUrl(
+  path: string,
+  expiresIn: number = 3600
+): Promise<string | null> {
   try {
-    const { data, error } = await getStorage()
-      .from(BUCKET)
-      .createSignedUrl(path, expiresIn);
+    const bucket = getBucket();
+    const client = getClient();
+    if (!bucket || !client) return null;
 
-    if (error) return null;
-    return data.signedUrl;
+    const cmd = new GetObjectCommand({ Bucket: bucket, Key: path });
+    return await awsGetSignedUrl(client, cmd, { expiresIn });
   } catch {
     return null;
   }
@@ -111,29 +133,60 @@ export async function uploadFromFormData(
   fieldName: string = "file",
   folder: string = "general",
   userId?: string
-): Promise<{ url: string; path: string; fileName: string; fileSize: number; mimeType: string; error?: string }> {
+): Promise<{
+  url: string;
+  path: string;
+  fileName: string;
+  fileSize: number;
+  mimeType: string;
+  error?: string;
+}> {
   const file = formData.get(fieldName) as File;
 
   if (!file || file.size === 0) {
-    return { url: "", path: "", fileName: "", fileSize: 0, mimeType: "", error: "No file provided" };
+    return {
+      url: "",
+      path: "",
+      fileName: "",
+      fileSize: 0,
+      mimeType: "",
+      error: "No file provided",
+    };
   }
 
-  // Validate file size (max 10MB)
   if (file.size > 10 * 1024 * 1024) {
-    return { url: "", path: "", fileName: "", fileSize: 0, mimeType: "", error: "File too large (max 10MB)" };
+    return {
+      url: "",
+      path: "",
+      fileName: "",
+      fileSize: 0,
+      mimeType: "",
+      error: "File too large (max 10MB)",
+    };
   }
 
-  // Validate file type
   const allowedTypes = [
-    "image/jpeg", "image/png", "image/webp", "image/gif",
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif",
     "application/pdf",
-    "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     "application/zip",
   ];
 
   if (!allowedTypes.includes(file.type)) {
-    return { url: "", path: "", fileName: "", fileSize: 0, mimeType: "", error: "File type not allowed" };
+    return {
+      url: "",
+      path: "",
+      fileName: "",
+      fileSize: 0,
+      mimeType: "",
+      error: "File type not allowed",
+    };
   }
 
   const result = await uploadFile(file, folder, userId);
