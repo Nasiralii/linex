@@ -28,6 +28,11 @@ jobs:
             npm install
             export NODE_OPTIONS="--max-old-space-size=2048"
             npx prisma migrate deploy
+            # Stop app and clear .next so `next build` is not blocked on .next/lock
+            # (stale lock or concurrent use from a previous failed/partial build).
+            pm2 stop linex || true
+            rm -f .next/lock
+            rm -rf .next
             npm run build
             pm2 restart linex --update-env
             pm2 save 
