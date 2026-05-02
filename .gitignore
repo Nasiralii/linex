@@ -3,3 +3,4 @@ node_modules
 .next
 # EC2 SSH private key — never commit (rotate if it ever leaked).
 aws-key.pem
+aws.pem
