@@ -5,6 +5,7 @@
 import { cookies } from "next/headers";
 import { createHmac, randomBytes } from "crypto";
 import { logger } from "./logger";
+import { isPublicUrlHttps } from "./https-public-url";
 
 const CSRF_SECRET = process.env.CSRF_SECRET || process.env.AUTH_SECRET || "csrf-secret-change-in-production";
 const CSRF_COOKIE_NAME = "csrf-token";
@@ -66,7 +67,8 @@ export async function setCsrfCookie(): Promise<string> {
   
   cookieStore.set(CSRF_COOKIE_NAME, token, {
     httpOnly: false, // Must be readable by client JS to send in header
-    secure: process.env.NODE_ENV === "production",
+    // Same rule as auth-token: Secure only over HTTPS (see https-public-url.ts).
+    secure: process.env.NODE_ENV === "production" && isPublicUrlHttps(),
     sameSite: "strict",
     path: "/",
     maxAge: 60 * 60 * 24, // 24 hours

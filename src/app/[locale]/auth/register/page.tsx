@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations, useLocale } from "next-intl";
-import { Link, useRouter } from "@/i18n/routing";
+import { Link } from "@/i18n/routing";
 import { useEffect, useState } from "react";
 import { registerAction } from "../actions";
 import { sanitizeSaudiPhoneInput, transliterateArabic } from "@/lib/utils";
@@ -11,7 +11,6 @@ export default function RegisterPage() {
   const t = useTranslations("auth.register");
   const tCommon = useTranslations("common");
   const locale = useLocale();
-  const router = useRouter();
   const isRtl = locale === "ar";
 
   const [selectedRole, setSelectedRole] = useState<string>("");
@@ -59,7 +58,9 @@ export default function RegisterPage() {
     
     const result = await registerAction(formData);
     if (result.success && result.redirectTo) {
-      router.push(result.redirectTo);
+      // Full page navigation with `/${locale}${path}` (matches login page): ensures next-intl
+      // locale prefix and a fresh request with the new session cookie after register.
+      window.location.href = `/${locale}${result.redirectTo}`;
     } else {
       setError(result.error || "An error occurred");
       setLoading(false);

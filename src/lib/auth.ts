@@ -6,6 +6,7 @@ import { logger } from "./logger";
 import type { UserRole } from "@prisma/client";
 import { isFullAccessAdmin } from "./admin-config";
 import { db } from "./db";
+import { isPublicUrlHttps } from "./https-public-url";
 
 // SECURITY: No fallback secret - fail fast if not configured
 const AUTH_SECRET = process.env.AUTH_SECRET;
@@ -87,11 +88,12 @@ export async function createSession(
     sessionId: session.id,
   });
 
-  // Set cookie
+  // Set cookie. `secure` only when NEXT_PUBLIC_APP_URL is https:// — on plain HTTP
+  // (e.g. EC2 IP) Secure cookies are ignored by the browser and login stays 401 on /api/auth/me.
   const cookieStore = await cookies();
   cookieStore.set("auth-token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === "production" && isPublicUrlHttps(),
     sameSite: "lax",
     maxAge: SESSION_DURATION / 1000,
     path: "/",
