@@ -5,8 +5,32 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { MANAGED_CONTENT_PAGES } from "../src/lib/content-pages";
 
+/** Same TLS handling as `src/lib/db.ts` — RDS + pg adapter. */
+function databaseUrlForPg(connectionString: string): string {
+  try {
+    const u = new URL(connectionString);
+    u.searchParams.delete("sslmode");
+    u.searchParams.delete("sslrootcert");
+    u.searchParams.delete("sslcert");
+    u.searchParams.delete("sslkey");
+    return u.toString();
+  } catch {
+    return connectionString;
+  }
+}
+
+const rawUrl = process.env.DATABASE_URL;
+if (!rawUrl) {
+  throw new Error("DATABASE_URL is required for seed (load ~/linex/.env or export it).");
+}
+
 // Prisma 7: Use pg adapter for direct database connection
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+// Original (local/dev): simple pool — keep for reference; RDS often needs TLS below.
+// const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool = new Pool({
+  connectionString: databaseUrlForPg(rawUrl),
+  ssl: { rejectUnauthorized: false },
+});
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 

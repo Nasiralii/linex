@@ -32,6 +32,16 @@ function createPrismaClient() {
     throw new Error("DATABASE_URL is not set");
   }
 
+  // Previous (reference only — RDS URLs with sslmode=verify-* could still fail TLS):
+  // const connectionString = process.env.DATABASE_URL;
+  // const pool = new Pool({
+  //   connectionString,
+  //   ssl: { rejectUnauthorized: false },
+  //   max: 5,
+  //   idleTimeoutMillis: 60000,
+  //   connectionTimeoutMillis: 20000,
+  // });
+
   const pool = new Pool({
     connectionString: databaseUrlForPg(raw),
     ssl: { rejectUnauthorized: false },
@@ -47,3 +57,8 @@ function createPrismaClient() {
 export const db = globalForPrisma.prisma ?? createPrismaClient();
 
 globalForPrisma.prisma = db;
+
+// Previous singleton pattern (dev-only cache):
+// if (process.env.NODE_ENV !== "production") {
+//   globalForPrisma.prisma = db;
+// }

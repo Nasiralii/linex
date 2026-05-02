@@ -93,6 +93,8 @@ export async function createSession(
   const cookieStore = await cookies();
   cookieStore.set("auth-token", token, {
     httpOnly: true,
+    // Previous: Secure in all production — breaks sessions on http:// (EC2 IP until HTTPS):
+    // secure: process.env.NODE_ENV === "production",
     secure: process.env.NODE_ENV === "production" && isPublicUrlHttps(),
     sameSite: "lax",
     maxAge: SESSION_DURATION / 1000,

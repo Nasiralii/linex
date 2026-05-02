@@ -58,6 +58,7 @@ export default function RegisterPage() {
     
     const result = await registerAction(formData);
     if (result.success && result.redirectTo) {
+      // Previous: router.push(result.redirectTo);
       // Full page navigation with `/${locale}${path}` (matches login page): ensures next-intl
       // locale prefix and a fresh request with the new session cookie after register.
       window.location.href = `/${locale}${result.redirectTo}`;

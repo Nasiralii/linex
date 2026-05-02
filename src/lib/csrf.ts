@@ -67,6 +67,7 @@ export async function setCsrfCookie(): Promise<string> {
   
   cookieStore.set(CSRF_COOKIE_NAME, token, {
     httpOnly: false, // Must be readable by client JS to send in header
+    // Previous: secure: process.env.NODE_ENV === "production",
     // Same rule as auth-token: Secure only over HTTPS (see https-public-url.ts).
     secure: process.env.NODE_ENV === "production" && isPublicUrlHttps(),
     sameSite: "strict",

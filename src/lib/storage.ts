@@ -4,6 +4,7 @@ import {
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
+import { defaultProvider } from "@aws-sdk/credential-provider-node";
 import { getSignedUrl as awsGetSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 // ============================================================================
@@ -21,7 +22,12 @@ function getRegion(): string | null {
 function getClient(): S3Client | null {
   const region = getRegion();
   if (!region) return null;
-  return new S3Client({ region });
+  // Explicit chain so Next.js server bundles still resolve EC2 instance-role creds
+  // (default SDK chain can break when webpack bundles @aws-sdk).
+  return new S3Client({
+    region,
+    credentials: defaultProvider(),
+  });
 }
 
 function encodeKeyForUrl(key: string): string {

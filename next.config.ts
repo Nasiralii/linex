@@ -28,6 +28,12 @@ if (publicBase) {
 }
 
 const nextConfig: NextConfig = {
+  // Keep AWS SDK + credential chain out of the Next bundle so EC2 IMDS works.
+  serverExternalPackages: [
+    "@aws-sdk/client-s3",
+    "@aws-sdk/credential-provider-node",
+    "@aws-sdk/s3-request-presigner",
+  ],
   // Security headers
   async headers() {
     return [
