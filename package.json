@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --webpack",
+    "dev:turbo": "next dev",
     "build": "prisma generate && node -e \"require('fs').writeFileSync('node_modules/.prisma/client/default.d.ts','export * from \\\"./index\\\"\\n')\" && next build",
     "postinstall": "prisma generate && node -e \"require('fs').writeFileSync('node_modules/.prisma/client/default.d.ts','export * from \\\"./index\\\"\\n')\"",
     "start": "next start",

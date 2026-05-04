@@ -120,18 +120,20 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, redirectTo });
   } catch (error: any) {
-    console.error(`Login API error at stage [${stage}]:`, error?.message || error);
+    const message = error?.message || String(error);
+    console.error(`Login API error at stage [${stage}]:`, message);
     await createAuthAuditLog({
       action: "AUTH_LOGIN_SERVICE_FAILURE",
-      metadata: { stage, message: error?.message || String(error) },
+      metadata: { stage, message },
     });
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Login service is temporarily unavailable. Please try again in a moment.",
-        stage,
-      },
-      { status: 503 }
-    );
+    const body: Record<string, unknown> = {
+      success: false,
+      error: "Login service is temporarily unavailable. Please try again in a moment.",
+      stage,
+    };
+    if (process.env.NODE_ENV === "development") {
+      body.detail = message;
+    }
+    return NextResponse.json(body, { status: 503 });
   }
 }
