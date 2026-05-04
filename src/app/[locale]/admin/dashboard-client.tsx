@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DollarSign, FolderOpen, ShieldCheck, Users, Clock, BarChart3 } from "lucide-react";
 
 interface DrillItem {
@@ -70,6 +70,8 @@ const DETAIL_TITLES: Record<string, { en: string; ar: string }> = {
 
 export default function AdminDashboardClient({ isRtl, stats, recentUsers, drilldowns }: AdminDashboardClientProps) {
   const [selectedKey, setSelectedKey] = useState<DrillKey | null>(null);
+  const [detailPage, setDetailPage] = useState(1);
+  const DETAIL_PAGE_SIZE = 12;
 
   const kpis = useMemo(() => ([
     { ...KPI_CONFIG[0], label: isRtl ? "إجمالي المستخدمين" : "Total Users", value: stats.totalUsers },
@@ -79,6 +81,30 @@ export default function AdminDashboardClient({ isRtl, stats, recentUsers, drilld
   ]), [isRtl, stats]);
 
   const detailItems = selectedKey ? (drilldowns[selectedKey] || []) : [];
+  const totalDetailPages = Math.max(1, Math.ceil(detailItems.length / DETAIL_PAGE_SIZE));
+  const safeDetailPage = Math.min(detailPage, totalDetailPages);
+  const pagedDetailItems = detailItems.slice((safeDetailPage - 1) * DETAIL_PAGE_SIZE, safeDetailPage * DETAIL_PAGE_SIZE);
+  const detailPageItems: Array<number | "ellipsis"> = [];
+  const detailStartPage = Math.min(safeDetailPage, Math.max(1, totalDetailPages - 1));
+
+  if (totalDetailPages <= 2) {
+    detailPageItems.push(1);
+    if (totalDetailPages === 2) detailPageItems.push(2);
+  } else if (detailStartPage >= totalDetailPages - 1) {
+    detailPageItems.push(1, "ellipsis", totalDetailPages - 1, totalDetailPages);
+  } else {
+    detailPageItems.push(detailStartPage);
+    if (detailStartPage + 1 <= totalDetailPages) detailPageItems.push(detailStartPage + 1);
+    detailPageItems.push("ellipsis", totalDetailPages);
+  }
+
+  useEffect(() => {
+    setDetailPage(1);
+  }, [selectedKey]);
+
+  useEffect(() => {
+    if (detailPage > totalDetailPages) setDetailPage(totalDetailPages);
+  }, [detailPage, totalDetailPages]);
 
   const statTiles = [
     { key: "totalOwners" as DrillKey, label: isRtl ? "ملاك مشاريع" : "Owners", value: stats.totalOwners },
@@ -130,13 +156,89 @@ export default function AdminDashboardClient({ isRtl, stats, recentUsers, drilld
           <div style={{ display: "grid", gap: "0.5rem" }}>
             {detailItems.length === 0 ? (
               <div style={{ fontSize: "0.8125rem", color: "var(--text-muted)" }}>{isRtl ? "لا توجد بيانات متاحة" : "No details available"}</div>
-            ) : detailItems.map((item, index) => (
+            ) : pagedDetailItems.map((item, index) => (
               <div key={`${selectedKey}-${index}`} style={{ display: "flex", justifyContent: "space-between", gap: "1rem", padding: "0.75rem 0.875rem", borderRadius: 12, background: "#faf9f6", border: "1px solid #ece7dc" }}>
                 <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#1a2332" }}>{item.label}</span>
                 <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>{item.sublabel}</span>
               </div>
             ))}
           </div>
+          {detailItems.length > DETAIL_PAGE_SIZE && (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", marginTop: "0.875rem", flexWrap: "wrap" }}>
+              <button
+                type="button"
+                onClick={() => setDetailPage((prev) => Math.max(1, prev - 1))}
+                disabled={safeDetailPage <= 1}
+                style={{
+                  pointerEvents: safeDetailPage <= 1 ? "none" : "auto",
+                  opacity: safeDetailPage <= 1 ? 0.5 : 1,
+                  textDecoration: "none",
+                  fontSize: "0.8125rem",
+                  fontWeight: 600,
+                  color: "var(--primary)",
+                  border: "1px solid var(--border-light)",
+                  background: "var(--surface)",
+                  borderRadius: "var(--radius-full)",
+                  padding: "0.375rem 0.75rem",
+                }}
+              >
+                {isRtl ? "السابق" : "Previous"}
+              </button>
+              {detailPageItems.map((item, idx) => {
+                if (item === "ellipsis") {
+                  return (
+                    <span key={`detail-ellipsis-${idx}`} style={{ fontSize: "0.8125rem", color: "var(--text-muted)", padding: "0 0.25rem" }}>
+                      ...
+                    </span>
+                  );
+                }
+
+                const isActive = item === safeDetailPage;
+                return (
+                  <button
+                    key={`detail-page-${item}`}
+                    type="button"
+                    onClick={() => setDetailPage(item)}
+                    aria-current={isActive ? "page" : undefined}
+                    style={{
+                      minWidth: "34px",
+                      height: "34px",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "0.8125rem",
+                      fontWeight: isActive ? 700 : 600,
+                      color: isActive ? "white" : "var(--text)",
+                      background: isActive ? "var(--primary)" : "var(--surface)",
+                      border: isActive ? "1px solid var(--primary)" : "1px solid var(--border-light)",
+                      borderRadius: "var(--radius-full)",
+                    }}
+                  >
+                    {item}
+                  </button>
+                );
+              })}
+              <button
+                type="button"
+                onClick={() => setDetailPage((prev) => Math.min(totalDetailPages, prev + 1))}
+                disabled={safeDetailPage >= totalDetailPages}
+                style={{
+                  pointerEvents: safeDetailPage >= totalDetailPages ? "none" : "auto",
+                  opacity: safeDetailPage >= totalDetailPages ? 0.5 : 1,
+                  textDecoration: "none",
+                  fontSize: "0.8125rem",
+                  fontWeight: 600,
+                  color: "var(--primary)",
+                  border: "1px solid var(--border-light)",
+                  background: "var(--surface)",
+                  borderRadius: "var(--radius-full)",
+                  padding: "0.375rem 0.75rem",
+                }}
+              >
+                {isRtl ? "التالي" : "Next"}
+              </button>
+            </div>
+          )}
         </div>
       )}
 

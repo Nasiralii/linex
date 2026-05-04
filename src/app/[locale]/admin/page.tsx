@@ -85,6 +85,7 @@ export default async function AdminDashboardPage() {
   let ownerItems: any[] = [];
   let contractorItems: any[] = [];
   let engineerItems: any[] = [];
+  let allUserItems: any[] = [];
   let publishedProjectItems: any[] = [];
   let bidItems: any[] = [];
   let categoryItems: any[] = [];
@@ -112,6 +113,7 @@ export default async function AdminDashboardPage() {
     ownerItems,
     contractorItems,
     engineerItems,
+    allUserItems,
     publishedProjectItems,
     bidItems,
     categoryItems,
@@ -171,6 +173,19 @@ export default async function AdminDashboardPage() {
     safeItems(() => db.user.findMany({ take: 20, where: { role: "OWNER" }, orderBy: { createdAt: "desc" }, select: { id: true, email: true } })),
     safeItems(() => db.user.findMany({ take: 20, where: { role: "CONTRACTOR" }, orderBy: { createdAt: "desc" }, select: { id: true, email: true } })),
     safeItems(() => db.user.findMany({ take: 20, where: { role: "ENGINEER" }, orderBy: { createdAt: "desc" }, select: { id: true, email: true } })),
+    safeItems(() => db.user.findMany({
+      orderBy: { createdAt: "desc" },
+      where: { role: { in: [...SUPPORTED_USER_ROLES] } },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        status: true,
+        ownerProfile: { select: { verificationStatus: true } },
+        contractorProfile: { select: { verificationStatus: true } },
+        engineerProfile: { select: { verificationStatus: true } },
+      },
+    })),
     safeItems(() => db.project.findMany({ take: 20, where: { status: "PUBLISHED" }, orderBy: { publishedAt: "desc" }, select: { id: true, title: true, titleAr: true } })),
     safeItems(() => db.bid.findMany({ take: 20, orderBy: { createdAt: "desc" }, select: { id: true, amount: true, project: { select: { title: true, titleAr: true } } } })),
     safeItems(() => db.category.findMany({ take: 20, orderBy: { sortOrder: "asc" }, select: { id: true, name: true, nameAr: true } })),
@@ -180,7 +195,7 @@ export default async function AdminDashboardPage() {
   totalUsers = totalOwners + totalContractors + totalEngineers;
 
   const drilldowns = {
-    totalUsers: recentUsers.map((u) => {
+    totalUsers: allUserItems.map((u) => {
       const vs = u.ownerProfile?.verificationStatus || u.contractorProfile?.verificationStatus || u.engineerProfile?.verificationStatus || u.status;
       return { label: u.email, sublabel: `${u.role} · ${vs}` };
     }),
