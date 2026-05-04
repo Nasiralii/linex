@@ -1236,11 +1236,11 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                   <input type="hidden" name="projectId" value={project.id} />
                   <div style={{ marginBottom: "1rem" }}>
                     <label>{tBid("amount")} ({tCommon("sar")})</label>
-                    <input type="number" name="amount" required dir="ltr" />
+                    <input type="number" name="amount" required min={0} dir="ltr" />
                   </div>
                   <div style={{ marginBottom: "1rem" }}>
                     <label>{tBid("duration")}</label>
-                    <input type="number" name="estimatedDuration" dir="ltr" />
+                    <input type="number" name="estimatedDuration" min={0} dir="ltr" />
                   </div>
                   <div style={{ marginBottom: "1rem" }}>
                     <label>{tBid("proposal")}</label>
