@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 const FILTERS = [
   { key: "ALL", ar: "الكل", en: "All" },
+  { key: "DRAFT", ar: "المسودات", en: "Drafts" },
   { key: "PENDING_REVIEW", ar: "قيد المراجعة", en: "Under Review" },
   { key: "BIDDING", ar: "مفتوح للعروض", en: "Bidding" },
   { key: "AWARDED", ar: "مُرسى", en: "Awarded" },

@@ -7,6 +7,7 @@ import { Plus, ExternalLink, Hammer, Edit3, Send, Trash2 } from "lucide-react";
 import { ProjectStatusChip } from "./status-chip";
 import { ProjectFilters } from "./filters";
 import { parseProjectMeta, formatProjectBudget } from "@/lib/project-meta";
+import { Pagination } from "@/components/pagination";
 
 const TYPE_LABELS: Record<string, { ar: string; en: string }> = {
   DESIGN_ONLY: { ar: "تصميم", en: "Design" },
@@ -17,7 +18,7 @@ const TYPE_LABELS: Record<string, { ar: string; en: string }> = {
 export default async function MyProjectsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; submitted?: string; saved?: string }>;
+  searchParams: Promise<{ status?: string; submitted?: string; saved?: string; page?: string }>;
 }) {
   const user = await getCurrentUser();
   const locale = await getLocale();
@@ -29,22 +30,38 @@ export default async function MyProjectsPage({
   const filterStatus = params.status || "ALL";
   const showSubmittedNotice = params.submitted === "1";
   const showDraftSavedNotice = params.saved === "draft";
+  const page = Math.max(1, Number(params.page || "1") || 1);
+  const PAGE_SIZE = 8;
 
   let projects: any[] = [];
+  let totalProjects = 0;
   try {
     const ownerProfile = await db.ownerProfile.findUnique({ where: { userId: user.id } });
     if (ownerProfile) {
       const where: any = { ownerId: ownerProfile.id };
       if (filterStatus !== "ALL") where.status = filterStatus;
+      totalProjects = await db.project.count({ where });
       projects = await db.project.findMany({
         where,
         include: { _count: { select: { bids: true } }, category: true },
         orderBy: { createdAt: "desc" },
+        skip: (page - 1) * PAGE_SIZE,
+        take: PAGE_SIZE,
       });
     }
   } catch (error) {
     console.error("[MyProjectsPage] DB query failed:", error);
   }
+  const totalPages = Math.max(1, Math.ceil(totalProjects / PAGE_SIZE));
+  const pageHref = (target: number) => {
+    const qp = new URLSearchParams();
+    if (filterStatus !== "ALL") qp.set("status", filterStatus);
+    if (showSubmittedNotice) qp.set("submitted", "1");
+    if (showDraftSavedNotice) qp.set("saved", "draft");
+    if (target > 1) qp.set("page", String(target));
+    const qs = qp.toString();
+    return qs ? `/dashboard/projects?${qs}` : "/dashboard/projects";
+  };
 
   const fmt = (n: number | null | undefined) =>
     n != null ? n.toLocaleString(isRtl ? "ar-SA" : "en-SA") : "—";
@@ -57,7 +74,7 @@ export default async function MyProjectsPage({
           <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "white", margin: 0 }}>
             {isRtl ? "مشاريعي" : "My Projects"}
             <span style={{ fontSize: "0.875rem", fontWeight: 400, opacity: 0.7, marginInlineStart: "0.75rem" }}>
-              ({projects.length})
+              ({totalProjects})
             </span>
           </h1>
           <Link href="/dashboard/projects/new" className="btn-primary" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "0.5rem", background: "white", color: "#2A7B88", fontWeight: 700, fontSize: "0.875rem", padding: "0.625rem 1.25rem", borderRadius: "var(--radius-lg)" }}>
@@ -138,6 +155,7 @@ export default async function MyProjectsPage({
                 </div>
               );
             })}
+            <Pagination currentPage={page} totalPages={totalPages} hrefForPage={pageHref} locale={locale} />
           </div>
         )}
       </div>

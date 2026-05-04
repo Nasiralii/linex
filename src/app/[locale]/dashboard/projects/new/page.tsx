@@ -213,6 +213,11 @@ export default function NewProjectPage() {
   const getExistingAttachmentsByFolder = (folder: string) =>
     existingAttachments.filter((file: any) => String(file?.fileUrl || "").includes(`/${folder}/`));
 
+  const formatAttachmentDisplayName = (name: string) => {
+    const value = String(name || "");
+    return value.replace(/^[0-9a-fA-F]{8}-[0-9a-fA-F-]{27}_(.+)$/i, "$1");
+  };
+
   // Toggle trade selection
   const toggleTrade = (trade: string) => {
     setSelectedTrades(prev => prev.includes(trade) ? prev.filter(t => t !== trade) : [...prev, trade]);
@@ -1002,7 +1007,7 @@ export default function NewProjectPage() {
                       {getExistingAttachmentsByFolder("project-images").map((file: any) => (
                         <div key={file.id} style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.75rem" }}>
                           <a href={file.fileUrl} target="_blank" rel="noreferrer" style={{ color: "var(--primary)", textDecoration: "none", flex: 1 }}>
-                            {file.fileName}
+                            {formatAttachmentDisplayName(file.fileName)}
                           </a>
                           <button
                             type="button"
@@ -1025,7 +1030,7 @@ export default function NewProjectPage() {
                       {getExistingAttachmentsByFolder("drawings").map((file: any) => (
                         <div key={file.id} style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.75rem" }}>
                           <a href={file.fileUrl} target="_blank" rel="noreferrer" style={{ color: "var(--primary)", textDecoration: "none", flex: 1 }}>
-                            {file.fileName}
+                            {formatAttachmentDisplayName(file.fileName)}
                           </a>
                           <button
                             type="button"
@@ -1048,7 +1053,7 @@ export default function NewProjectPage() {
                       {getExistingAttachmentsByFolder("boq").map((file: any) => (
                         <div key={file.id} style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.75rem" }}>
                           <a href={file.fileUrl} target="_blank" rel="noreferrer" style={{ color: "var(--primary)", textDecoration: "none", flex: 1 }}>
-                            {file.fileName}
+                            {formatAttachmentDisplayName(file.fileName)}
                           </a>
                           <button
                             type="button"
@@ -1071,7 +1076,7 @@ export default function NewProjectPage() {
                       {getExistingAttachmentsByFolder("site-photos").map((file: any) => (
                         <div key={file.id} style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.75rem" }}>
                           <a href={file.fileUrl} target="_blank" rel="noreferrer" style={{ color: "var(--primary)", textDecoration: "none", flex: 1 }}>
-                            {file.fileName}
+                            {formatAttachmentDisplayName(file.fileName)}
                           </a>
                           <button
                             type="button"
