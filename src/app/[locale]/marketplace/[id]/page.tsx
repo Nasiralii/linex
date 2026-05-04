@@ -745,7 +745,18 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                 {project.location && <span style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.875rem", color: "var(--text-secondary)" }}><MapPin style={{ width: "16px", height: "16px" }} />{isRtl ? project.location.nameAr : project.location.name}</span>}
                 {project.requiredStartDate && <span style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.875rem", color: "var(--text-secondary)" }}><Clock style={{ width: "16px", height: "16px" }} />{isRtl ? `تاريخ البدء: ${new Date(project.requiredStartDate).toLocaleDateString()}` : `Start: ${new Date(project.requiredStartDate).toLocaleDateString()}`}</span>}
                 {project.deadline && <span style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.875rem", color: "var(--text-secondary)" }}><Calendar style={{ width: "16px", height: "16px" }} />{new Date(project.deadline).toLocaleDateString()}</span>}
-                <span style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.875rem" }}><User style={{ width: "16px", height: "16px", color: "var(--text-secondary)" }} /><Link href={`/profile/${project.owner?.userId}`} style={{ color: "var(--primary)", fontWeight: 600, textDecoration: "none" }}>{project.owner?.companyName || project.owner?.fullName}</Link></span>
+                <span style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.875rem" }}>
+                  <User style={{ width: "16px", height: "16px", color: "var(--text-secondary)" }} />
+                  {hasKrasat ? (
+                    <Link href={`/profile/${project.owner?.userId}`} style={{ color: "var(--primary)", fontWeight: 600, textDecoration: "none" }}>
+                      {project.owner?.companyName || project.owner?.fullName}
+                    </Link>
+                  ) : (
+                    <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>
+                      {isRtl ? "المالك (مخفي حتى الدفع)" : "Owner (hidden until payment)"}
+                    </span>
+                  )}
+                </span>
               </div>
 
               {/* G1: Budget hidden from bidders — only admin and project owner can see */}
@@ -795,9 +806,9 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                           {isRtl ? "ادفع 100 ريال سعودي لعرض الوصف الكامل والمواصفات" : "Pay 100 SAR to view full description & specifications"}
                         </p>
 
-                        {user.role === "OWNER" ? (
+                        {user.role !== "CONTRACTOR" && user.role !== "ENGINEER" ? (
                           <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", fontWeight: 600, margin: 0 }}>
-                            {isRtl ? "لا يمكنك رؤية التفاصيل." : "You cannot see the details."}
+                            {isRtl ? "فقط المقاول أو المهندس يمكنه رؤية التفاصيل." : "Only contractors and engineers can see the details."}
                           </p>
                         ) : (
                           <>

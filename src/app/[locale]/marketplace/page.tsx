@@ -7,6 +7,7 @@ import { ProjectCard } from "@/components/marketplace/project-card";
 import { SidebarFilters } from "@/components/marketplace/sidebar-filters";
 import { calculateMatchScore } from "@/lib/match-score";
 import { getUserMatchProfile } from "@/lib/user-profile";
+import { Pagination } from "@/components/pagination";
 
 export const dynamic = "force-dynamic";
 
@@ -19,16 +20,19 @@ function getAllowedTypes(role: string): string[] | null {
 
 const VALID_PROJECT_TYPES = ["CONSTRUCTION_ONLY", "DESIGN_ONLY", "DESIGN_AND_CONSTRUCTION"] as const;
 
-export default async function MarketplacePage({ searchParams }: { searchParams: Promise<{ category?: string; search?: string; type?: string }> }) {
+export default async function MarketplacePage({ searchParams }: { searchParams: Promise<{ category?: string; search?: string; type?: string; page?: string }> }) {
   const user = await getCurrentUser();
   const locale = await getLocale();
   if (!user) return redirect({ href: "/auth/login", locale });
   const params = await searchParams;
+  const page = Math.max(1, Number(params.page || "1") || 1);
+  const PAGE_SIZE = 10;
   const [t, tProject, tCommon] = await Promise.all([getTranslations("marketplace"), getTranslations("project"), getTranslations("common")]);
   const isRtl = locale === "ar";
 
   let projects: any[] = [];
   let categories: any[] = [];
+  let totalProjects = 0;
   try {
     categories = await db.category.findMany({ where: { isActive: true }, orderBy: { sortOrder: "asc" } });
 
@@ -66,10 +70,31 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
       ];
     }
 
-    projects = await db.project.findMany({ where, orderBy: { publishedAt: "desc" }, include: { category: { select: { name: true, nameAr: true } }, location: { select: { name: true, nameAr: true } }, _count: { select: { bids: true } } } });
+    totalProjects = await db.project.count({ where });
+    projects = await db.project.findMany({
+      where,
+      orderBy: { publishedAt: "desc" },
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+      include: {
+        category: { select: { name: true, nameAr: true } },
+        location: { select: { name: true, nameAr: true } },
+        _count: { select: { bids: true } },
+      },
+    });
   } catch (error) {
     console.error('[MarketplacePage] DB query failed:', error);
   }
+  const totalPages = Math.max(1, Math.ceil(totalProjects / PAGE_SIZE));
+  const pageHref = (target: number) => {
+    const qp = new URLSearchParams();
+    if (params.category) qp.set("category", params.category);
+    if (params.search) qp.set("search", params.search);
+    if (params.type) qp.set("type", params.type);
+    if (target > 1) qp.set("page", String(target));
+    const qs = qp.toString();
+    return qs ? `/marketplace?${qs}` : `/marketplace`;
+  };
 
   // Gap 1: Smart match scores
   let profile: any = null;
@@ -120,7 +145,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
           <SidebarFilters params={params} locale={locale} isRtl={isRtl} filtersTitle={t("filters.title")} filtersClearAll={t("filters.clearAll")} categories={categories} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ marginBottom: "1.25rem" }}>
-              <span style={{ fontSize: "0.875rem", color: "var(--text-muted)", fontWeight: 500 }}>{t("results", { count: projects.length.toString() })}</span>
+              <span style={{ fontSize: "0.875rem", color: "var(--text-muted)", fontWeight: 500 }}>{t("results", { count: totalProjects.toString() })}</span>
             </div>
             {projects.length === 0 ? (
               <div className="card" style={{ padding: "3rem", textAlign: "center" }}>
@@ -135,6 +160,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 {projects.map((p: any) => <ProjectCard key={p.id} project={p} isRtl={isRtl} isAdmin={user.role === "ADMIN"} matchScore={scores[p.id] ?? null} tProject={(k) => tProject(k)} tCommon={(k) => tCommon(k)} />)}
+                <Pagination currentPage={page} totalPages={totalPages} hrefForPage={pageHref} locale={locale} />
               </div>
             )}
           </div>
