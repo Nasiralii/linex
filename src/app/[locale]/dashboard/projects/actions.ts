@@ -7,7 +7,7 @@ import { generateSlug } from "@/lib/utils";
 import { uploadFile } from "@/lib/storage";
 import { parseProjectMeta, stringifyProjectMeta, type ProjectContact } from "@/lib/project-meta";
 
-const PROJECT_SUBMISSION_TIMEOUT_MS = 45_000;
+const PROJECT_SUBMISSION_TIMEOUT_MS = 120_000;
 
 function withTimeout<T>(promise: Promise<T>, ms: number, message: string) {
   return Promise.race<T>([
@@ -74,6 +74,8 @@ export async function createProjectAction(formData: FormData) {
     const estimatedBudget = parseFloat(formData.get("estimatedBudget") as string) || budgetMax || budgetMin || 0;
     const selectedTradesRaw = formData.get("selectedTrades") as string;
     const selectedTrades = selectedTradesRaw ? (JSON.parse(selectedTradesRaw) as string[]).filter(Boolean) : [];
+    const removedAttachmentIdsRaw = (formData.get("removedAttachmentIds") as string) || "[]";
+    const removedAttachmentIds = removedAttachmentIdsRaw ? (JSON.parse(removedAttachmentIdsRaw) as string[]).filter(Boolean) : [];
     const targetStatus = action === "submit" ? "PENDING_REVIEW" : "DRAFT";
     const effectiveTitle = title || titleAr || "draft-project";
 
@@ -177,6 +179,11 @@ export async function createProjectAction(formData: FormData) {
 
     if (existingDraft) {
       await db.projectTrade.deleteMany({ where: { projectId: project.id } });
+      if (removedAttachmentIds.length > 0) {
+        await db.projectAttachment.deleteMany({
+          where: { projectId: project.id, id: { in: removedAttachmentIds } },
+        });
+      }
     }
 
     // Persist uploaded attachments to storage + DB
@@ -189,7 +196,7 @@ export async function createProjectAction(formData: FormData) {
 
     const filesToUpload = uploadGroups.flatMap((group) =>
       Array.from(formData.entries())
-        .filter(([key, value]) => key.startsWith(group.prefix) && value instanceof File && value.size > 0)
+        .filter(([key, value]) => (key.startsWith(group.prefix) || key.includes(`_${group.prefix}`)) && value instanceof File && value.size > 0)
         .map(([, value]) => ({ file: value as File, folder: group.folder })),
     );
 
@@ -220,10 +227,10 @@ export async function createProjectAction(formData: FormData) {
     );
 
     const failedUploads = uploadResults.filter((result) => !result.success);
-    if (action === "submit" && filesToUpload.length > 0 && failedUploads.length > 0) {
+    if (filesToUpload.length > 0 && failedUploads.length > 0) {
       return {
         success: false,
-        error: `Some attachments failed to upload: ${failedUploads.map((item) => item.fileName).join(", ")}`,
+        error: `Some attachments failed to upload: ${failedUploads.map((item) => `${item.fileName}${item.error ? ` (${item.error})` : ""}`).join(", ")}`,
       };
     }
 
@@ -365,6 +372,29 @@ export async function getOwnerProjectAction(projectId: string) {
       meta: parseProjectMeta(project.scopeSummary),
     },
   };
+}
+
+export async function getOwnerProjectAttachmentsAction(projectId: string) {
+  const user = await getCurrentUser();
+  if (!user || user.role !== "OWNER") return { success: false, attachments: [] as any[] };
+
+  const ownerProfile = await db.ownerProfile.findUnique({ where: { userId: user.id } });
+  if (!ownerProfile) return { success: false, attachments: [] as any[] };
+
+  const project = await db.project.findFirst({
+    where: { id: projectId, ownerId: ownerProfile.id },
+    select: { id: true },
+  });
+
+  if (!project) return { success: false, attachments: [] as any[] };
+
+  const attachments = await db.projectAttachment.findMany({
+    where: { projectId },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    select: { id: true, fileName: true, fileUrl: true, createdAt: true },
+  });
+
+  return { success: true, attachments };
 }
 
 // ============================================================================

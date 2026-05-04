@@ -3,7 +3,7 @@
 import { useLocale } from "next-intl";
 import { useRouter } from "@/i18n/routing";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { createProjectAction, aiTranslateTitleAction, getFormData, getOwnerDraftProjectAction, getOwnerProjectAction } from "../actions";
+import { createProjectAction, aiTranslateTitleAction, getFormData, getOwnerDraftProjectAction, getOwnerProjectAction, getOwnerProjectAttachmentsAction } from "../actions";
 import type { ProjectContact } from "@/lib/project-meta";
 import {
   Sparkles, Loader2, AlertCircle, Save, Send, Upload, X, FileText, Image as ImageIcon,
@@ -137,6 +137,7 @@ export default function NewProjectPage() {
   const [showDraftPrompt, setShowDraftPrompt] = useState(false);
   const [draftPreview, setDraftPreview] = useState<any>(null);
   const [existingAttachments, setExistingAttachments] = useState<any[]>([]);
+  const [removedAttachmentIds, setRemovedAttachmentIds] = useState<string[]>([]);
   const lastAutoSavedSnapshot = useRef("");
 
   // File upload state (4 categories)
@@ -209,6 +210,9 @@ export default function NewProjectPage() {
     return /^05\d{8}$/.test(normalized) || /^\+9665\d{8}$/.test(normalized);
   };
 
+  const getExistingAttachmentsByFolder = (folder: string) =>
+    existingAttachments.filter((file: any) => String(file?.fileUrl || "").includes(`/${folder}/`));
+
   // Toggle trade selection
   const toggleTrade = (trade: string) => {
     setSelectedTrades(prev => prev.includes(trade) ? prev.filter(t => t !== trade) : [...prev, trade]);
@@ -223,6 +227,38 @@ export default function NewProjectPage() {
   // BUG-12: Removed auto-scroll on location selection — user should control scroll
 
   // BUG-V02: Load specific project by ID if passed via URL
+  const applyDraftToForm = async (projectData: any) => {
+    if (!projectData) return;
+    setDraftProjectId(projectData.id);
+    setTitle(projectData.title || "");
+    setTitleAr(projectData.titleAr || "");
+    setProjectType(projectData.projectType || "");
+    setSelectedTrades((projectData.requiredTrades || []).map((trade: any) => (isRtl ? trade.tradeNameAr || trade.tradeName : trade.tradeName)));
+    setNeighborhood(projectData.meta?.neighborhood || "");
+    setAddressName(projectData.meta?.addressName || "");
+    setCity(projectData.meta?.city || (isRtl ? "الرياض" : "Riyadh"));
+    setDetailedAddress(projectData.meta?.detailedAddress || "");
+    setDescription(projectData.description || "");
+    setSpecifications(projectData.meta?.specifications || "");
+    setPropertyType(projectData.propertyType || "");
+    setEstimatedBudget(projectData.meta?.estimatedBudget ? String(projectData.meta.estimatedBudget) : projectData.budgetMax ? String(projectData.budgetMax) : "");
+    setStartDate(
+      projectData.requiredStartDate
+        ? new Date(projectData.requiredStartDate).toISOString().slice(0, 10)
+        : ""
+    );
+    setDeadline(
+      projectData.deadline
+        ? new Date(projectData.deadline).toISOString().slice(0, 10)
+        : ""
+    );
+    setContacts(projectData.meta?.contacts?.length ? projectData.meta.contacts : [createEmptyContact()]);
+    const attachmentsResult = await getOwnerProjectAttachmentsAction(projectData.id);
+    setExistingAttachments(attachmentsResult?.success ? (attachmentsResult.attachments || []) : (projectData.attachments || []));
+    setRemovedAttachmentIds([]);
+    setShowDraftPrompt(false);
+  };
+
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const projectId = urlParams.get("draft");
@@ -231,8 +267,7 @@ export default function NewProjectPage() {
       // Load specific project by ID (for Edit & Resubmit)
       getOwnerProjectAction(projectId).then((result) => {
         if (result.success && result.project) {
-          setDraftPreview(result.project);
-          setShowDraftPrompt(true);
+          applyDraftToForm(result.project);
         }
       }).catch(() => {});
     } else {
@@ -246,42 +281,21 @@ export default function NewProjectPage() {
     }
   }, []);
 
-  const loadDraft = () => {
+  const loadDraft = async () => {
     if (!draftPreview) return;
-    setDraftProjectId(draftPreview.id);
-    setTitle(draftPreview.title || "");
-    setTitleAr(draftPreview.titleAr || "");
-    setProjectType(draftPreview.projectType || "");
-    setSelectedTrades((draftPreview.requiredTrades || []).map((trade: any) => (isRtl ? trade.tradeNameAr || trade.tradeName : trade.tradeName)));
-    setNeighborhood(draftPreview.meta?.neighborhood || "");
-    setAddressName(draftPreview.meta?.addressName || "");
-    setCity(draftPreview.meta?.city || (isRtl ? "الرياض" : "Riyadh"));
-    setDetailedAddress(draftPreview.meta?.detailedAddress || "");
-    setDescription(draftPreview.description || "");
-    setSpecifications(draftPreview.meta?.specifications || "");
-    setPropertyType(draftPreview.propertyType || "");
-    setEstimatedBudget(draftPreview.meta?.estimatedBudget ? String(draftPreview.meta.estimatedBudget) : draftPreview.budgetMax ? String(draftPreview.budgetMax) : "");
-    // setStartDate(draftPreview.requiredStartDate ? String(draftPreview.requiredStartDate).slice(0, 10) : "");
-    setStartDate(
-  draftPreview.requiredStartDate
-    ? new Date(draftPreview.requiredStartDate).toISOString().slice(0, 10)
-    : ""
-);
-    // setDeadline(draftPreview.deadline ? String(draftPreview.deadline).slice(0, 10) : "");
-    setDeadline(
-  draftPreview.deadline
-    ? new Date(draftPreview.deadline).toISOString().slice(0, 10)
-    : ""
-);
-    setContacts(draftPreview.meta?.contacts?.length ? draftPreview.meta.contacts : [createEmptyContact()]);
-    setExistingAttachments(draftPreview.attachments || []);
-    setShowDraftPrompt(false);
+    let projectData: any = draftPreview;
+    try {
+      const fresh = await getOwnerProjectAction(draftPreview.id);
+      if (fresh?.success && fresh.project) projectData = fresh.project;
+    } catch {}
+    await applyDraftToForm(projectData);
   };
 
   const startFresh = () => {
     setDraftProjectId("");
     setContacts([createEmptyContact()]);
     setExistingAttachments([]);
+    setRemovedAttachmentIds([]);
     setShowDraftPrompt(false);
   };
 
@@ -333,6 +347,7 @@ export default function NewProjectPage() {
       formData.set("detailedAddress", detailedAddress);
       formData.set("contacts", JSON.stringify(contacts));
       formData.set("action", "draft");
+      formData.set("removedAttachmentIds", JSON.stringify(removedAttachmentIds));
       formData.set("fileCount", "0");
 
       const result = await createProjectAction(formData);
@@ -404,12 +419,13 @@ export default function NewProjectPage() {
     formData.set("detailedAddress", detailedAddress);
     formData.set("contacts", JSON.stringify(contactsToSave));
     formData.set("action", action);
+    formData.set("removedAttachmentIds", JSON.stringify(removedAttachmentIds));
     // Files
     projectImages.forEach((f, i) => formData.append(`img_${i}`, f));
     drawings.forEach((f, i) => formData.append(`draw_${i}`, f));
     boqFiles.forEach((f, i) => formData.append(`boq_${i}`, f));
     sitePhotos.forEach((f, i) => formData.append(`site_${i}`, f));
-    formData.set("fileCount", (projectImages.length + drawings.length + boqFiles.length + sitePhotos.length).toString());
+    formData.set("fileCount", (existingAttachments.length + projectImages.length + drawings.length + boqFiles.length + sitePhotos.length).toString());
 
     const result = await createProjectAction(formData);
     if (result.success) router.push(result.redirectTo || "/dashboard/projects");
@@ -977,27 +993,101 @@ export default function NewProjectPage() {
                   <label style={{ fontSize: "0.9375rem", fontWeight: 700, marginBottom: "0.75rem", display: "block" }}>
                     {isRtl ? "المرفقات" : "Attachments"}
                   </label>
-                  {existingAttachments.length > 0 && (
-                    <div style={{ marginBottom: "0.75rem", padding: "0.75rem", borderRadius: "var(--radius-lg)", background: "var(--surface-2)" }}>
-                      <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--text)", marginBottom: "0.5rem" }}>
-                        {isRtl ? "المرفقات الحالية" : "Existing Attachments"}
-                      </div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.375rem" }}>
-                        {existingAttachments.map((file: any) => (
-                          <a key={file.id} href={file.fileUrl} target="_blank" rel="noreferrer" style={{ fontSize: "0.8125rem", color: "var(--primary)", textDecoration: "none" }}>
-                            {file.fileName}
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                   <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "-0.25rem", marginBottom: "0.75rem" }}>
                     {isRtl ? "يجب إضافة ملف واحد على الأقل ضمن المرفقات قبل الإرسال للمراجعة." : "At least one attachment is required before submitting for review."}
                   </p>
                   <FileUploadBtn label="Project Images (up to 10)" labelAr="صور المشروع (حتى 10)" files={projectImages} setFiles={setProjectImages} inputRef={imgRef} accept="image/*" max={10} />
+                  {getExistingAttachmentsByFolder("project-images").length > 0 && (
+                    <div style={{ marginTop: "-0.375rem", marginBottom: "0.625rem", paddingInlineStart: "1rem", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                      {getExistingAttachmentsByFolder("project-images").map((file: any) => (
+                        <div key={file.id} style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.75rem" }}>
+                          <a href={file.fileUrl} target="_blank" rel="noreferrer" style={{ color: "var(--primary)", textDecoration: "none", flex: 1 }}>
+                            {file.fileName}
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (file.id) setRemovedAttachmentIds((prev) => [...prev, file.id]);
+                              setExistingAttachments((prev) => prev.filter((item) => item.id !== file.id));
+                            }}
+                            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--error)", padding: 0, display: "flex" }}
+                            aria-label={isRtl ? "حذف المرفق" : "Remove attachment"}
+                          >
+                            <X style={{ width: "14px", height: "14px" }} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <FileUploadBtn label="Drawings / Designs" labelAr="مخططات وتصاميم" files={drawings} setFiles={setDrawings} inputRef={drawRef} accept="image/*,.pdf,.dwg" max={10} />
+                  {getExistingAttachmentsByFolder("drawings").length > 0 && (
+                    <div style={{ marginTop: "-0.375rem", marginBottom: "0.625rem", paddingInlineStart: "1rem", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                      {getExistingAttachmentsByFolder("drawings").map((file: any) => (
+                        <div key={file.id} style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.75rem" }}>
+                          <a href={file.fileUrl} target="_blank" rel="noreferrer" style={{ color: "var(--primary)", textDecoration: "none", flex: 1 }}>
+                            {file.fileName}
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (file.id) setRemovedAttachmentIds((prev) => [...prev, file.id]);
+                              setExistingAttachments((prev) => prev.filter((item) => item.id !== file.id));
+                            }}
+                            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--error)", padding: 0, display: "flex" }}
+                            aria-label={isRtl ? "حذف المرفق" : "Remove attachment"}
+                          >
+                            <X style={{ width: "14px", height: "14px" }} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <FileUploadBtn label="BOQ (Bill of Quantities)" labelAr="جدول الكميات BOQ" files={boqFiles} setFiles={setBoqFiles} inputRef={boqRef} accept=".pdf,.xls,.xlsx,.doc,.docx" max={5} />
+                  {getExistingAttachmentsByFolder("boq").length > 0 && (
+                    <div style={{ marginTop: "-0.375rem", marginBottom: "0.625rem", paddingInlineStart: "1rem", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                      {getExistingAttachmentsByFolder("boq").map((file: any) => (
+                        <div key={file.id} style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.75rem" }}>
+                          <a href={file.fileUrl} target="_blank" rel="noreferrer" style={{ color: "var(--primary)", textDecoration: "none", flex: 1 }}>
+                            {file.fileName}
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (file.id) setRemovedAttachmentIds((prev) => [...prev, file.id]);
+                              setExistingAttachments((prev) => prev.filter((item) => item.id !== file.id));
+                            }}
+                            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--error)", padding: 0, display: "flex" }}
+                            aria-label={isRtl ? "حذف المرفق" : "Remove attachment"}
+                          >
+                            <X style={{ width: "14px", height: "14px" }} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <FileUploadBtn label="Site Photos" labelAr="صور الموقع" files={sitePhotos} setFiles={setSitePhotos} inputRef={siteRef} accept="image/*" max={10} />
+                  {getExistingAttachmentsByFolder("site-photos").length > 0 && (
+                    <div style={{ marginTop: "-0.375rem", marginBottom: "0.25rem", paddingInlineStart: "1rem", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                      {getExistingAttachmentsByFolder("site-photos").map((file: any) => (
+                        <div key={file.id} style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.75rem" }}>
+                          <a href={file.fileUrl} target="_blank" rel="noreferrer" style={{ color: "var(--primary)", textDecoration: "none", flex: 1 }}>
+                            {file.fileName}
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (file.id) setRemovedAttachmentIds((prev) => [...prev, file.id]);
+                              setExistingAttachments((prev) => prev.filter((item) => item.id !== file.id));
+                            }}
+                            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--error)", padding: 0, display: "flex" }}
+                            aria-label={isRtl ? "حذف المرفق" : "Remove attachment"}
+                          >
+                            <X style={{ width: "14px", height: "14px" }} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -1006,14 +1096,14 @@ export default function NewProjectPage() {
             <div className="grid md:grid-cols-4 items-baseline w-full" style={{  gap: "0.75rem", paddingTop: "1rem", borderTop: "1px solid var(--border-light)" }}>
              <div className="md:flex hidden"></div><div className="md:flex hidden"></div>
              <div className="w-full">
-               <button onClick={() => handleSubmit("draft")} disabled={loading} className="btn-secondary w-full" style={{ padding: "0.875rem 2rem", fontSize: "0.9375rem" }}>
+               <button onClick={() => handleSubmit("draft")} disabled={loading} className="btn-secondary w-full !text-sm" style={{ padding: "0.675rem 1rem", fontSize: "0.9375rem" }}>
                 <Save style={{ width: "16px", height: "16px" }} /> {isRtl ? "حفظ كمسودة" : "Save Draft"}
               </button>
               <div style={{ alignSelf: "center", fontSize: "0.75rem", color: "var(--text-muted)" }}>
                 {isRtl ? "ستجد المسودات لاحقاً في صفحة: مشاريعي" : "Drafts will appear in your My Projects page."}
               </div>
              </div>
-              <button onClick={() => handleSubmit("submit")} disabled={loading || (!title && !titleAr) || !description || (projectImages.length + drawings.length + boqFiles.length + sitePhotos.length) < 1} className="btn-primary" style={{ padding: "0.875rem 2rem", fontSize: "0.9375rem" }}>
+              <button  onClick={() => handleSubmit("submit")} disabled={loading || (!title && !titleAr) || !description || (existingAttachments.length + projectImages.length + drawings.length + boqFiles.length + sitePhotos.length) < 1} className="btn-primary !text-sm border" style={{ padding: "0.875rem 2rem", fontSize: "0.9375rem" }}>
                 {loading ? <Loader2 className="animate-spin" style={{ width: "16px", height: "16px" }} /> : <Send style={{ width: "16px", height: "16px" }} />}
                 {isRtl ? "إرسال للمراجعة" : "Submit for Review"}
               </button>
