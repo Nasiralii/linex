@@ -1248,7 +1248,10 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                   </div>
                   <div style={{ marginBottom: "1rem" }}>
                     <label>{isRtl ? "مرفقات داعمة" : "Supporting Documents"}</label>
-                    <input type="file" name="bidAttachment" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
+                    <input id="bid-supporting-docs" type="file" name="bidAttachment" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style={{ display: "block", marginTop: "0.5rem", fontSize: "0.8125rem" }} />
+                    <label htmlFor="bid-supporting-docs" className="btn-secondary" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", marginTop: "0.375rem", cursor: "pointer", padding: "0.55rem 0.9rem" }}>
+                      {isRtl ? "رفع الملفات" : "Upload Files"}
+                    </label>
                     <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
                       {isRtl ? "يمكنك إرفاق ملفات داعمة للعرض مثل PDF أو الصور." : "You can attach supporting bid files such as PDFs or images."}
                     </div>
