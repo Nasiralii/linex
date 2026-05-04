@@ -18,7 +18,7 @@ const TYPE_LABELS: Record<string, { ar: string; en: string }> = {
 export default async function MyProjectsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; submitted?: string; saved?: string; page?: string }>;
+  searchParams: Promise<{ status?: string; submitted?: string; saved?: string; page?: string; hasBids?: string }>;
 }) {
   const user = await getCurrentUser();
   const locale = await getLocale();
@@ -30,6 +30,7 @@ export default async function MyProjectsPage({
   const filterStatus = params.status || "ALL";
   const showSubmittedNotice = params.submitted === "1";
   const showDraftSavedNotice = params.saved === "draft";
+  const onlyWithBids = params.hasBids === "1";
   const page = Math.max(1, Number(params.page || "1") || 1);
   const PAGE_SIZE = 8;
 
@@ -40,6 +41,10 @@ export default async function MyProjectsPage({
     if (ownerProfile) {
       const where: any = { ownerId: ownerProfile.id };
       if (filterStatus !== "ALL") where.status = filterStatus;
+      if (onlyWithBids) {
+        where.bids = { some: {} };
+        where.status = { not: "AWARDED" };
+      }
       totalProjects = await db.project.count({ where });
       projects = await db.project.findMany({
         where,
@@ -56,6 +61,7 @@ export default async function MyProjectsPage({
   const pageHref = (target: number) => {
     const qp = new URLSearchParams();
     if (filterStatus !== "ALL") qp.set("status", filterStatus);
+    if (onlyWithBids) qp.set("hasBids", "1");
     if (showSubmittedNotice) qp.set("submitted", "1");
     if (showDraftSavedNotice) qp.set("saved", "draft");
     if (target > 1) qp.set("page", String(target));

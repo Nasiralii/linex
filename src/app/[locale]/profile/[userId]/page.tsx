@@ -121,21 +121,25 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
 
       <div className="container-app" style={{ padding: "2rem 1.5rem", maxWidth: "800px" }}>
         {/* Stats */}
-        <div className="grid md:grid-cols-4 grid-cols-2" style={{ gap: "1rem", marginBottom: "2rem" }}>
+        <div className={`grid ${role === "OWNER" ? "md:grid-cols-2" : "md:grid-cols-4"} grid-cols-2`} style={{ gap: "1rem", marginBottom: "2rem" }}>
           <div className="card" style={{ padding: "1rem", textAlign: "center" }}>
             <div style={{ display: "flex", justifyContent: "center", gap: "2px", marginBottom: "0.25rem" }}>
               {[1,2,3,4,5].map(s => <Star key={s} style={{ width: "14px", height: "14px", fill: s <= Math.round(rating) ? "var(--accent)" : "none", color: s <= Math.round(rating) ? "var(--accent)" : "var(--border)" }} />)}
             </div>
             <div style={{ fontSize: "0.6875rem", color: "var(--text-muted)" }}>{rating.toFixed(1)} ({reviews} {isRtl ? "تقييم" : "reviews"})</div>
           </div>
-          <div className="card" style={{ padding: "1rem", textAlign: "center" }}>
-            <div style={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--primary)" }}>{years}</div>
-            <div style={{ fontSize: "0.6875rem", color: "var(--text-muted)" }}>{isRtl ? "سنوات خبرة" : "Years Exp."}</div>
-          </div>
-          <div className="card" style={{ padding: "1rem", textAlign: "center" }}>
-            <div style={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--info)" }}>{teamSize || "—"}</div>
-            <div style={{ fontSize: "0.6875rem", color: "var(--text-muted)" }}>{isRtl ? "حجم الفريق" : "Team Size"}</div>
-          </div>
+          {role !== "OWNER" && (
+            <div className="card" style={{ padding: "1rem", textAlign: "center" }}>
+              <div style={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--primary)" }}>{years}</div>
+              <div style={{ fontSize: "0.6875rem", color: "var(--text-muted)" }}>{isRtl ? "سنوات خبرة" : "Years Exp."}</div>
+            </div>
+          )}
+          {role !== "OWNER" && (
+            <div className="card" style={{ padding: "1rem", textAlign: "center" }}>
+              <div style={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--info)" }}>{teamSize || "—"}</div>
+              <div style={{ fontSize: "0.6875rem", color: "var(--text-muted)" }}>{isRtl ? "حجم الفريق" : "Team Size"}</div>
+            </div>
+          )}
           <div className="card" style={{ padding: "1rem", textAlign: "center" }}>
             <div style={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--accent)" }}>{verified ? "✓" : "⏳"}</div>
             <div style={{ fontSize: "0.6875rem", color: "var(--text-muted)" }}>{isRtl ? "التحقق" : "Verification"}</div>

@@ -124,7 +124,7 @@ export default async function MyBidsPage() {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             {bids.map((bid: any) => (
-              <Link key={bid.id} href={`/marketplace/${bid.projectId}`} className="card" style={{ padding: "1.25rem", textDecoration: "none", display: "block" }}>
+              <div key={bid.id} className="card" style={{ padding: "1.25rem" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)", marginBottom: "0.25rem" }}>
@@ -140,6 +140,11 @@ export default async function MyBidsPage() {
                        {bid.aiScore && <span>• AI: {bid.aiScore}/100</span>}
                        {rankingMap[bid.id]?.confidence && <span>• {isRtl ? `الثقة: ${rankingMap[bid.id].confidence}` : `Confidence: ${rankingMap[bid.id].confidence}`}</span>}
                        {rankingMap[bid.id]?.usedFallbacks?.length > 0 && <span>• {isRtl ? `بدائل: ${rankingMap[bid.id].usedFallbacks.length}` : `Fallbacks: ${rankingMap[bid.id].usedFallbacks.length}`}</span>}
+                    </div>
+                    <div style={{ marginTop: "0.5rem" }}>
+                      <Link href={`/marketplace/${bid.projectId}`} style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", fontSize: "0.75rem", fontWeight: 700, color: "var(--primary)", textDecoration: "none" }}>
+                        {isRtl ? "عرض المشروع" : "View Project"}
+                      </Link>
                     </div>
                   </div>
                   <div style={{ textAlign: "end" }}>
@@ -164,7 +169,7 @@ export default async function MyBidsPage() {
                     )}
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         )}

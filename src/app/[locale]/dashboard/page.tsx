@@ -39,7 +39,10 @@ export default async function DashboardPage() {
     const ownerProfile = await db.ownerProfile.findUnique({ where: { userId: user.id } });
     if (ownerProfile) {
       projectCount = await db.project.count({ where: { ownerId: ownerProfile.id } });
-      bidCount = await db.bid.count({ where: { project: { ownerId: ownerProfile.id } } });
+      bidCount = await db.bid.count({
+        where: { project: { ownerId: ownerProfile.id, status: { not: "AWARDED" } } },
+      });
+      awardCount = await db.project.count({ where: { ownerId: ownerProfile.id, status: "AWARDED" } });
     }
   }
 
@@ -108,8 +111,8 @@ export default async function DashboardPage() {
     });
 
     if (engineerProfile) {
-      bidCount = await db.bid.count({ where: { contractorId: engineerProfile.id } });
-      awardCount = await db.award.count({ where: { contractorId: engineerProfile.id } });
+      bidCount = await db.bid.count({ where: { engineerId: engineerProfile.id } });
+      awardCount = await db.bid.count({ where: { engineerId: engineerProfile.id, status: "AWARDED" } });
       awardedWorkspaceProjects = await db.bid.findMany({
         where: { engineerId: engineerProfile.id, status: "AWARDED" },
         include: { project: { select: { id: true, title: true, titleAr: true, status: true } } },
@@ -152,8 +155,8 @@ export default async function DashboardPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "1rem", marginBottom: "2rem" }}>
           {(isOwner ? [
             { icon: FolderOpen, label: isRtl ? "مشاريعي" : "My Projects", value: projectCount, color: "#2A7B88", bg: "#E8F4F6", link: "/dashboard/projects" as const },
-            { icon: FileCheck, label: isRtl ? "العروض المستلمة" : "Bids Received", value: bidCount, color: "#B87333", bg: "#F5EDE6" },
-            { icon: Award, label: isRtl ? "الترسيات" : "Awards", value: awardCount, color: "#7c3aed", bg: "#f5f3ff" },
+            { icon: FileCheck, label: isRtl ? "العروض المستلمة" : "Bids Received", value: bidCount, color: "#B87333", bg: "#F5EDE6", link: "/dashboard/projects?hasBids=1" as const },
+            { icon: Award, label: isRtl ? "الترسيات" : "Awards", value: awardCount, color: "#7c3aed", bg: "#f5f3ff", link: "/dashboard/projects?status=AWARDED" as const },
             { icon: Clock, label: isRtl ? "قيد التنفيذ" : "In Progress", value: 0, color: "#2563eb", bg: "#eff6ff" },
           ] : [
             { icon: BarChart3, label: isRtl ? "عروضي" : "My Bids", value: bidCount, color: "#2A7B88", bg: "#E8F4F6" },
