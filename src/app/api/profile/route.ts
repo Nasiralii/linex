@@ -56,18 +56,7 @@ function formatUploadErrorLabel(documentType: string) {
   return documentType.replace(/_/g, " ");
 }
 
-async function replaceProfileDocuments<T extends { id: string }>(
-  existingDocs: T[],
-  documentType: string,
-  createRecords: () => Promise<void>,
-  deleteRecords: (ids: string[]) => Promise<void>
-) {
-  const matchingIds = existingDocs.filter((doc: any) => doc.documentType === documentType).map((doc) => doc.id);
-  if (matchingIds.length > 0) {
-    await deleteRecords(matchingIds);
-  }
-  await createRecords();
-}
+const MAX_DOCS_PER_TYPE = 5;
 
 function normalizeWebsiteInput(value: unknown) {
   const raw = String(value || "").trim();
@@ -210,26 +199,27 @@ export async function PUT(request: Request) {
 
           if (uploadedFiles.length === 0) continue;
 
-          await replaceProfileDocuments(
-            currentProfile?.documents || [],
-            documentType,
-            async () => {
-              await db.contractorDocument.createMany({
-                data: uploadedFiles.map(({ file, url }) => ({
-                  contractorId: contractorProfile.id,
-                  documentType,
-                  fileName: file.name,
-                  fileUrl: url,
-                  fileSize: file.size,
-                  mimeType: file.type || null,
-                  uploadedAt: new Date(),
-                })),
-              });
-            },
-            async (ids) => {
-              await db.contractorDocument.deleteMany({ where: { id: { in: ids } } });
-            }
-          );
+          const existingCount = (currentProfile?.documents || []).filter((doc: any) => doc.documentType === documentType).length;
+          const remainingSlots = Math.max(0, MAX_DOCS_PER_TYPE - existingCount);
+          const filesToPersist = uploadedFiles.slice(0, remainingSlots);
+          if (filesToPersist.length === 0) {
+            uploadErrors.push(`${formatUploadErrorLabel(documentType)}: Maximum ${MAX_DOCS_PER_TYPE} files allowed`);
+            continue;
+          }
+          if (uploadedFiles.length > filesToPersist.length) {
+            uploadErrors.push(`${formatUploadErrorLabel(documentType)}: Only ${MAX_DOCS_PER_TYPE} files are allowed`);
+          }
+          await db.contractorDocument.createMany({
+            data: filesToPersist.map(({ file, url }) => ({
+              contractorId: contractorProfile.id,
+              documentType,
+              fileName: file.name,
+              fileUrl: url,
+              fileSize: file.size,
+              mimeType: file.type || null,
+              uploadedAt: new Date(),
+            })),
+          });
         }
 
         const portfolioEntries = Array.from(formData.entries()).filter(([key, value]) => key === "portfolio" && value instanceof File && value.size > 0) as [string, File][];
@@ -336,8 +326,19 @@ export async function PUT(request: Request) {
 
           if (uploadedFiles.length === 0) continue;
 
+          const existingCount = (currentProfile?.documents || []).filter((doc: any) => doc.documentType === documentType).length;
+          const remainingSlots = Math.max(0, MAX_DOCS_PER_TYPE - existingCount);
+          const filesToPersist = uploadedFiles.slice(0, remainingSlots);
+          if (filesToPersist.length === 0) {
+            uploadErrors.push(`${formatUploadErrorLabel(documentType)}: Maximum ${MAX_DOCS_PER_TYPE} files allowed`);
+            continue;
+          }
+          if (uploadedFiles.length > filesToPersist.length) {
+            uploadErrors.push(`${formatUploadErrorLabel(documentType)}: Only ${MAX_DOCS_PER_TYPE} files are allowed`);
+          }
+
           await db.engineerDocument.createMany({
-            data: uploadedFiles.map(({ file, url }) => ({
+            data: filesToPersist.map(({ file, url }) => ({
               engineerId: engineerProfile.id,
               documentType,
               fileName: file.name,

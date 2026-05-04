@@ -361,7 +361,11 @@ export default function ProfilePage() {
     }
 
     if (activeTab === "docs" && docCategories.length > 0) {
-      const missingDocs = docCategories.filter((cat) => !(documents[cat.key] || []).length);
+      const missingDocs = docCategories.filter((cat) => {
+        const hasNew = (documents[cat.key] || []).length > 0;
+        const hasExisting = existingDocuments.some((doc: any) => doc.documentType === cat.key);
+        return !hasNew && !hasExisting;
+      });
       if (missingDocs.length > 0) {
         return `${isRtl ? "ارفع الوثائق المطلوبة قبل المتابعة" : "Upload the required documents before continuing"}: ${missingDocs.map((doc) => isRtl ? doc.label : doc.labelEn).join(isRtl ? "، " : ", ")}`;
       }
@@ -1036,33 +1040,6 @@ export default function ProfilePage() {
               )}
             </div>
 
-            {/* BUG-C04: Show existing documents from DB */}
-            {existingDocuments.length > 0 && (
-              <div className="card" style={{ padding: "1.25rem", marginBottom: "0.75rem", border: "1px solid var(--success)" }}>
-                <div style={{ fontSize: "0.875rem", fontWeight: 700, color: "var(--success)", marginBottom: "0.5rem" }}>
-                  {isRtl ? "✓ الوثائق المرفوعة سابقاً" : "✓ Previously Uploaded Documents"}
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.375rem" }}>
-                  {existingDocuments.map((doc: any, i: number) => (
-                    <a key={i} href={doc.fileUrl} target="_blank" rel="noopener" style={{
-                      display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.8125rem",
-                      padding: "0.5rem 0.75rem", borderRadius: "var(--radius-md)", background: "var(--surface-2)",
-                      color: "var(--primary)", textDecoration: "none",
-                    }}>
-                      <FileText style={{ width: "14px", height: "14px" }} />
-                      <span style={{ flex: 1 }}>{formatDocumentLabel(doc.documentType, isRtl)}</span>
-                      <span style={{ fontSize: "0.6875rem", color: "var(--text-muted)" }}>
-                        {new Date(doc.uploadedAt).toLocaleDateString(isRtl ? "ar-SA" : "en-SA")}
-                      </span>
-                      <span className={`chip chip-${doc.status === "pending" ? "warning" : doc.status === "approved" ? "success" : "default"}`} style={{ fontSize: "0.625rem" }}>
-                        {doc.status}
-                      </span>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-
             {docCategories.map(cat => (
               <div key={cat.key} className="card" style={{ padding: "1.25rem", marginBottom: "0.75rem" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.5rem" }}>
@@ -1088,6 +1065,38 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Uploaded files list */}
+                {(existingDocuments.filter((doc: any) => doc.documentType === cat.key) || []).length > 0 && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", marginTop: "0.25rem", marginBottom: "0.35rem" }}>
+                    {existingDocuments
+                      .filter((doc: any) => doc.documentType === cat.key)
+                      .map((doc: any, i: number) => (
+                        <a
+                          key={`existing-${doc.id || i}`}
+                          href={doc.fileUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.375rem",
+                            fontSize: "0.75rem",
+                            color: "var(--primary)",
+                            padding: "0.25rem 0.5rem",
+                            background: "var(--surface-2)",
+                            borderRadius: "var(--radius-md)",
+                            textDecoration: "none",
+                          }}
+                        >
+                          <FileText style={{ width: "12px", height: "12px", color: "var(--primary)" }} />
+                          <span style={{ flex: 1 }}>{doc.fileName}</span>
+                          <span className={`chip chip-${doc.status === "pending" ? "warning" : doc.status === "approved" ? "success" : "default"}`} style={{ fontSize: "0.625rem" }}>
+                            {doc.status}
+                          </span>
+                        </a>
+                      ))}
+                  </div>
+                )}
+
                 {(documents[cat.key] || []).length > 0 && (
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", marginTop: "0.25rem" }}>
                     {(documents[cat.key] || []).map((file, i) => (
@@ -1103,7 +1112,7 @@ export default function ProfilePage() {
                   </div>
                 )}
 
-                {(documents[cat.key] || []).length === 0 && (
+                {(documents[cat.key] || []).length === 0 && existingDocuments.filter((doc: any) => doc.documentType === cat.key).length === 0 && (
                   <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontStyle: "italic" }}>
                     {isRtl ? "لم يتم رفع ملفات بعد" : "No files uploaded yet"}
                   </div>
