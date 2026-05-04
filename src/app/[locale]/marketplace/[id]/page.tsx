@@ -46,6 +46,11 @@ function formatProjectAttachmentLabel(file: { fileName: string; fileUrl: string 
   return isRtl ? "مرفق مشروع" : "Project Attachment";
 }
 
+function displayAttachmentFileName(fileName: string) {
+  const value = String(fileName || "");
+  return value.replace(/^[0-9a-fA-F]{8}-[0-9a-fA-F-]{27}_(.+)$/i, "$1");
+}
+
 // ============================================================================
 // Server Actions
 // ============================================================================
@@ -922,28 +927,30 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                 <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)", marginBottom: "0.75rem" }}>
                   {isRtl ? "مستندات المشروع" : "Project Documents"}
                 </h3>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                  {project.attachments.map((file: any) => (
-                    <a
-                      key={file.id}
-                      href={file.fileUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "0.5rem",
-                        color: "var(--primary)",
-                        textDecoration: "none",
-                        fontSize: "0.875rem",
-                        fontWeight: 600,
-                      }}
-                    >
-                      <ArrowRight style={{ width: "14px", height: "14px" }} />
-                      {formatProjectAttachmentLabel(file, isRtl)}
-                    </a>
-                  ))}
-                </div>
+                {Object.entries(
+                  project.attachments.reduce((acc: Record<string, any[]>, file: any) => {
+                    const label = formatProjectAttachmentLabel(file, isRtl);
+                    if (!acc[label]) acc[label] = [];
+                    acc[label].push(file);
+                    return acc;
+                  }, {})
+                ).map(([label, files]) => (
+                  <div key={label} style={{ marginBottom: "0.75rem" }}>
+                    <div style={{ fontSize: "0.875rem", fontWeight: 700, color: "var(--text)", marginBottom: "0.35rem" }}>
+                      {label}
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem", paddingInlineStart: "0.5rem" }}>
+                      {(files as any[]).map((file: any, idx: number) => (
+                        <div key={file.id} style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", fontSize: "0.875rem", fontWeight: 600 }}>
+                          <span style={{ color: "var(--text-muted)", minWidth: "1.25rem" }}>{idx + 1}.</span>
+                          <a href={file.fileUrl} target="_blank" rel="noreferrer" style={{ color: "var(--primary)", textDecoration: "none" }}>
+                            {displayAttachmentFileName(file.fileName)}
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
 
@@ -1112,7 +1119,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                                 rel="noreferrer"
                                 style={{ color: "var(--primary)", textDecoration: "none", fontSize: "0.8125rem", fontWeight: 600 }}
                               >
-                                {file.fileName}
+                                {displayAttachmentFileName(file.fileName)}
                               </a>
                             ))}
                           </div>
