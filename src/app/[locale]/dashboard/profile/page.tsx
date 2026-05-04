@@ -5,10 +5,11 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "@/i18n/routing";
 import { aiTranslateProfileTextAction } from "../../auth/actions";
 import {
-  User, Building2, Save, Loader2, AlertCircle, CheckCircle, Phone, MapPin, Award,
+  User, Building2, Save, Loader2, CheckCircle, Phone, MapPin, Award,
   Upload, FileText, X, Camera, Briefcase, Shield, Clock, Image as ImageIcon,
 } from "lucide-react";
 import { calculateProfileScore } from "@/lib/ai";
+import { useToast } from "@/components/toast";
 
 // G6-G10: Full profile page rebuild with document uploads, avatar, portfolio
 
@@ -128,12 +129,12 @@ function normalizePhoneInput(value: string) {
 export default function ProfilePage() {
   const locale = useLocale();
   const router = useRouter();
+  const { showToast } = useToast();
   const isRtl = locale === "ar";
   const localizedMarketplacePath = `/${locale}/marketplace`;
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [profile, setProfile] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("info");
@@ -370,11 +371,11 @@ export default function ProfilePage() {
   };
 
   const handleSave = async (continueToNext = false) => {
-    setSaving(true); setError(""); setSuccess("");
+    setSaving(true); setSuccess("");
     try {
       const stepError = validateCurrentStep();
       if (stepError) {
-        setError(stepError);
+        showToast(stepError, "error");
         setSaving(false);
         return;
       }
@@ -436,7 +437,7 @@ export default function ProfilePage() {
       if (result.success) {
         const stepBlockingMessage = getStepBlockingMessage(result);
         if (stepBlockingMessage) {
-          setError(stepBlockingMessage);
+          showToast(stepBlockingMessage, "error");
           setSaving(false);
           return;
         }
@@ -455,7 +456,7 @@ export default function ProfilePage() {
               redirectToMarketplace();
             }, 900);
           } else {
-            setError(buildIncompleteMessage(result.missingFields, result.missingDocuments) || (isRtl ? "تم حفظ البيانات لكن الطلب لم يُرسل بعد. أكمل جميع الحقول والوثائق المطلوبة." : "Your data was saved, but the application was not submitted yet. Please complete all required fields and documents."));
+            showToast(buildIncompleteMessage(result.missingFields, result.missingDocuments) || (isRtl ? "تم حفظ البيانات لكن الطلب لم يُرسل بعد. أكمل جميع الحقول والوثائق المطلوبة." : "Your data was saved, but the application was not submitted yet. Please complete all required fields and documents."), "error");
           }
         } else {
           await syncUploadedAssetsFromServer();
@@ -466,8 +467,8 @@ export default function ProfilePage() {
           if (nextTab) setActiveTab(nextTab);
         }
       }
-      else setError(result.error || "Failed to save");
-    } catch (e: any) { setError(e?.message || "Error"); }
+      else showToast(result.error || "Failed to save", "error");
+    } catch (e: any) { showToast(e?.message || "Error", "error"); }
     setSaving(false);
   };
 
@@ -484,10 +485,9 @@ export default function ProfilePage() {
     const selected = Array.from(files);
     const invalidMessage = selected.map((file) => validateSelectedFile(file, isRtl)).find(Boolean);
     if (invalidMessage) {
-      setError(invalidMessage);
+      showToast(invalidMessage, "error");
       return;
     }
-    setError("");
     setDocuments(prev => ({
       ...prev,
       [category]: [...(prev[category] || []), ...selected].slice(0, 5),
@@ -721,11 +721,6 @@ export default function ProfilePage() {
               : "Your application will not be sent to admin until all required profile details and mandatory documents are completed."}
           </div>
         )}
-        {error && (
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.75rem 1rem", borderRadius: "var(--radius-lg)", marginBottom: "1rem", background: "var(--error-light)", color: "var(--error)", fontSize: "0.875rem" }}>
-            <AlertCircle style={{ width: "16px", height: "16px" }} /> {error}
-          </div>
-        )}
         {success && (
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.75rem 1rem", borderRadius: "var(--radius-lg)", marginBottom: "1rem", background: "var(--primary-light)", color: "var(--primary)", fontSize: "0.875rem" }}>
             <CheckCircle style={{ width: "16px", height: "16px" }} /> {success}
@@ -800,9 +795,7 @@ export default function ProfilePage() {
                       const value = normalizePhoneInput(e.target.value);
                       setForm((p: any) => ({ ...p, phone: value }));
                       if (value && !/^05\d{8}$/.test(value)) {
-                        setError(isRtl ? "يرجى إدخال رقم سعودي صحيح يبدأ بـ 05 ويتكون من 10 أرقام" : "Please enter a valid Saudi number starting with 05 and 10 digits long");
-                      } else {
-                        setError("");
+                        showToast(isRtl ? "يرجى إدخال رقم سعودي صحيح يبدأ بـ 05 ويتكون من 10 أرقام" : "Please enter a valid Saudi number starting with 05 and 10 digits long", "error");
                       }
                     }}
                     dir="ltr" 
