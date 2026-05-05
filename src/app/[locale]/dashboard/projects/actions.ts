@@ -112,6 +112,30 @@ export async function createProjectAction(formData: FormData) {
       if (fileCount < 1) {
         return { success: false, error: "At least one attachment is required before submission" };
       }
+
+      if (!requiredStartDate) {
+        return { success: false, error: "Expected start date is required" };
+      }
+      if (!deadline) {
+        return { success: false, error: "Last date to accept offers is required" };
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const startDateObj = new Date(requiredStartDate);
+      startDateObj.setHours(0, 0, 0, 0);
+      const deadlineObj = new Date(deadline);
+      deadlineObj.setHours(0, 0, 0, 0);
+
+      if (Number.isNaN(startDateObj.getTime()) || Number.isNaN(deadlineObj.getTime())) {
+        return { success: false, error: "Invalid project dates" };
+      }
+      if (startDateObj.getTime() < today.getTime()) {
+        return { success: false, error: "Expected start date must be today or a future date" };
+      }
+      if (deadlineObj.getTime() < startDateObj.getTime()) {
+        return { success: false, error: "Last date to accept offers must be on or after expected start date" };
+      }
     } else if (!title && !titleAr && !description && !specifications && !projectType && selectedTrades.length === 0) {
       return { success: false, error: "Nothing to save yet" };
     }

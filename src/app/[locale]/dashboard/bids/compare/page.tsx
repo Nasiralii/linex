@@ -133,7 +133,7 @@ export default async function BidComparisonPage({ searchParams }: { searchParams
             </p>
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: `repeat(${bids.length}, 1fr)`, gap: "1.5rem" }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {bids.map((bid: any, index: number) => (
               <div key={bid.id} className="card" style={{ padding: "1.5rem", border: index === 0 ? "2px solid var(--primary)" : "1px solid var(--border-light)" }}>
                 {index === 0 && (

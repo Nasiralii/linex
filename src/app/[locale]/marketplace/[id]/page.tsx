@@ -270,12 +270,25 @@ async function sendMessageAction(formData: FormData) {
 
     if (!project) return notFound();
 
+    const [senderKrasatPurchase, receiverKrasatPurchase] = await Promise.all([
+      db.krasatPurchase.findUnique({
+        where: { userId_projectId: { userId: user.id, projectId } },
+        select: { id: true },
+      }),
+      db.krasatPurchase.findUnique({
+        where: { userId_projectId: { userId: receiverId, projectId } },
+        select: { id: true },
+      }),
+    ]);
+
     const allowedParticipants = new Set(
       [
         project.owner?.userId,
         ...project.bids.flatMap((bid: any) => [bid.contractor?.userId, bid.engineer?.userId]),
         project.award?.bid?.contractor?.userId,
         project.award?.bid?.engineer?.userId,
+        senderKrasatPurchase ? user.id : null,
+        receiverKrasatPurchase ? receiverId : null,
       ].filter(Boolean) as string[],
     );
 

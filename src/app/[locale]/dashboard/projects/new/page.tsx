@@ -2,6 +2,7 @@
 
 import { useLocale } from "next-intl";
 import { useRouter } from "@/i18n/routing";
+import { useToast } from "@/components/toast";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createProjectAction, aiTranslateTitleAction, getFormData, getOwnerDraftProjectAction, getOwnerProjectAction, getOwnerProjectAttachmentsAction } from "../actions";
 import type { ProjectContact } from "@/lib/project-meta";
@@ -107,12 +108,12 @@ const FIELD_IDS = {
 export default function NewProjectPage() {
   const locale = useLocale();
   const router = useRouter();
+  const { showToast } = useToast();
   const isRtl = locale === "ar";
   const step5Ref = useRef<HTMLDivElement>(null);
 
   const [loading, setLoading] = useState(false);
   const [translating, setTranslating] = useState(false);
-  const [error, setError] = useState("");
   const [neighborhoodSearch, setNeighborhoodSearch] = useState("");
   const [showNeighborhoods, setShowNeighborhoods] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
@@ -368,7 +369,6 @@ export default function NewProjectPage() {
   const addContactRow = () => {
     if (contacts.length >= 3) return;
     setContacts((prev) => [...prev, createEmptyContact()]);
-    setError("");
   };
 
   const updateContact = (index: number, field: keyof ProjectContact, value: string) => {
@@ -384,7 +384,7 @@ export default function NewProjectPage() {
 
   // Submit
   const handleSubmit = async (action: "draft" | "submit") => {
-    setLoading(true); setError("");
+    setLoading(true);
     const normalizedContacts = contacts
       .map((contact) => ({
         name: contact.name.trim(),
@@ -394,12 +394,32 @@ export default function NewProjectPage() {
 
     const hasPartialContact = normalizedContacts.some((contact) => (contact.name || contact.phone || contact.email) && (!contact.name || !contact.phone));
     if (hasPartialContact) {
-      setError(isRtl ? "أكمل الاسم ورقم الجوال لكل جهة اتصال قمت بإضافتها" : "Complete the name and phone for every contact you add");
+      showToast(isRtl ? "أكمل الاسم ورقم الجوال لكل جهة اتصال قمت بإضافتها" : "Complete the name and phone for every contact you add", "error");
       setLoading(false);
       return;
     }
 
     const contactsToSave = normalizedContacts.filter((contact) => contact.name || contact.phone);
+
+    if (action === "submit") {
+      const today = new Date().toISOString().slice(0, 10);
+      const submitError =
+        !startDate
+          ? (isRtl ? "تاريخ البدء المتوقع مطلوب قبل الإرسال للمراجعة" : "Expected start date is required before submitting for review")
+          : startDate < today
+            ? (isRtl ? "تاريخ البدء المتوقع يجب أن يكون اليوم أو تاريخًا مستقبليًا" : "Expected start date must be today or a future date")
+            : !deadline
+              ? (isRtl ? "آخر موعد لاستقبال العروض مطلوب قبل الإرسال للمراجعة" : "Last date to accept offers is required before submitting for review")
+              : deadline < startDate
+                ? (isRtl ? "آخر موعد لاستقبال العروض يجب أن يكون بعد أو يساوي تاريخ البدء المتوقع" : "Last date to accept offers must be on or after the expected start date")
+                : "";
+
+      if (submitError) {
+        showToast(submitError, "error");
+        setLoading(false);
+        return;
+      }
+    }
 
     const formData = new FormData();
     if (draftProjectId) formData.set("projectId", draftProjectId);
@@ -434,7 +454,10 @@ export default function NewProjectPage() {
 
     const result = await createProjectAction(formData);
     if (result.success) router.push(result.redirectTo || "/dashboard/projects");
-    else { setError(result.error || "Error"); setLoading(false); }
+    else {
+      showToast(result.error || (isRtl ? "حدث خطأ" : "Error"), "error");
+      setLoading(false);
+    }
   };
 
   // Property types
@@ -586,12 +609,6 @@ export default function NewProjectPage() {
                 {isRtl ? "بدء مشروع جديد" : "Start New Project"}
               </button>
             </div>
-          </div>
-        )}
-
-        {error && (
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.75rem 1rem", borderRadius: "var(--radius-lg)", marginBottom: "1.5rem", background: "var(--error-light)", color: "var(--error)", fontSize: "0.875rem" }}>
-            <AlertCircle style={{ width: "16px", height: "16px" }} /> {error}
           </div>
         )}
 

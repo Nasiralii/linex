@@ -1,4 +1,8 @@
-import { Paperclip, Download, Send, MessageSquare } from "lucide-react";
+"use client";
+
+import { useId, useState } from "react";
+import { useFormStatus } from "react-dom";
+import { Loader2, Paperclip, Download, Send, MessageSquare, Upload } from "lucide-react";
 import { sendWorkspaceMessage, shareFileMessage } from "@/app/[locale]/dashboard/execution/[id]/actions";
 
 interface WorkspaceChatProps {
@@ -8,7 +12,64 @@ interface WorkspaceChatProps {
   isRtl: boolean;
 }
 
+function SendMessageButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" className="btn-primary" style={{ padding: "0.5rem 1rem" }} disabled={pending}>
+      {pending ? <Loader2 className="animate-spin" style={{ width: "16px", height: "16px" }} /> : <Send style={{ width: "16px", height: "16px" }} />}
+    </button>
+  );
+}
+
+function ShareFileButton({ isRtl }: { isRtl: boolean }) {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      style={{
+        padding: "0.5rem 0.75rem",
+        fontSize: "0.75rem",
+        borderRadius: "var(--radius-md)",
+        border: "1px solid var(--border)",
+        background: pending ? "var(--surface)" : "var(--surface-2)",
+        color: pending ? "var(--text-muted)" : "var(--text)",
+        cursor: pending ? "not-allowed" : "pointer",
+        opacity: pending ? 0.8 : 1,
+        fontFamily: "inherit",
+        fontWeight: 600,
+        display: "flex",
+        alignItems: "center",
+        gap: "0.35rem",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {pending ? (
+        <>
+          <Loader2 className="animate-spin" style={{ width: "12px", height: "12px" }} />
+          {isRtl ? "جارٍ الإرسال..." : "Sending..."}
+        </>
+      ) : (
+        <>
+          <Paperclip style={{ width: "12px", height: "12px" }} />
+          {isRtl ? "مشاركة ملف" : "Share File"}
+        </>
+      )}
+    </button>
+  );
+}
+
 export function WorkspaceChat({ messages, userId, projectId, isRtl }: WorkspaceChatProps) {
+  const fileInputId = useId();
+  const [selectedFileName, setSelectedFileName] = useState("");
+  const formatMessageTime = (value: string | Date) =>
+    new Intl.DateTimeFormat("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone: "UTC",
+    }).format(new Date(value));
+
   return (
     <div className="card" style={{ padding: "1.5rem", marginTop: "1.5rem" }}>
       <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -30,7 +91,7 @@ export function WorkspaceChat({ messages, userId, projectId, isRtl }: WorkspaceC
               color: isMine ? "white" : "var(--text)",
             }}>
               <div style={{ fontSize: "0.6875rem", marginBottom: "0.25rem", opacity: 0.7 }}>
-                {msg.sender?.email} • {new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                {msg.sender?.email} • {formatMessageTime(msg.createdAt)}
               </div>
               <div style={{ fontSize: "0.875rem", lineHeight: 1.5 }}>
                 {msg.content.startsWith("📎 FILE:") ? (
@@ -65,25 +126,44 @@ export function WorkspaceChat({ messages, userId, projectId, isRtl }: WorkspaceC
         <form action={sendWorkspaceMessage} style={{ display: "flex", gap: "0.5rem" }}>
           <input type="hidden" name="projectId" value={projectId} />
           <input type="text" name="content" placeholder={isRtl ? "اكتب رسالتك..." : "Type a message..."} required style={{ flex: 1 }} />
-          <button type="submit" className="btn-primary" style={{ padding: "0.5rem 1rem" }}>
-            <Send style={{ width: "16px", height: "16px" }} />
-          </button>
+          <SendMessageButton />
         </form>
         <form action={shareFileMessage} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
           <input type="hidden" name="projectId" value={projectId} />
-          <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", flex: 1 }}>
-            <Paperclip style={{ width: "16px", height: "16px", color: "var(--text-muted)", flexShrink: 0 }} />
-            <input type="file" name="file" required style={{ flex: 1, fontSize: "0.8125rem" }} />
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flex: 1 }}>
+            <input
+              id={fileInputId}
+              type="file"
+              name="file"
+              required
+              onChange={(e) => setSelectedFileName(e.target.files?.[0]?.name || "")}
+              style={{ display: "none" }}
+            />
+            <label
+              htmlFor={fileInputId}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.35rem",
+                padding: "0.5rem 0.75rem",
+                borderRadius: "var(--radius-md)",
+                border: "1px dashed var(--border)",
+                background: "var(--surface-2)",
+                color: "var(--primary)",
+                cursor: "pointer",
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                whiteSpace: "nowrap",
+              }}
+            >
+              <Upload style={{ width: "13px", height: "13px" }} />
+              {isRtl ? "رفع ملف" : "Upload File"}
+            </label>
+            <span style={{ fontSize: "0.75rem", color: selectedFileName ? "var(--text)" : "var(--text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {selectedFileName || (isRtl ? "لم يتم اختيار ملف" : "No file selected")}
+            </span>
           </div>
-          <button type="submit" style={{
-            padding: "0.5rem 0.75rem", fontSize: "0.75rem", borderRadius: "var(--radius-md)",
-            border: "1px solid var(--border)", background: "var(--surface-2)", color: "var(--text-muted)",
-            cursor: "pointer", fontFamily: "inherit", fontWeight: 600, display: "flex",
-            alignItems: "center", gap: "0.25rem", whiteSpace: "nowrap",
-          }}>
-            <Paperclip style={{ width: "12px", height: "12px" }} />
-            {isRtl ? "مشاركة ملف" : "Share File"}
-          </button>
+          <ShareFileButton isRtl={isRtl} />
         </form>
       </div>
     </div>

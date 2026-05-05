@@ -6,7 +6,7 @@ import { generateMatchRecommendations, analyzeContractorProfile } from "@/lib/ai
 import { logger } from "@/lib/logger";
 import {
   FolderOpen, FileCheck, Clock, Award, Plus, ArrowUpRight,
-  BarChart3, ShieldCheck, Sparkles, Star, TrendingUp, AlertCircle,
+  BarChart3, ShieldCheck, Sparkles, Star, TrendingUp, AlertCircle, CheckCircle,
 } from "lucide-react";
 
 export default async function DashboardPage() {
@@ -26,7 +26,7 @@ export default async function DashboardPage() {
   if (isAdmin) return redirect({ href: "/admin", locale });
 
   // Fetch real data based on role
-  let projectCount = 0, bidCount = 0, awardCount = 0;
+  let projectCount = 0, bidCount = 0, awardCount = 0, completedCount = 0;
   let aiMatches: any[] = [];
   let profileAnalysis: any = null;
   let contractorProfile: any = null;
@@ -43,6 +43,7 @@ export default async function DashboardPage() {
         where: { project: { ownerId: ownerProfile.id, status: { not: "AWARDED" } } },
       });
       awardCount = await db.project.count({ where: { ownerId: ownerProfile.id, status: "AWARDED" } });
+      completedCount = await db.project.count({ where: { ownerId: ownerProfile.id, status: "COMPLETED" } });
     }
   }
 
@@ -158,6 +159,7 @@ export default async function DashboardPage() {
             { icon: FileCheck, label: isRtl ? "العروض المستلمة" : "Bids Received", value: bidCount, color: "#B87333", bg: "#F5EDE6", link: "/dashboard/projects?hasBids=1" as const },
             { icon: Award, label: isRtl ? "الترسيات" : "Awards", value: awardCount, color: "#7c3aed", bg: "#f5f3ff", link: "/dashboard/projects?status=AWARDED" as const },
             { icon: Clock, label: isRtl ? "قيد التنفيذ" : "In Progress", value: 0, color: "#2563eb", bg: "#eff6ff" },
+            { icon: CheckCircle, label: isRtl ? "مكتمل" : "Completed", value: completedCount, color: "#16a34a", bg: "#ecfdf3", link: "/dashboard/projects?status=COMPLETED" as const },
           ] : [
             { icon: BarChart3, label: isRtl ? "عروضي" : "My Bids", value: bidCount, color: "#2A7B88", bg: "#E8F4F6", link: "/dashboard/bids" as const },
             { icon: Award, label: isRtl ? "مشاريع فائزة" : "Won", value: awardCount, color: "#B87333", bg: "#F5EDE6", link: "/dashboard/bids?status=AWARDED" as const },

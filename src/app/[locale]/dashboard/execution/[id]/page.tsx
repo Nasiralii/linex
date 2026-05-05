@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { FolderOpen, CheckCircle, ArrowLeft, Users, Shield, Star } from "lucide-react";
 import { FileList } from "@/components/execution/file-list";
 import { WorkspaceChat } from "@/components/execution/workspace-chat";
-import { MilestoneTracker } from "@/components/execution/milestone-tracker";
+// import { MilestoneTracker } from "@/components/execution/milestone-tracker";
 import { markCompleteAction, submitProgressUpdate } from "./actions";
 
 function dedupeWorkspaceMessages(messages: any[]) {
@@ -126,14 +126,15 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
   }
   const companyName = project.award.bid?.contractor?.companyName || project.award.bid?.engineer?.fullName || "";
 
-  const milestones = [
-    { name: isRtl ? "ترسية المشروع" : "Project Awarded", done: true, date: project.awardedAt },
-    { name: isRtl ? "بدء التنفيذ" : "Execution Started", done: ["IN_PROGRESS", "COMPLETED"].includes(project.status), date: null },
-    { name: isRtl ? "اكتمال 25%" : "25% Complete", done: false, date: null },
-    { name: isRtl ? "اكتمال 50%" : "50% Complete", done: false, date: null },
-    { name: isRtl ? "اكتمال 75%" : "75% Complete", done: false, date: null },
-    { name: isRtl ? "التسليم النهائي" : "Final Delivery", done: project.status === "COMPLETED", date: project.completedAt },
-  ];
+  // Milestone tracking intentionally disabled for now.
+  // const milestones = [
+  //   { name: isRtl ? "ترسية المشروع" : "Project Awarded", done: true, date: project.awardedAt },
+  //   { name: isRtl ? "بدء التنفيذ" : "Execution Started", done: ["IN_PROGRESS", "COMPLETED"].includes(project.status), date: null },
+  //   { name: isRtl ? "اكتمال 25%" : "25% Complete", done: false, date: null },
+  //   { name: isRtl ? "اكتمال 50%" : "50% Complete", done: false, date: null },
+  //   { name: isRtl ? "اكتمال 75%" : "75% Complete", done: false, date: null },
+  //   { name: isRtl ? "التسليم النهائي" : "Final Delivery", done: project.status === "COMPLETED", date: project.completedAt },
+  // ];
 
   // Gap 2: file versioning data
   const files = project.attachments.map((a: any) => ({
@@ -165,7 +166,17 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
           </div>
           <div className="card" style={{ padding: "1.25rem", textAlign: "center" }}>
             <div style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--info)" }}><Users style={{ width: "24px", height: "24px", display: "inline" }} /></div>
-            <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{isRtl ? `المالك + ${companyName}` : `Owner + ${companyName}`}</div>
+            <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+              {isRtl ? "المالك:" : "Owner:"}{" "}
+              <Link
+                href={`/profile/${project.owner.userId}`}
+                style={{ color: "var(--primary)", textDecoration: "none", fontWeight: 700 }}
+              >
+                {project.owner.fullName || (isRtl ? "المالك" : "Owner")}
+              </Link>
+              {" + "}
+              {companyName}
+            </div>
           </div>
         </div>
         <div className="card" style={{ padding: "1.25rem", marginBottom: "1.5rem", border: "1px solid rgba(37,99,235,0.2)", background: "#eff6ff" }}>
@@ -206,7 +217,7 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
           </div>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-          <MilestoneTracker milestones={milestones} isRtl={isRtl} />
+          {/* <MilestoneTracker milestones={milestones} isRtl={isRtl} /> */}
           <div className="card" style={{ padding: "1.5rem" }}>
             <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <FolderOpen style={{ width: "18px", height: "18px", color: "var(--primary)" }} /> {isRtl ? "ملفات المشروع" : "Project Files"}
@@ -217,14 +228,14 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
         <WorkspaceChat messages={messages} userId={user.id} projectId={id} isRtl={isRtl} />
         {project.status !== "COMPLETED" && (
           <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "1rem", marginTop: "1.5rem" }}>
-            <div className="card" style={{ padding: "1.25rem" }}>
+            {/* <div className="card" style={{ padding: "1.25rem" }}>
               <h3 style={{ fontSize: "0.9375rem", fontWeight: 700, marginBottom: "0.75rem" }}>📋 {isRtl ? "تحديث التقدم" : "Submit Progress Update"}</h3>
               <form action={submitProgressUpdate} style={{ display: "flex", gap: "0.5rem" }}>
                 <input type="hidden" name="projectId" value={id} />
                 <input type="text" name="progressUpdate" placeholder={isRtl ? "وصف التقدم..." : "Describe progress..."} required style={{ flex: 1 }} />
                 <button type="submit" className="btn-secondary" style={{ padding: "0.5rem 1rem", fontSize: "0.8125rem" }}>{isRtl ? "إرسال" : "Send"}</button>
               </form>
-            </div>
+            </div> */}
             <div className="card" style={{ padding: "1.25rem", display: "flex", alignItems: "center" }}>
               <form action={markCompleteAction}>
                 <input type="hidden" name="projectId" value={id} />
