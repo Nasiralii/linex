@@ -159,8 +159,8 @@ export default async function DashboardPage() {
             { icon: Award, label: isRtl ? "الترسيات" : "Awards", value: awardCount, color: "#7c3aed", bg: "#f5f3ff", link: "/dashboard/projects?status=AWARDED" as const },
             { icon: Clock, label: isRtl ? "قيد التنفيذ" : "In Progress", value: 0, color: "#2563eb", bg: "#eff6ff" },
           ] : [
-            { icon: BarChart3, label: isRtl ? "عروضي" : "My Bids", value: bidCount, color: "#2A7B88", bg: "#E8F4F6" },
-            { icon: Award, label: isRtl ? "مشاريع فائزة" : "Won", value: awardCount, color: "#B87333", bg: "#F5EDE6" },
+            { icon: BarChart3, label: isRtl ? "عروضي" : "My Bids", value: bidCount, color: "#2A7B88", bg: "#E8F4F6", link: "/dashboard/bids" as const },
+            { icon: Award, label: isRtl ? "مشاريع فائزة" : "Won", value: awardCount, color: "#B87333", bg: "#F5EDE6", link: "/dashboard/bids?status=AWARDED" as const },
             { icon: Sparkles, label: isRtl ? "توصيات AI" : "AI Matches", value: aiMatches.length, color: "#7c3aed", bg: "#f5f3ff" },
             { icon: ShieldCheck, label: isRtl ? "حالة التحقق" : "Verification", value: (isEngineer ? engineerProfile?.verificationStatus : contractorProfile?.verificationStatus) === "VERIFIED" ? "✓" : "—", color: "#2563eb", bg: "#eff6ff" },
           ]).map((stat: any, i) => {
