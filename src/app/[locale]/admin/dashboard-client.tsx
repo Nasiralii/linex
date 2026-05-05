@@ -6,6 +6,7 @@ import { DollarSign, FolderOpen, ShieldCheck, Users, Clock, BarChart3 } from "lu
 interface DrillItem {
   label: string;
   sublabel: string;
+  href?: string;
 }
 
 interface AdminDashboardClientProps {
@@ -26,6 +27,7 @@ interface AdminDashboardClientProps {
     totalLocations: number;
   };
   recentUsers: { id: string; email: string; role: string; status: string; createdAt: string; ownerProfile?: { verificationStatus?: string }; contractorProfile?: { verificationStatus?: string }; engineerProfile?: { verificationStatus?: string } }[];
+  approvedActiveUsers: { id: string; email: string; role: string; createdAt: string; ownerProfile?: { verificationStatus?: string }; contractorProfile?: { verificationStatus?: string }; engineerProfile?: { verificationStatus?: string } }[];
   drilldowns: {
     totalUsers: DrillItem[];
     totalProjects: DrillItem[];
@@ -68,10 +70,13 @@ const DETAIL_TITLES: Record<string, { en: string; ar: string }> = {
   totalLocations: { en: "Locations", ar: "المواقع" },
 };
 
-export default function AdminDashboardClient({ isRtl, stats, recentUsers, drilldowns }: AdminDashboardClientProps) {
+export default function AdminDashboardClient({ isRtl, stats, recentUsers, approvedActiveUsers, drilldowns }: AdminDashboardClientProps) {
   const [selectedKey, setSelectedKey] = useState<DrillKey | null>(null);
   const [detailPage, setDetailPage] = useState(1);
   const DETAIL_PAGE_SIZE = 12;
+  const [approvedPage, setApprovedPage] = useState(1);
+  const [approvedRoleFilter, setApprovedRoleFilter] = useState<"ALL" | "OWNER" | "CONTRACTOR" | "ENGINEER">("ALL");
+  const APPROVED_PAGE_SIZE = 8;
 
   const kpis = useMemo(() => ([
     { ...KPI_CONFIG[0], label: isRtl ? "إجمالي المستخدمين" : "Total Users", value: stats.totalUsers },
@@ -86,6 +91,14 @@ export default function AdminDashboardClient({ isRtl, stats, recentUsers, drilld
   const pagedDetailItems = detailItems.slice((safeDetailPage - 1) * DETAIL_PAGE_SIZE, safeDetailPage * DETAIL_PAGE_SIZE);
   const detailPageItems: Array<number | "ellipsis"> = [];
   const detailStartPage = Math.min(safeDetailPage, Math.max(1, totalDetailPages - 1));
+  const filteredApprovedUsers = approvedRoleFilter === "ALL"
+    ? approvedActiveUsers
+    : approvedActiveUsers.filter((u) => u.role === approvedRoleFilter);
+  const approvedTotalPages = Math.max(1, Math.ceil(filteredApprovedUsers.length / APPROVED_PAGE_SIZE));
+  const safeApprovedPage = Math.min(approvedPage, approvedTotalPages);
+  const pagedApprovedUsers = filteredApprovedUsers.slice((safeApprovedPage - 1) * APPROVED_PAGE_SIZE, safeApprovedPage * APPROVED_PAGE_SIZE);
+  const approvedPageItems: Array<number | "ellipsis"> = [];
+  const approvedStartPage = Math.min(safeApprovedPage, Math.max(1, approvedTotalPages - 1));
 
   if (totalDetailPages <= 2) {
     detailPageItems.push(1);
@@ -98,6 +111,17 @@ export default function AdminDashboardClient({ isRtl, stats, recentUsers, drilld
     detailPageItems.push("ellipsis", totalDetailPages);
   }
 
+  if (approvedTotalPages <= 2) {
+    approvedPageItems.push(1);
+    if (approvedTotalPages === 2) approvedPageItems.push(2);
+  } else if (approvedStartPage >= approvedTotalPages - 1) {
+    approvedPageItems.push(1, "ellipsis", approvedTotalPages - 1, approvedTotalPages);
+  } else {
+    approvedPageItems.push(approvedStartPage);
+    if (approvedStartPage + 1 <= approvedTotalPages) approvedPageItems.push(approvedStartPage + 1);
+    approvedPageItems.push("ellipsis", approvedTotalPages);
+  }
+
   useEffect(() => {
     setDetailPage(1);
   }, [selectedKey]);
@@ -105,6 +129,13 @@ export default function AdminDashboardClient({ isRtl, stats, recentUsers, drilld
   useEffect(() => {
     if (detailPage > totalDetailPages) setDetailPage(totalDetailPages);
   }, [detailPage, totalDetailPages]);
+
+  useEffect(() => {
+    if (approvedPage > approvedTotalPages) setApprovedPage(approvedTotalPages);
+  }, [approvedPage, approvedTotalPages]);
+  useEffect(() => {
+    setApprovedPage(1);
+  }, [approvedRoleFilter]);
 
   const statTiles = [
     { key: "totalOwners" as DrillKey, label: isRtl ? "ملاك مشاريع" : "Owners", value: stats.totalOwners },
@@ -156,12 +187,38 @@ export default function AdminDashboardClient({ isRtl, stats, recentUsers, drilld
           <div style={{ display: "grid", gap: "0.5rem" }}>
             {detailItems.length === 0 ? (
               <div style={{ fontSize: "0.8125rem", color: "var(--text-muted)" }}>{isRtl ? "لا توجد بيانات متاحة" : "No details available"}</div>
-            ) : pagedDetailItems.map((item, index) => (
-              <div key={`${selectedKey}-${index}`} style={{ display: "flex", justifyContent: "space-between", gap: "1rem", padding: "0.75rem 0.875rem", borderRadius: 12, background: "#faf9f6", border: "1px solid #ece7dc" }}>
-                <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#1a2332" }}>{item.label}</span>
-                <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>{item.sublabel}</span>
-              </div>
-            ))}
+            ) : pagedDetailItems.map((item, index) => {
+              const row = (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: "1rem",
+                    padding: "0.75rem 0.875rem",
+                    borderRadius: 12,
+                    background: "#faf9f6",
+                    border: "1px solid #ece7dc",
+                  }}
+                >
+                  <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#1a2332" }}>{item.label}</span>
+                  <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>{item.sublabel}</span>
+                </div>
+              );
+
+              if (!item.href) {
+                return <div key={`${selectedKey}-${index}`}>{row}</div>;
+              }
+
+              return (
+                <a
+                  key={`${selectedKey}-${index}`}
+                  href={item.href}
+                  style={{ textDecoration: "none", color: "inherit", display: "block" }}
+                >
+                  {row}
+                </a>
+              );
+            })}
           </div>
           {detailItems.length > DETAIL_PAGE_SIZE && (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", marginTop: "0.875rem", flexWrap: "wrap" }}>
@@ -289,39 +346,166 @@ export default function AdminDashboardClient({ isRtl, stats, recentUsers, drilld
         </div>
       </div>
 
-      <div className="card" style={{ padding: "1.5rem" }}>
-        <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)", marginBottom: "1rem" }}>
-          {isRtl ? "آخر المستخدمين المسجلين" : "Recent Users"}
-        </h3>
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.875rem" }}>
-            <thead>
-              <tr style={{ borderBottom: "1px solid var(--border-light)" }}>
-                <th style={{ padding: "0.75rem 1rem", textAlign: isRtl ? "right" : "left", color: "var(--text-muted)", fontWeight: 600 }}>{isRtl ? "البريد الإلكتروني" : "Email"}</th>
-                <th style={{ padding: "0.75rem 1rem", textAlign: isRtl ? "right" : "left", color: "var(--text-muted)", fontWeight: 600 }}>{isRtl ? "الدور" : "Role"}</th>
-                <th style={{ padding: "0.75rem 1rem", textAlign: isRtl ? "right" : "left", color: "var(--text-muted)", fontWeight: 600 }}>{isRtl ? "الحالة" : "Status"}</th>
-                <th style={{ padding: "0.75rem 1rem", textAlign: isRtl ? "right" : "left", color: "var(--text-muted)", fontWeight: 600 }}>{isRtl ? "التاريخ" : "Date"}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentUsers.map((u) => (
-                <tr key={u.id} style={{ borderBottom: "1px solid var(--border-light)" }}>
-                  <td style={{ padding: "0.75rem 1rem", color: "var(--text)" }}>{u.email}</td>
-                  <td style={{ padding: "0.75rem 1rem" }}>
-                    <span className={`chip chip-${u.role === "OWNER" ? "info" : u.role === "CONTRACTOR" ? "success" : "warning"}`} style={{ fontSize: "0.6875rem" }}>
-                      {u.role === "OWNER" ? (isRtl ? "مالك مشروع" : "Owner") : u.role === "CONTRACTOR" ? (isRtl ? "مقاول" : "Contractor") : (isRtl ? "مهندس" : "Engineer")}
-                    </span>
-                  </td>
-                  <td style={{ padding: "0.75rem 1rem" }}>
-                    <span className={`chip chip-${(u.ownerProfile?.verificationStatus || u.contractorProfile?.verificationStatus || u.engineerProfile?.verificationStatus || u.status) === "VERIFIED" ? "success" : (u.ownerProfile?.verificationStatus || u.contractorProfile?.verificationStatus || u.engineerProfile?.verificationStatus || u.status) === "PENDING" ? "warning" : "default"}`} style={{ fontSize: "0.6875rem" }}>
-                      {u.ownerProfile?.verificationStatus || u.contractorProfile?.verificationStatus || u.engineerProfile?.verificationStatus || u.status}
-                    </span>
-                  </td>
-                  <td style={{ padding: "0.75rem 1rem", color: "var(--text-muted)" }}>{u.createdAt}</td>
+      <div className="grid grid-cols-1 lg:grid-cols-2 items-start gap-4">
+        <div className="card" style={{ padding: "1.5rem" }}>
+          <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)", marginBottom: "1rem" }}>
+            {isRtl ? "آخر المستخدمين المسجلين" : "Recent Users"}
+          </h3>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.875rem" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid var(--border-light)" }}>
+                  <th style={{ padding: "0.75rem 1rem", textAlign: isRtl ? "right" : "left", color: "var(--text-muted)", fontWeight: 600 }}>{isRtl ? "البريد الإلكتروني" : "Email"}</th>
+                  <th style={{ padding: "0.75rem 1rem", textAlign: isRtl ? "right" : "left", color: "var(--text-muted)", fontWeight: 600 }}>{isRtl ? "الدور" : "Role"}</th>
+                  <th style={{ padding: "0.75rem 1rem", textAlign: isRtl ? "right" : "left", color: "var(--text-muted)", fontWeight: 600 }}>{isRtl ? "الحالة" : "Status"}</th>
+                  <th style={{ padding: "0.75rem 1rem", textAlign: isRtl ? "right" : "left", color: "var(--text-muted)", fontWeight: 600 }}>{isRtl ? "التاريخ" : "Date"}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {recentUsers.map((u) => (
+                  <tr key={u.id} style={{ borderBottom: "1px solid var(--border-light)" }}>
+                    <td style={{ padding: "0.75rem 1rem", color: "var(--text)" }}>{u.email}</td>
+                    <td style={{ padding: "0.75rem 1rem" }}>
+                      <span className={`chip chip-${u.role === "OWNER" ? "info" : u.role === "CONTRACTOR" ? "success" : "warning"}`} style={{ fontSize: "0.6875rem" }}>
+                        {u.role === "OWNER" ? (isRtl ? "مالك مشروع" : "Owner") : u.role === "CONTRACTOR" ? (isRtl ? "مقاول" : "Contractor") : (isRtl ? "مهندس" : "Engineer")}
+                      </span>
+                    </td>
+                    <td style={{ padding: "0.75rem 1rem" }}>
+                      <span className={`chip chip-${(u.ownerProfile?.verificationStatus || u.contractorProfile?.verificationStatus || u.engineerProfile?.verificationStatus || u.status) === "VERIFIED" ? "success" : (u.ownerProfile?.verificationStatus || u.contractorProfile?.verificationStatus || u.engineerProfile?.verificationStatus || u.status) === "PENDING" ? "warning" : "default"}`} style={{ fontSize: "0.6875rem" }}>
+                        {u.ownerProfile?.verificationStatus || u.contractorProfile?.verificationStatus || u.engineerProfile?.verificationStatus || u.status}
+                      </span>
+                    </td>
+                    <td style={{ padding: "0.75rem 1rem", color: "var(--text-muted)" }}>{u.createdAt}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="card" style={{ padding: "1.5rem" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem", marginBottom: "1rem", flexWrap: "wrap" }}>
+            <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)", margin: 0 }}>
+              {isRtl ? "المستخدمون النشطون المعتمدون" : "Approved Active Users"}
+            </h3>
+            <select
+              value={approvedRoleFilter}
+              onChange={(e) => setApprovedRoleFilter(e.target.value as "ALL" | "OWNER" | "CONTRACTOR" | "ENGINEER")}
+              style={{ padding: "0.375rem 0.625rem", borderRadius: "var(--radius-md)", border: "1px solid var(--border-light)", background: "var(--surface)", color: "var(--text)", fontSize: "0.8125rem" }}
+            >
+              <option value="ALL">{isRtl ? "الكل" : "All roles"}</option>
+              <option value="OWNER">{isRtl ? "مالك مشروع" : "Owner"}</option>
+              <option value="CONTRACTOR">{isRtl ? "مقاول" : "Contractor"}</option>
+              <option value="ENGINEER">{isRtl ? "مهندس" : "Engineer"}</option>
+            </select>
+          </div>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.875rem" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid var(--border-light)" }}>
+                  <th style={{ padding: "0.75rem 1rem", textAlign: isRtl ? "right" : "left", color: "var(--text-muted)", fontWeight: 600 }}>{isRtl ? "البريد الإلكتروني" : "Email"}</th>
+                  <th style={{ padding: "0.75rem 1rem", textAlign: isRtl ? "right" : "left", color: "var(--text-muted)", fontWeight: 600 }}>{isRtl ? "الدور" : "Role"}</th>
+                  <th style={{ padding: "0.75rem 1rem", textAlign: isRtl ? "right" : "left", color: "var(--text-muted)", fontWeight: 600 }}>{isRtl ? "الحالة" : "Status"}</th>
+                  <th style={{ padding: "0.75rem 1rem", textAlign: isRtl ? "right" : "left", color: "var(--text-muted)", fontWeight: 600 }}>{isRtl ? "التاريخ" : "Date"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pagedApprovedUsers.map((u) => {
+                  const verificationStatus = u.ownerProfile?.verificationStatus || u.contractorProfile?.verificationStatus || u.engineerProfile?.verificationStatus || "ACTIVE";
+                  return (
+                    <tr key={u.id} style={{ borderBottom: "1px solid var(--border-light)" }}>
+                      <td style={{ padding: "0.75rem 1rem", color: "var(--text)" }}>{u.email}</td>
+                      <td style={{ padding: "0.75rem 1rem" }}>
+                        <span className={`chip chip-${u.role === "OWNER" ? "info" : u.role === "CONTRACTOR" ? "success" : "warning"}`} style={{ fontSize: "0.6875rem" }}>
+                          {u.role === "OWNER" ? (isRtl ? "مالك مشروع" : "Owner") : u.role === "CONTRACTOR" ? (isRtl ? "مقاول" : "Contractor") : (isRtl ? "مهندس" : "Engineer")}
+                        </span>
+                      </td>
+                      <td style={{ padding: "0.75rem 1rem" }}>
+                        <span className="chip chip-success" style={{ fontSize: "0.6875rem" }}>{verificationStatus}</span>
+                      </td>
+                      <td style={{ padding: "0.75rem 1rem", color: "var(--text-muted)" }}>{u.createdAt}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          {filteredApprovedUsers.length > APPROVED_PAGE_SIZE && (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", marginTop: "0.875rem", flexWrap: "wrap" }}>
+              <button
+                type="button"
+                onClick={() => setApprovedPage((prev) => Math.max(1, prev - 1))}
+                disabled={safeApprovedPage <= 1}
+                style={{
+                  pointerEvents: safeApprovedPage <= 1 ? "none" : "auto",
+                  opacity: safeApprovedPage <= 1 ? 0.5 : 1,
+                  textDecoration: "none",
+                  fontSize: "0.8125rem",
+                  fontWeight: 600,
+                  color: "var(--primary)",
+                  border: "1px solid var(--border-light)",
+                  background: "var(--surface)",
+                  borderRadius: "var(--radius-full)",
+                  padding: "0.375rem 0.75rem",
+                }}
+              >
+                {isRtl ? "السابق" : "Previous"}
+              </button>
+              {approvedPageItems.map((item, idx) => {
+                if (item === "ellipsis") {
+                  return (
+                    <span key={`approved-ellipsis-${idx}`} style={{ fontSize: "0.8125rem", color: "var(--text-muted)", padding: "0 0.25rem" }}>
+                      ...
+                    </span>
+                  );
+                }
+
+                const isActive = item === safeApprovedPage;
+                return (
+                  <button
+                    key={`approved-page-${item}`}
+                    type="button"
+                    onClick={() => setApprovedPage(item)}
+                    aria-current={isActive ? "page" : undefined}
+                    style={{
+                      minWidth: "34px",
+                      height: "34px",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "0.8125rem",
+                      fontWeight: isActive ? 700 : 600,
+                      color: isActive ? "white" : "var(--text)",
+                      background: isActive ? "var(--primary)" : "var(--surface)",
+                      border: isActive ? "1px solid var(--primary)" : "1px solid var(--border-light)",
+                      borderRadius: "var(--radius-full)",
+                    }}
+                  >
+                    {item}
+                  </button>
+                );
+              })}
+              <button
+                type="button"
+                onClick={() => setApprovedPage((prev) => Math.min(approvedTotalPages, prev + 1))}
+                disabled={safeApprovedPage >= approvedTotalPages}
+                style={{
+                  pointerEvents: safeApprovedPage >= approvedTotalPages ? "none" : "auto",
+                  opacity: safeApprovedPage >= approvedTotalPages ? 0.5 : 1,
+                  textDecoration: "none",
+                  fontSize: "0.8125rem",
+                  fontWeight: 600,
+                  color: "var(--primary)",
+                  border: "1px solid var(--border-light)",
+                  background: "var(--surface)",
+                  borderRadius: "var(--radius-full)",
+                  padding: "0.375rem 0.75rem",
+                }}
+              >
+                {isRtl ? "التالي" : "Next"}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </>

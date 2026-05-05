@@ -53,6 +53,22 @@ export default function NotificationsPage() {
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
+  const resolveNotificationHref = (n: Notification) => {
+    if (!n.link) return null;
+    const isProjectExpiredNotice =
+      n.title === "Your project has expired" ||
+      n.titleAr === "انتهت صلاحية مشروعك";
+    if (!isProjectExpiredNotice) return n.link;
+
+    const [path, query = ""] = n.link.split("?");
+    if (!path.startsWith("/dashboard/projects")) return n.link;
+
+    const params = new URLSearchParams(query);
+    if (!params.get("status")) params.set("status", "EXPIRED");
+    const q = params.toString();
+    return q ? `${path}?${q}` : path;
+  };
+
   if (loading) {
     return (
       <div style={{ background: "var(--bg)", minHeight: "calc(100vh - 64px)", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -120,8 +136,9 @@ export default function NotificationsPage() {
                   </div>
                 </div>
               );
-              return n.link ? (
-                <Link key={n.id} href={n.link} style={{ textDecoration: "none", color: "inherit" }}>
+              const href = resolveNotificationHref(n);
+              return href ? (
+                <Link key={n.id} href={href} style={{ textDecoration: "none", color: "inherit" }}>
                   {content}
                 </Link>
               ) : (

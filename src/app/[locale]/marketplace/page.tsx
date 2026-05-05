@@ -34,10 +34,77 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
   let categories: any[] = [];
   let totalProjects = 0;
   try {
+    const now = new Date();
+    const todayStart = new Date(now);
+    todayStart.setHours(0, 0, 0, 0);
     categories = await db.category.findMany({ where: { isActive: true }, orderBy: { sortOrder: "asc" } });
 
+    // Notify owners once when a marketplace project expires.
+    const expiredProjects = await db.project.findMany({
+      where: {
+        status: { in: ["PUBLISHED", "BIDDING"] },
+        OR: [
+          { deadline: { lt: todayStart } },
+          { AND: [{ deadline: null }, { biddingWindowEnd: { lt: todayStart } }] },
+        ],
+      },
+      select: {
+        id: true,
+        title: true,
+        titleAr: true,
+        owner: { select: { userId: true } },
+      },
+    });
+    if (expiredProjects.length > 0) {
+      const expiredProjectIds = expiredProjects.map((p) => p.id);
+      const alreadyNotifiedLogs = await db.auditLog.findMany({
+        where: {
+          action: "PROJECT_EXPIRED_NOTIFIED",
+          entityType: "project",
+          entityId: { in: expiredProjectIds },
+        },
+        select: { entityId: true },
+      });
+      const alreadyNotifiedIds = new Set(alreadyNotifiedLogs.map((log) => log.entityId));
+      const projectsToNotify = expiredProjects.filter((project) => !alreadyNotifiedIds.has(project.id));
+
+      if (projectsToNotify.length > 0) {
+        await db.notification.createMany({
+          data: projectsToNotify.map((expiredProject) => ({
+            userId: expiredProject.owner.userId,
+            type: "GENERAL",
+            title: "Your project has expired",
+            titleAr: "انتهت صلاحية مشروعك",
+            message: `Your project "${expiredProject.title}" is no longer visible in the marketplace because the bidding end date has passed.`,
+            messageAr: `مشروعك "${expiredProject.titleAr || expiredProject.title}" لم يعد ظاهرًا في السوق لأن تاريخ انتهاء التقديم قد مر.`,
+            link: `/dashboard/projects?status=EXPIRED&projectId=${expiredProject.id}`,
+          })),
+        });
+
+        await db.auditLog.createMany({
+          data: projectsToNotify.map((expiredProject) => ({
+            actorId: expiredProject.owner.userId,
+            action: "PROJECT_EXPIRED_NOTIFIED",
+            entityType: "project",
+            entityId: expiredProject.id,
+          })),
+        });
+      }
+    }
+
     // Build WHERE — Gap 3: role-based visibility
-    const where: any = { status: { in: ["PUBLISHED", "BIDDING"] } };
+    const where: any = {
+      status: { in: ["PUBLISHED", "BIDDING"] },
+      AND: [
+        {
+          OR: [
+            { deadline: { gte: todayStart } },
+            { AND: [{ deadline: null }, { biddingWindowEnd: { gte: todayStart } }] },
+            { AND: [{ deadline: null }, { biddingWindowEnd: null }] },
+          ],
+        },
+      ],
+    };
     const allowed = getAllowedTypes(user.role);
     const validType = params.type && VALID_PROJECT_TYPES.includes(params.type as (typeof VALID_PROJECT_TYPES)[number]) ? params.type : undefined;
     const requestedTypeAllowed = validType && (!allowed || allowed.includes(validType));

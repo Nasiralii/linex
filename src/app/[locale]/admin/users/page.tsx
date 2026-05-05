@@ -3,8 +3,7 @@ import { redirect } from "@/i18n/routing";
 import { getLocale } from "next-intl/server";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import { Users, CheckCircle, XCircle, Clock, ShieldCheck, MessageSquare, Phone, Mail, Briefcase, Award, Globe, FileText, Image as ImageIcon } from "lucide-react";
-import { calculateProfileScore } from "@/lib/ai";
+import { Users, CheckCircle, XCircle, Clock, MessageSquare, Phone, Mail, Briefcase, Award, Globe, FileText, Image as ImageIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import ActionButtons from "./action-buttons";
 import RequestInfoForm from "./request-info-form";
@@ -171,25 +170,7 @@ export default async function AdminUsersPage({
 
   // Get pending users (ALL roles with PENDING verification)
   let pendingUsers: any[] = [];
-  let activeUsers: any[] = [];
   const pendingRoleWhere = getPendingVerificationWhere(roleFilter);
-
-  const activeRoleWhere =
-    roleFilter === "CONTRACTOR"
-      ? { status: "ACTIVE" as const, role: "CONTRACTOR" as const, contractorProfile: { is: { verificationStatus: "VERIFIED" } } }
-      : roleFilter === "ENGINEER"
-        ? { status: "ACTIVE" as const, role: "ENGINEER" as const, engineerProfile: { is: { verificationStatus: "VERIFIED" } } }
-        : roleFilter === "OWNER"
-          ? { status: "ACTIVE" as const, role: "OWNER" as const, ownerProfile: { is: { verificationStatus: "VERIFIED" } } }
-          : {
-              status: "ACTIVE" as const,
-              role: { not: "ADMIN" as const },
-              OR: [
-                { role: "OWNER" as const, ownerProfile: { is: { verificationStatus: "VERIFIED" } } },
-                { role: "CONTRACTOR" as const, contractorProfile: { is: { verificationStatus: "VERIFIED" } } },
-                { role: "ENGINEER" as const, engineerProfile: { is: { verificationStatus: "VERIFIED" } } },
-              ],
-            };
 
   try {
     pendingUsers = await db.user.findMany({
@@ -199,17 +180,6 @@ export default async function AdminUsersPage({
         ownerProfile: true,
         contractorProfile: { include: { documents: true, portfolioItems: true } },
         engineerProfile: { include: { documents: true, portfolioItems: true } },
-      },
-    });
-
-    activeUsers = await db.user.findMany({
-      where: activeRoleWhere as any,
-      orderBy: { createdAt: "desc" },
-      take: 30,
-      include: {
-        ownerProfile: { select: { fullName: true, fullNameAr: true, phone: true, city: true, companyType: true, verificationStatus: true, bio: true, projectPreferences: true } },
-        contractorProfile: { select: { companyName: true, companyNameAr: true, phone: true, city: true, verificationStatus: true, yearsInBusiness: true, description: true, ratingAverage: true, reviewCount: true, website: true, teamSize: true } },
-        engineerProfile: { select: { fullName: true, fullNameAr: true, phone: true, city: true, specialization: true, verificationStatus: true, yearsExperience: true, description: true, ratingAverage: true, reviewCount: true, website: true } },
       },
     });
   } catch (error) {
@@ -445,50 +415,6 @@ export default async function AdminUsersPage({
           </div>
         )}
 
-        {/* Active Users */}
-        <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)", marginBottom: "1rem" }}>
-          <ShieldCheck style={{ width: "16px", height: "16px", display: "inline", color: "var(--primary)" }} /> {isRtl ? "المستخدمون المعتمدون" : "Approved Active Users"} ({activeUsers.length})
-        </h3>
-        <div className="card" style={{ padding: "1rem", overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8125rem" }}>
-            <thead>
-              <tr style={{ borderBottom: "1px solid var(--border-light)" }}>
-                <th style={{ padding: "0.5rem", textAlign: isRtl ? "right" : "left", color: "var(--text-muted)" }}>{isRtl ? "الاسم" : "Name"}</th>
-                <th style={{ padding: "0.5rem", textAlign: isRtl ? "right" : "left", color: "var(--text-muted)" }}>{isRtl ? "الجوال" : "Phone"}</th>
-                <th style={{ padding: "0.5rem", textAlign: isRtl ? "right" : "left", color: "var(--text-muted)" }}>{isRtl ? "البريد" : "Email"}</th>
-                <th style={{ padding: "0.5rem", textAlign: isRtl ? "right" : "left", color: "var(--text-muted)" }}>{isRtl ? "الدور" : "Role"}</th>
-                <th style={{ padding: "0.5rem", textAlign: isRtl ? "right" : "left", color: "var(--text-muted)" }}>{isRtl ? "الحالة" : "Status"}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {activeUsers.map((u: any) => {
-                const name = u.ownerProfile?.fullName || u.contractorProfile?.companyName || u.engineerProfile?.fullName || u.email;
-                const vs = u.contractorProfile?.verificationStatus || u.engineerProfile?.verificationStatus || "N/A";
-                const phone = u.ownerProfile?.phone || u.contractorProfile?.phone || u.engineerProfile?.phone || "—";
-                const profile = u.ownerProfile || u.contractorProfile || u.engineerProfile;
-                const scoreResult = profile ? calculateProfileScore(profile) : { score: 0 };
-                const score = scoreResult.score;
-                const scoreColor = score >= 70 ? "#10b981" : score >= 40 ? "#f59e0b" : "#dc2626";
-                return (
-                  <tr key={u.id} style={{ borderBottom: "1px solid var(--border-light)" }}>
-                    <td style={{ padding: "0.5rem", color: "var(--text)" }}>{name}</td>
-                    <td style={{ padding: "0.5rem", color: "var(--text-muted)" }}>{phone}</td>
-                    <td style={{ padding: "0.5rem", color: "var(--text-muted)" }}>{u.email}</td>
-                    <td style={{ padding: "0.5rem" }}>
-                      <span className={`chip chip-${u.role === "OWNER" ? "info" : "success"}`} style={{ fontSize: "0.6875rem" }}>{u.role}</span>
-                    </td>
-                    <td style={{ padding: "0.5rem" }}>
-                      <span className={`chip chip-${vs === "VERIFIED" ? "success" : "warning"}`} style={{ fontSize: "0.6875rem" }}>{vs}</span>
-                    </td>
-                    <td style={{ padding: "0.5rem" }}>
-                      <span style={{ fontSize: "0.75rem", fontWeight: 700, color: scoreColor }}>{score}/100</span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
       </div>
     </div>
   );

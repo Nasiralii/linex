@@ -39,11 +39,23 @@ export default async function MyProjectsPage({
   try {
     const ownerProfile = await db.ownerProfile.findUnique({ where: { userId: user.id } });
     if (ownerProfile) {
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
       const where: any = { ownerId: ownerProfile.id };
-      if (filterStatus !== "ALL") where.status = filterStatus;
+      if (filterStatus === "EXPIRED") {
+        where.status = { in: ["PUBLISHED", "BIDDING"] };
+        where.OR = [
+          { deadline: { lt: todayStart } },
+          { AND: [{ deadline: null }, { biddingWindowEnd: { lt: todayStart } }] },
+        ];
+      } else if (filterStatus !== "ALL") {
+        where.status = filterStatus;
+      }
       if (onlyWithBids) {
         where.bids = { some: {} };
-        where.status = { not: "AWARDED" };
+        if (filterStatus !== "EXPIRED") {
+          where.status = { not: "AWARDED" };
+        }
       }
       totalProjects = await db.project.count({ where });
       projects = await db.project.findMany({

@@ -3,6 +3,7 @@ import { redirect, Link } from "@/i18n/routing";
 import { getLocale } from "next-intl/server";
 import { db } from "@/lib/db";
 import { isFullAccessAdmin } from "@/lib/admin-config";
+import { Pagination } from "@/components/pagination";
 
 export const dynamic = "force-dynamic";
 import { Clock, Eye, FileText, Phone, MapPin, Tag, Banknote, User, ChevronDown, ChevronUp, Shield } from "lucide-react";
@@ -21,11 +22,19 @@ function formatProjectAttachmentLabel(file: { fileName: string; fileUrl: string 
 // G11: Admin full project view with ALL details
 // G12: Request edits with specific guidance text
 
-export default async function AdminProjectsPage() {
+export default async function AdminProjectsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ pendingPage?: string; otherPage?: string }>;
+}) {
   const user = await getCurrentUser();
   const locale = await getLocale();
+  const params = await searchParams;
   if (!user || user.role !== "ADMIN") return redirect({ href: "/auth/login", locale });
   const isRtl = locale === "ar";
+  const pendingPage = Math.max(1, Number(params.pendingPage || "1") || 1);
+  const otherPage = Math.max(1, Number(params.otherPage || "1") || 1);
+  const PAGE_SIZE = 8;
 
   let projects: any[] = [];
   try {
@@ -82,6 +91,26 @@ export default async function AdminProjectsPage() {
 
   const pending = projects.filter(p => p.status === "PENDING_REVIEW");
   const others = projects.filter(p => p.status !== "PENDING_REVIEW");
+  const pendingTotalPages = Math.max(1, Math.ceil(pending.length / PAGE_SIZE));
+  const otherTotalPages = Math.max(1, Math.ceil(others.length / PAGE_SIZE));
+  const safePendingPage = Math.min(pendingPage, pendingTotalPages);
+  const safeOtherPage = Math.min(otherPage, otherTotalPages);
+  const pagedPending = pending.slice((safePendingPage - 1) * PAGE_SIZE, safePendingPage * PAGE_SIZE);
+  const pagedOthers = others.slice((safeOtherPage - 1) * PAGE_SIZE, safeOtherPage * PAGE_SIZE);
+  const pendingHref = (target: number) => {
+    const qp = new URLSearchParams();
+    if (target > 1) qp.set("pendingPage", String(target));
+    if (safeOtherPage > 1) qp.set("otherPage", String(safeOtherPage));
+    const qs = qp.toString();
+    return qs ? `/admin/projects?${qs}` : "/admin/projects";
+  };
+  const otherHref = (target: number) => {
+    const qp = new URLSearchParams();
+    if (safePendingPage > 1) qp.set("pendingPage", String(safePendingPage));
+    if (target > 1) qp.set("otherPage", String(target));
+    const qs = qp.toString();
+    return qs ? `/admin/projects?${qs}` : "/admin/projects";
+  };
 
   return (
     <div style={{ background: "var(--bg)", minHeight: "calc(100vh - 64px)" }}>
@@ -103,7 +132,7 @@ export default async function AdminProjectsPage() {
             <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)", marginBottom: "1rem" }}>
               <Clock style={{ width: "16px", height: "16px", display: "inline", color: "var(--accent)" }} /> {isRtl ? "بانتظار المراجعة" : "Pending Review"} ({pending.length})
             </h3>
-            {pending.map((project: any) => {
+            {pagedPending.map((project: any) => {
               const meta = parseProjectMeta(project.scopeSummary);
                 const assignedSupervisor = project.supervisionRequests?.[0]?.bids?.[0]?.engineer || null;
               return (
@@ -249,6 +278,9 @@ export default async function AdminProjectsPage() {
               </div>
               );
             })}
+            {pending.length > PAGE_SIZE && (
+              <Pagination currentPage={safePendingPage} totalPages={pendingTotalPages} hrefForPage={pendingHref} locale={locale} />
+            )}
           </>
         )}
 
@@ -267,7 +299,7 @@ export default async function AdminProjectsPage() {
               </tr>
             </thead>
             <tbody>
-              {others.map((p: any) => {
+              {pagedOthers.map((p: any) => {
                 const assignedSupervisor = p.supervisionRequests?.[0]?.bids?.[0]?.engineer || null;
                 return (
                   <tr key={p.id} style={{ borderBottom: "1px solid var(--border-light)" }}>
@@ -293,6 +325,11 @@ export default async function AdminProjectsPage() {
             </tbody>
           </table>
         </div>
+        {others.length > PAGE_SIZE && (
+          <div style={{ marginTop: "1rem" }}>
+            <Pagination currentPage={safeOtherPage} totalPages={otherTotalPages} hrefForPage={otherHref} locale={locale} />
+          </div>
+        )}
       </div>
     </div>
   );

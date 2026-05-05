@@ -10,6 +10,7 @@ const FILTERS = [
   { key: "AWARDED", ar: "مُرسى", en: "Awarded" },
   { key: "IN_PROGRESS", ar: "قيد التنفيذ", en: "In Progress" },
   { key: "COMPLETED", ar: "مكتمل", en: "Completed" },
+  { key: "EXPIRED", ar: "منتهية", en: "Expired" },
   { key: "CANCELLED", ar: "المرفوضة", en: "Rejected" },
 ];
 

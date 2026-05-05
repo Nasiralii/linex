@@ -14,6 +14,7 @@ import { Wallet } from "lucide-react";
 import { parseProjectMeta } from "@/lib/project-meta";
 import { rankBidWithPolicy, extractStoredBidRankingSnapshot, isStoredBidRankingSnapshotFresh } from "@/lib/bid-ranking-policy";
 import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
+import { ExtendDeadlineSubmit } from "./extend-deadline-submit";
 
 const STATUS_LABELS: Record<string, { ar: string; en: string }> = {
   DRAFT: { ar: "مسودة", en: "Draft" },
@@ -85,9 +86,16 @@ async function submitBidAction(formData: FormData) {
       : await db.bid.findUnique({ where: { projectId_engineerId: { projectId, engineerId: profileId! } } });
     if (existing) return;
 
-    // Gap 6: Check bidding deadline
-    const proj = await db.project.findUnique({ where: { id: projectId }, select: { biddingWindowEnd: true } });
-    if (proj?.biddingWindowEnd && new Date() > new Date(proj.biddingWindowEnd)) return;
+    // Gap 6: Check bidding deadline by calendar date (allow full end date day)
+    const proj = await db.project.findUnique({ where: { id: projectId }, select: { deadline: true, biddingWindowEnd: true } });
+    const bidEndDate = proj?.deadline || proj?.biddingWindowEnd;
+    if (bidEndDate) {
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const bidEndStart = new Date(bidEndDate);
+      bidEndStart.setHours(0, 0, 0, 0);
+      if (bidEndStart.getTime() < todayStart.getTime()) return;
+    }
 
     const bid = await db.bid.create({
       data: {
@@ -335,10 +343,13 @@ async function extendDeadlineAction(formData: FormData) {
     });
     if (!project || project.owner.userId !== user.id) return;
 
-    const currentEnd = project.biddingWindowEnd || new Date();
+    const currentEnd = project.deadline || project.biddingWindowEnd || new Date();
     const newEnd = new Date(Math.max(currentEnd.getTime(), Date.now()) + extraDays * 24 * 60 * 60 * 1000);
 
-    await db.project.update({ where: { id: projectId }, data: { biddingWindowEnd: newEnd } });
+    await db.project.update({
+      where: { id: projectId },
+      data: { deadline: newEnd, biddingWindowEnd: newEnd },
+    });
     await db.auditLog.create({
       data: { actorId: user.id, action: "BIDDING_DEADLINE_EXTENDED", entityType: "project", entityId: projectId, metadata: { extraDays, newEnd: newEnd.toISOString() } },
     });
@@ -610,8 +621,16 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
       }
     }
 
-    // Gap 6: Check bidding deadline
-    const biddingExpired = project.biddingWindowEnd && new Date() > new Date(project.biddingWindowEnd);
+    // Gap 6: Check bidding deadline (prefer Bid End Date field)
+    const effectiveBidEndDate = project.deadline || project.biddingWindowEnd;
+    const biddingExpired = (() => {
+      if (!effectiveBidEndDate) return false;
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const bidEndStart = new Date(effectiveBidEndDate);
+      bidEndStart.setHours(0, 0, 0, 0);
+      return bidEndStart.getTime() < todayStart.getTime();
+    })();
     if (biddingExpired) {
       if (canBid) canBid = false;
       bidBlockReason = "CLOSED";
@@ -732,6 +751,25 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
     return { userId, name, nameAr, ratingAverage, reviewCount, verificationStatus, yearsValue, yearsLabel, roleLabel };
   };
 
+  const projectMeta = parseProjectMeta(project.scopeSummary);
+  const legacyMetaPropertyType = (() => {
+    try {
+      const rawMeta = JSON.parse(project.scopeSummary || "{}");
+      return typeof rawMeta?.propertyType === "string" ? rawMeta.propertyType : "";
+    } catch {
+      return "";
+    }
+  })();
+  const rawPropertyType = project.propertyType || legacyMetaPropertyType || "";
+  const propertyTypeLabel = rawPropertyType
+    ? ({
+        residential: isRtl ? "سكني" : "Residential",
+        commercial: isRtl ? "تجاري" : "Commercial",
+        industrial: isRtl ? "صناعي" : "Industrial",
+        government: isRtl ? "حكومي" : "Government",
+      } as Record<string, string>)[rawPropertyType] || rawPropertyType.replace(/_/g, " ")
+    : "—";
+
   return (
     <div style={{ background: "var(--bg)", minHeight: "calc(100vh - 64px)" }}>
       <div style={{ background: "linear-gradient(135deg, #1C5963, #2A7B88)", padding: "2rem 0" }}>
@@ -782,7 +820,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                 <div style={{ display: "inline-flex", alignItems: "baseline", gap: "0.25rem", padding: "0.625rem 1.25rem", borderRadius: "var(--radius-lg)", background: "var(--primary-light)", marginBottom: "1rem" }}>
                   <Banknote style={{ width: "18px", height: "18px", color: "var(--primary)" }} />
                   <span style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--primary)", margin: "0 0.375rem" }}>
-                    {project.budgetMin?.toLocaleString()}{project.budgetMax ? ` - ${project.budgetMax.toLocaleString()}` : ""}
+                    {project.budgetMin?.toLocaleString()}
                   </span>
                   <span style={{ fontSize: "0.875rem", fontWeight: 500, color: "var(--primary)" }}>{tCommon("sar")}</span>
                 </div>
@@ -924,13 +962,13 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
               </div>
             )}
 
-            {hasKrasat && parseProjectMeta(project.scopeSummary).specifications && (
+            {hasKrasat && projectMeta.specifications && (
               <div className="card" style={{ padding: "1.5rem", marginBottom: "1.5rem" }}>
                 <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)", marginBottom: "0.75rem" }}>
                   {isRtl ? "المواصفات الفنية" : "Specifications"}
                 </h3>
                 <p style={{ fontSize: "0.9375rem", color: "var(--text-secondary)", lineHeight: 1.8, whiteSpace: "pre-wrap" }}>
-                  {parseProjectMeta(project.scopeSummary).specifications}
+                  {projectMeta.specifications}
                 </p>
               </div>
             )}
@@ -1291,11 +1329,22 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             )}
 
             {/* Gap 6: Bidding Deadline Banner */}
-            {project.biddingWindowEnd && (() => {
-              const now = new Date();
-              const end = new Date(project.biddingWindowEnd);
-              const daysLeft = Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-              const expired = daysLeft <= 0;
+            {(project.deadline || project.biddingWindowEnd) && (() => {
+              const msPerDay = 1000 * 60 * 60 * 24;
+              const todayStart = new Date();
+              todayStart.setHours(0, 0, 0, 0);
+              const end = new Date(project.deadline || project.biddingWindowEnd);
+              const endStart = new Date(end);
+              endStart.setHours(0, 0, 0, 0);
+              const daysLeft = Math.max(0, Math.floor((endStart.getTime() - todayStart.getTime()) / msPerDay));
+              const expired = endStart.getTime() < todayStart.getTime();
+              const biddingWindowLabel = expired
+                ? (isRtl ? "انتهت فترة التقديم" : "Bidding Closed")
+                : daysLeft === 0
+                  ? (isRtl ? "آخر يوم للتقديم" : "Last day to bid")
+                  : daysLeft === 1
+                    ? (isRtl ? "متبقي يوم واحد للتقديم" : "1 day left to bid")
+                    : (isRtl ? `${daysLeft} يوم متبقي للتقديم` : `${daysLeft} days left to bid`);
               return (
                 <div className="card" style={{
                   padding: "1rem", marginBottom: "1rem",
@@ -1306,9 +1355,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                     <Timer style={{ width: "18px", height: "18px", color: expired ? "var(--error)" : daysLeft <= 5 ? "var(--accent)" : "var(--primary)" }} />
                     <div>
                       <div style={{ fontSize: "0.875rem", fontWeight: 700, color: expired ? "var(--error)" : "var(--text)" }}>
-                        {expired
-                          ? (isRtl ? "انتهت فترة التقديم" : "Bidding Closed")
-                          : (isRtl ? `${daysLeft} يوم متبقي للتقديم` : `${daysLeft} days left to bid`)}
+                        {biddingWindowLabel}
                       </div>
                       <div style={{ fontSize: "0.6875rem", color: "var(--text-muted)" }}>
                         {isRtl ? "الموعد النهائي:" : "Deadline:"} {end.toLocaleDateString()}
@@ -1329,13 +1376,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                     <option value="14">{isRtl ? "14 يوم" : "14 days"}</option>
                     <option value="30">{isRtl ? "30 يوم" : "30 days"}</option>
                   </select>
-                  <button type="submit" style={{
-                    padding: "0.375rem 0.75rem", fontSize: "0.75rem", borderRadius: "var(--radius-md)",
-                    border: "1px solid var(--primary)", background: "var(--primary-light)", color: "var(--primary)",
-                    cursor: "pointer", fontFamily: "inherit", fontWeight: 600, whiteSpace: "nowrap",
-                  }}>
-                    {isRtl ? "تمديد الموعد" : "Extend"}
-                  </button>
+                  <ExtendDeadlineSubmit isRtl={isRtl} />
                 </form>
               </div>
             )}
@@ -1353,7 +1394,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                   { label: isRtl ? "آخر موعد لاستقبال العروض" : "Bid End Date", value: project.deadline ? new Date(project.deadline).toLocaleDateString() : "—" },
                   { label: isRtl ? "العروض" : "Bids", value: project.bids.length.toString() },
                   { label: isRtl ? "تاريخ النشر" : "Published", value: project.publishedAt ? new Date(project.publishedAt).toLocaleDateString() : "—" },
-                  { label: isRtl ? "نوع العقار" : "Property", value: project.propertyType || "—" },
+                  { label: isRtl ? "نوع العقار" : "Property", value: propertyTypeLabel },
                 ].map((item, i) => (
                   <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8125rem" }}>
                     <span style={{ color: "var(--text-muted)" }}>{item.label}</span>

@@ -90,6 +90,7 @@ export default async function AdminDashboardPage() {
   let bidItems: any[] = [];
   let categoryItems: any[] = [];
   let locationItems: any[] = [];
+  let approvedActiveUsers: any[] = [];
 
   [
     totalOwners,
@@ -192,6 +193,31 @@ export default async function AdminDashboardPage() {
     safeItems(() => db.location.findMany({ take: 20, orderBy: { sortOrder: "asc" }, select: { id: true, name: true, nameAr: true } })),
   ]);
 
+  approvedActiveUsers = await safeItems(() =>
+    db.user.findMany({
+      take: 12,
+      orderBy: { createdAt: "desc" },
+      where: {
+        status: "ACTIVE",
+        role: { in: [...SUPPORTED_USER_ROLES] },
+        OR: [
+          { role: "OWNER", ownerProfile: { is: { verificationStatus: "VERIFIED" } } },
+          { role: "CONTRACTOR", contractorProfile: { is: { verificationStatus: "VERIFIED" } } },
+          { role: "ENGINEER", engineerProfile: { is: { verificationStatus: "VERIFIED" } } },
+        ],
+      },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        createdAt: true,
+        ownerProfile: { select: { verificationStatus: true } },
+        contractorProfile: { select: { verificationStatus: true } },
+        engineerProfile: { select: { verificationStatus: true } },
+      },
+    }),
+  );
+
   totalUsers = totalOwners + totalContractors + totalEngineers;
 
   const drilldowns = {
@@ -202,7 +228,11 @@ export default async function AdminDashboardPage() {
     totalProjects: recentProjects.map((p) => ({ label: isRtl ? p.titleAr || p.title : p.title, sublabel: `${p.status} · ${(p as any)._count?.bids || 0} ${isRtl ? "عرض" : "bids"}` })),
     verifiedContractors: verifiedContractorItems.map((c) => ({ label: isRtl ? c.companyNameAr || c.companyName : c.companyName, sublabel: c.city || (isRtl ? "بدون مدينة" : "No city") })),
     totalAwards: awardItems.map((a) => ({ label: isRtl ? a.project?.titleAr || a.project?.title : a.project?.title || "—", sublabel: `${a.awardedAmount?.toLocaleString() || 0} ${isRtl ? "ر.س" : "SAR"}` })),
-    pendingProjects: pendingProjectItems.map((p) => ({ label: isRtl ? p.titleAr || p.title : p.title, sublabel: p.status })),
+    pendingProjects: pendingProjectItems.map((p) => ({
+      label: isRtl ? p.titleAr || p.title : p.title,
+      sublabel: isRtl ? "قيد المراجعة" : "Pending",
+      href: `/${locale}/admin/projects`,
+    })),
     pendingVerifications: pendingVerificationUsers.map((u) => ({ label: u.email, sublabel: u.role })),
     totalOwners: ownerItems.map((u) => ({ label: u.email, sublabel: isRtl ? "مالك مشروع" : "Owner" })),
     totalContractors: contractorItems.map((u) => ({ label: u.email, sublabel: isRtl ? "مقاول" : "Contractor" })),
@@ -325,6 +355,10 @@ export default async function AdminDashboardPage() {
             totalLocations,
           }}
           recentUsers={recentUsers.map((u) => ({
+            ...u,
+            createdAt: new Date(u.createdAt).toLocaleDateString(locale === "ar" ? "ar-SA" : "en-US"),
+          }))}
+          approvedActiveUsers={approvedActiveUsers.map((u) => ({
             ...u,
             createdAt: new Date(u.createdAt).toLocaleDateString(locale === "ar" ? "ar-SA" : "en-US"),
           }))}
