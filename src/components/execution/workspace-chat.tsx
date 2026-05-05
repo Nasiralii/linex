@@ -10,6 +10,7 @@ interface WorkspaceChatProps {
   userId: string;
   projectId: string;
   isRtl: boolean;
+  embedded?: boolean;
 }
 
 function SendMessageButton() {
@@ -59,7 +60,7 @@ function ShareFileButton({ isRtl }: { isRtl: boolean }) {
   );
 }
 
-export function WorkspaceChat({ messages, userId, projectId, isRtl }: WorkspaceChatProps) {
+export function WorkspaceChat({ messages, userId, projectId, isRtl, embedded = false }: WorkspaceChatProps) {
   const fileInputId = useId();
   const [selectedFileName, setSelectedFileName] = useState("");
   const formatMessageTime = (value: string | Date) =>
@@ -71,7 +72,7 @@ export function WorkspaceChat({ messages, userId, projectId, isRtl }: WorkspaceC
     }).format(new Date(value));
 
   return (
-    <div className="card" style={{ padding: "1.5rem", marginTop: "1.5rem" }}>
+    <div className="card" style={{ padding: "1.5rem", marginTop: embedded ? 0 : "1.5rem" }}>
       <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
         <MessageSquare style={{ width: "18px", height: "18px", color: "var(--primary)" }} />
         {isRtl ? "محادثة المشروع" : "Project Chat"}

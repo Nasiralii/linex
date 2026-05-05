@@ -4,7 +4,7 @@ import { redirect, Link } from "@/i18n/routing";
 import { db } from "@/lib/db";
 import { notFound, redirect as nextRedirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { MapPin, Calendar, Tag, Banknote, User, Clock, ArrowRight, Send, CheckCircle, Lock, Star, MessageSquare, Eye, Timer, HardHat, FileText, Shield } from "lucide-react";
+import { MapPin, Calendar, Tag, Banknote, User, Clock, ArrowRight, Send, CheckCircle, Lock, Star, Eye, Timer, HardHat, FileText, Shield } from "lucide-react";
 import { getUserBadges } from "@/lib/badges";
 import { BadgeDisplay } from "@/components/badge-display";
 import { awardProjectAction, shortlistBidAction, purchaseKrasat, refreshProjectBidRankings } from "../actions";
@@ -15,6 +15,7 @@ import { parseProjectMeta } from "@/lib/project-meta";
 import { rankBidWithPolicy, extractStoredBidRankingSnapshot, isStoredBidRankingSnapshotFresh } from "@/lib/bid-ranking-policy";
 import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
 import { ExtendDeadlineSubmit } from "./extend-deadline-submit";
+import { QAPanel } from "./qa-panel";
 
 const STATUS_LABELS: Record<string, { ar: string; en: string }> = {
   DRAFT: { ar: "مسودة", en: "Draft" },
@@ -246,10 +247,16 @@ async function sendMessageAction(formData: FormData) {
 
   const receiverId = formData.get("receiverId") as string;
   const projectId = formData.get("projectId") as string;
+  const currentChatWith = (formData.get("currentChatWith") as string) || "";
+  const targetReceiverId = currentChatWith || receiverId;
   const content = formData.get("content") as string;
+  const file = formData.get("file") as File | null;
+  const hasFile = !!file && file.size > 0;
+  const text = content?.trim() || "";
+  const backToProjectHref = `/marketplace/${projectId || ""}${currentChatWith ? `?chatWith=${currentChatWith}` : ""}`;
 
-  if (!projectId || !receiverId || !content?.trim()) {
-    return redirect({ href: `/marketplace/${projectId || ""}`, locale });
+  if (!projectId || !targetReceiverId || (!text && !hasFile)) {
+    return redirect({ href: backToProjectHref, locale });
   }
 
   try {
@@ -284,33 +291,57 @@ async function sendMessageAction(formData: FormData) {
         select: { id: true },
       }),
       db.krasatPurchase.findUnique({
-        where: { userId_projectId: { userId: receiverId, projectId } },
+        where: { userId_projectId: { userId: targetReceiverId, projectId } },
         select: { id: true },
       }),
     ]);
 
-    const allowedParticipants = new Set(
-      [
-        project.owner?.userId,
-        ...project.bids.flatMap((bid: any) => [bid.contractor?.userId, bid.engineer?.userId]),
-        project.award?.bid?.contractor?.userId,
-        project.award?.bid?.engineer?.userId,
-        senderKrasatPurchase ? user.id : null,
-        receiverKrasatPurchase ? receiverId : null,
-      ].filter(Boolean) as string[],
-    );
+    const awardedUserId = project.award?.bid?.contractor?.userId || project.award?.bid?.engineer?.userId || null;
+    const allowedParticipants = project.award
+      ? new Set(
+          [
+            project.owner?.userId,
+            awardedUserId,
+            user.role === "ADMIN" ? user.id : null,
+          ].filter(Boolean) as string[],
+        )
+      : new Set(
+          [
+            project.owner?.userId,
+            ...project.bids.flatMap((bid: any) => [bid.contractor?.userId, bid.engineer?.userId]),
+            senderKrasatPurchase ? user.id : null,
+            receiverKrasatPurchase ? targetReceiverId : null,
+          ].filter(Boolean) as string[],
+        );
 
-    if (!allowedParticipants.has(user.id) || !allowedParticipants.has(receiverId) || user.id === receiverId) {
-      return redirect({ href: `/marketplace/${projectId}`, locale });
+    if (!allowedParticipants.has(user.id) || !allowedParticipants.has(targetReceiverId) || user.id === targetReceiverId) {
+      return redirect({ href: backToProjectHref, locale });
     }
 
-    await db.message.create({
-      data: { senderId: user.id, receiverId, projectId, content: content.trim() },
+    const messagePayloads: string[] = [];
+    if (text) messagePayloads.push(text);
+    if (hasFile) {
+      const uploaded = await uploadFile(file, `qa/${projectId}`, user.id);
+      if (!uploaded.error && uploaded.url) {
+        messagePayloads.push(`📎 FILE: ${file.name}||${uploaded.url}`);
+      }
+    }
+    if (messagePayloads.length === 0) {
+      return redirect({ href: backToProjectHref, locale });
+    }
+
+    await db.message.createMany({
+      data: messagePayloads.map((payload) => ({
+        senderId: user.id,
+        receiverId: targetReceiverId,
+        projectId,
+        content: payload,
+      })),
     });
 
     await db.notification.create({
       data: {
-        userId: receiverId,
+        userId: targetReceiverId,
         type: "GENERAL",
         title: "New project message",
         titleAr: "رسالة جديدة على المشروع",
@@ -324,7 +355,7 @@ async function sendMessageAction(formData: FormData) {
   }
 
   revalidatePath(`/marketplace/${projectId}`);
-  return redirect({ href: `/marketplace/${projectId}`, locale });
+  return redirect({ href: backToProjectHref, locale });
 }
 
 // Gap 6: Extend bidding deadline action (owner only)
@@ -418,8 +449,15 @@ async function purchaseKrasatFromWalletAction(formData: FormData) {
 // ============================================================================
 // Page Component
 // ============================================================================
-export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string; locale: string }> }) {
+export default async function ProjectDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string; locale: string }>;
+  searchParams: Promise<{ chatWith?: string }>;
+}) {
   const { id } = await params;
+  const query = await searchParams;
   const user = await getCurrentUser();
   const locale = await getLocale();
   if (!user) return redirect({ href: "/auth/login", locale });
@@ -722,20 +760,81 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
     hasKrasat = isOwner || isAdmin;
   }
 
-  // Determine Q&A recipient
-  let qaRecipientId: string | null = null;
-  if (isOwner && (project.award?.bid?.contractor?.userId || project.award?.bid?.engineer?.userId)) {
-    qaRecipientId = project.award.bid.contractor?.userId || project.award.bid.engineer?.userId;
-  } else if (isOwner && messages.length > 0) {
-    const latestCounterparty = [...messages].reverse().find((msg: any) => (msg.senderId === user.id ? msg.receiverId : msg.senderId) !== user.id);
-    if (latestCounterparty) {
-      qaRecipientId = latestCounterparty.senderId === user.id ? latestCounterparty.receiverId : latestCounterparty.senderId;
+  // Determine Q&A conversation participants and active recipient
+  const conversationCandidates = new Set<string>();
+  if (project.owner?.userId) conversationCandidates.add(project.owner.userId);
+  for (const bid of project.bids || []) {
+    if (bid.contractor?.userId) conversationCandidates.add(bid.contractor.userId);
+    if (bid.engineer?.userId) conversationCandidates.add(bid.engineer.userId);
+  }
+  if (project.award?.bid?.contractor?.userId) conversationCandidates.add(project.award.bid.contractor.userId);
+  if (project.award?.bid?.engineer?.userId) conversationCandidates.add(project.award.bid.engineer.userId);
+  for (const msg of messages) {
+    if (msg.senderId && msg.senderId !== user.id) conversationCandidates.add(msg.senderId);
+    if (msg.receiverId && msg.receiverId !== user.id) conversationCandidates.add(msg.receiverId);
+  }
+  const awardedUserId = project.award?.bid?.contractor?.userId || project.award?.bid?.engineer?.userId || null;
+  const candidateIds = [...conversationCandidates]
+    .filter((id) => id !== user.id)
+    .filter((id) => (project.award ? (isOwner ? true : id === project.owner?.userId) : true));
+  const senderEmailById = new Map<string, string>();
+  for (const msg of messages) {
+    if (msg.senderId && msg.sender?.email) senderEmailById.set(msg.senderId, msg.sender.email);
+  }
+  const latestInteractionById = new Map<string, number>();
+  for (const msg of messages) {
+    const counterpartyId = msg.senderId === user.id ? msg.receiverId : msg.senderId;
+    if (!counterpartyId || counterpartyId === user.id) continue;
+    const ts = new Date(msg.createdAt).getTime();
+    const prev = latestInteractionById.get(counterpartyId) || 0;
+    if (ts > prev) latestInteractionById.set(counterpartyId, ts);
+  }
+  const candidateUsers = candidateIds.length
+    ? await db.user.findMany({
+        where: { id: { in: candidateIds } },
+        select: { id: true, email: true },
+      })
+    : [];
+  const userEmailById = new Map(candidateUsers.map((u) => [u.id, u.email]));
+
+  const getCounterpartyLabel = (id: string) => {
+    const bidder = project.bids.find((b: any) => b.contractor?.userId === id || b.engineer?.userId === id);
+    if (bidder) {
+      return isRtl
+        ? (bidder.contractor?.companyNameAr || bidder.contractor?.companyName || bidder.engineer?.fullNameAr || bidder.engineer?.fullName || userEmailById.get(id) || senderEmailById.get(id) || "مستخدم")
+        : (bidder.contractor?.companyName || bidder.engineer?.fullName || userEmailById.get(id) || senderEmailById.get(id) || "User");
     }
-  } else if (isOwner && project.bids.length === 1 && (project.bids[0]?.contractor?.userId || project.bids[0]?.engineer?.userId)) {
-    qaRecipientId = project.bids[0].contractor?.userId || project.bids[0].engineer?.userId;
+    if (id === project.owner?.userId) {
+      return isRtl ? (project.owner?.fullName || "المالك") : (project.owner?.fullName || "Owner");
+    }
+    return userEmailById.get(id) || senderEmailById.get(id) || (isRtl ? "مستخدم" : "User");
+  };
+
+  const ownerConversationOptions = candidateIds
+    .map((id) => ({ id, label: getCounterpartyLabel(id), sortTs: latestInteractionById.get(id) || 0 }))
+    .sort((a, b) => b.sortTs - a.sortTs)
+    .map(({ id, label }) => ({ id, label }));
+
+  let qaRecipientId: string | null = null;
+  if (isOwner) {
+    const requestedChatWith = (query.chatWith || "").trim();
+    const requestedAllowed = ownerConversationOptions.some((option) => option.id === requestedChatWith);
+    if (requestedAllowed) {
+      qaRecipientId = requestedChatWith;
+    } else {
+      const latestCounterparty = [...messages].reverse().find((msg: any) => (msg.senderId === user.id ? msg.receiverId : msg.senderId) !== user.id);
+      if (latestCounterparty) {
+        qaRecipientId = latestCounterparty.senderId === user.id ? latestCounterparty.receiverId : latestCounterparty.senderId;
+      } else if (project.award?.bid?.contractor?.userId || project.award?.bid?.engineer?.userId) {
+        qaRecipientId = project.award.bid.contractor?.userId || project.award.bid.engineer?.userId;
+      } else if (project.bids.length === 1) {
+        qaRecipientId = project.bids[0].contractor?.userId || project.bids[0].engineer?.userId || null;
+      }
+    }
   } else if ((isContractor || isEngineer) && project.owner?.userId) {
     qaRecipientId = project.owner.userId;
   }
+
 
   const getBidderDisplay = (bid: any) => {
     const isEngineerBid = !!bid.engineer;
@@ -1042,56 +1141,28 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             {/* ============================================ */}
             {/* Gap 4: Q&A Messaging UI */}
             {/* ============================================ */}
-            {hasKrasat && (qaRecipientId || messages.length > 0) && (
-              <div className="card" style={{ padding: "1.5rem", marginBottom: "1.5rem" }}>
-                <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <MessageSquare style={{ width: "18px", height: "18px", color: "var(--primary)" }} />
-                  {isRtl ? "الرسائل والأسئلة" : "Q&A Messages"}
-                </h3>
-
-                {/* Message list */}
-                <div style={{ maxHeight: "300px", overflowY: "auto", marginBottom: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                  {messages.length === 0 ? (
-                    <p style={{ fontSize: "0.8125rem", color: "var(--text-muted)", textAlign: "center", padding: "1rem" }}>
-                      {isRtl ? "لا توجد رسائل بعد. ابدأ المحادثة!" : "No messages yet. Start the conversation!"}
-                    </p>
-                  ) : (
-                    messages.map((msg: any) => {
-                      const isMine = msg.senderId === user.id;
-                      return (
-                        <div key={msg.id} style={{
-                          maxWidth: "75%", padding: "0.75rem 1rem", borderRadius: "var(--radius-lg)",
-                          alignSelf: isMine ? "flex-end" : "flex-start",
-                          background: isMine ? "var(--primary)" : "var(--surface-2)",
-                          color: isMine ? "white" : "var(--text)",
-                        }}>
-                          <div style={{ fontSize: "0.6875rem", marginBottom: "0.25rem", opacity: 0.7 }}>
-                            {msg.sender?.email} • {new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                          </div>
-                          <div style={{ fontSize: "0.875rem", lineHeight: 1.5 }}>{msg.content}</div>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-
-                {/* Send message form */}
-                {qaRecipientId ? (
-                  <form action={sendMessageAction} style={{ display: "flex", gap: "0.5rem" }}>
-                    <input type="hidden" name="receiverId" value={qaRecipientId} />
-                    <input type="hidden" name="projectId" value={project.id} />
-                    <input type="text" name="content" placeholder={isRtl ? "اكتب رسالتك..." : "Type your message..."} required style={{ flex: 1 }} />
-                    <button type="submit" className="btn-primary" style={{ padding: "0.5rem 1rem", flexShrink: 0 }}>
-                      <Send style={{ width: "16px", height: "16px" }} />
-                    </button>
-                  </form>
-                ) : (
-                  <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", margin: 0 }}>
-                    {isRtl ? "يمكنك عرض الرسائل الحالية، وسيتم تفعيل الرد عند تحديد الطرف المقابل للمحادثة." : "You can view the current messages. Replying will be enabled once a conversation counterpart is identified."}
-                  </p>
-                )}
-              </div>
-            )}
+            <QAPanel
+              isRtl={isRtl}
+              projectId={project.id}
+              userId={user.id}
+              userRole={user.role}
+              isOwner={isOwner}
+              isContractor={isContractor}
+              isEngineer={isEngineer}
+              hasKrasat={hasKrasat}
+              initialRecipientId={qaRecipientId}
+              messages={messages.map((m: any) => ({
+                id: m.id,
+                senderId: m.senderId,
+                receiverId: m.receiverId,
+                senderEmail: m.sender?.email,
+                content: m.content,
+                createdAt: m.createdAt,
+              }))}
+              conversationOptions={ownerConversationOptions}
+              awardedUserId={awardedUserId}
+              sendMessageAction={sendMessageAction}
+            />
 
             {/* Bids (visible to owner/admin) */}
             {(isOwner || isAdmin) && project.bids.length > 0 && (
@@ -1202,6 +1273,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                             <form action={async () => { "use server"; await awardProjectAction(project.id, bid.id); }}>
                               <ConfirmSubmitButton
                                 label={isRtl ? "ترسية هذا العرض" : "Award This Bid"}
+                                pendingLabel={isRtl ? "جاري الترسية..." : "Awarding..."}
                                 confirmMessage={isRtl ? "هل أنت متأكد من ترسية هذا العرض؟ سيتم رفض بقية العروض تلقائياً." : "Are you sure you want to award this bid? All other bids will be rejected automatically."}
                                 className="btn-primary"
                                 style={{ fontSize: "0.75rem", padding: "0.375rem 0.75rem" }}

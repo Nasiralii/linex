@@ -124,7 +124,8 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
   } catch (error) {
     console.error('[ExecutionWorkspacePage] messages query failed:', error);
   }
-  const companyName = project.award.bid?.contractor?.companyName || project.award.bid?.engineer?.fullName || "";
+  const awardedPartyName = project.award.bid?.contractor?.companyName || project.award.bid?.engineer?.fullName || "";
+  const awardedPartyUserId = project.award.bid?.contractor?.userId || project.award.bid?.engineer?.userId || null;
 
   // Milestone tracking intentionally disabled for now.
   // const milestones = [
@@ -139,7 +140,7 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
   // Gap 2: file versioning data
   const files = project.attachments.map((a: any) => ({
     id: a.id, fileName: a.fileName, fileUrl: a.fileUrl, fileSize: a.fileSize,
-    createdAt: a.createdAt.toISOString(), uploaderName: isOwner ? (isRtl ? "المالك" : "Owner") : companyName,
+    createdAt: a.createdAt.toISOString(), uploaderName: isOwner ? (isRtl ? "المالك" : "Owner") : awardedPartyName,
   }));
 
   return (
@@ -167,15 +168,26 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
           <div className="card" style={{ padding: "1.25rem", textAlign: "center" }}>
             <div style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--info)" }}><Users style={{ width: "24px", height: "24px", display: "inline" }} /></div>
             <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-              {isRtl ? "المالك:" : "Owner:"}{" "}
-              <Link
-                href={`/profile/${project.owner.userId}`}
-                style={{ color: "var(--primary)", textDecoration: "none", fontWeight: 700 }}
-              >
-                {project.owner.fullName || (isRtl ? "المالك" : "Owner")}
-              </Link>
-              {" + "}
-              {companyName}
+              {isOwner ? (
+                <>
+                  {isRtl ? "المُرسى عليه:" : "Awarded:"}{" "}
+                  {awardedPartyUserId ? (
+                    <Link href={`/profile/${awardedPartyUserId}`} style={{ color: "var(--primary)", textDecoration: "none", fontWeight: 700 }}>
+                      {awardedPartyName || (isRtl ? "غير متوفر" : "N/A")}
+                    </Link>
+                  ) : <span style={{ color: "var(--text)", fontWeight: 700 }}>{awardedPartyName || (isRtl ? "غير متوفر" : "N/A")}</span>}
+                </>
+              ) : (
+                <>
+                  {isRtl ? "المالك:" : "Owner:"}{" "}
+                  <Link
+                    href={`/profile/${project.owner.userId}`}
+                    style={{ color: "var(--primary)", textDecoration: "none", fontWeight: 700 }}
+                  >
+                    {project.owner.fullName || (isRtl ? "المالك" : "Owner")}
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -224,8 +236,8 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
             </h3>
             <FileList files={files} isRtl={isRtl} />
           </div>
+          <WorkspaceChat messages={messages} userId={user.id} projectId={id} isRtl={isRtl} embedded />
         </div>
-        <WorkspaceChat messages={messages} userId={user.id} projectId={id} isRtl={isRtl} />
         {project.status !== "COMPLETED" && (
           <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "1rem", marginTop: "1.5rem" }}>
             {/* <div className="card" style={{ padding: "1.25rem" }}>
