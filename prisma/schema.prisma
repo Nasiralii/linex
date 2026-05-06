@@ -55,6 +55,8 @@ model User {
   receivedMessages  Message[]         @relation("MessageReceiver")
   walletTransactions WalletTransaction[]
   badges            UserBadge[]
+  reviewsAuthored   Review[]         @relation("ReviewAuthorUser")
+  reviewsReceived   Review[]         @relation("ReviewSubjectUser")
 
   @@map("users")
 }
@@ -562,8 +564,10 @@ model Invoice {
 model Review {
   id           String   @id @default(cuid())
   projectId    String   @map("project_id")
-  authorId     String   @map("author_id")
-  subjectId    String   @map("subject_id")
+  authorId     String?  @map("author_id")
+  subjectId    String?  @map("subject_id")
+  authorUserId String?  @map("author_user_id")
+  subjectUserId String? @map("subject_user_id")
   rating       Int      // 1-5
   comment      String?
   commentAr    String?  @map("comment_ar")
@@ -573,11 +577,14 @@ model Review {
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   // Relations
-  project Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  author  OwnerProfile      @relation("ReviewAuthor", fields: [authorId], references: [id])
-  subject ContractorProfile @relation("ReviewSubject", fields: [subjectId], references: [id])
+  project     Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  author      OwnerProfile?      @relation("ReviewAuthor", fields: [authorId], references: [id])
+  subject     ContractorProfile? @relation("ReviewSubject", fields: [subjectId], references: [id])
+  authorUser  User?              @relation("ReviewAuthorUser", fields: [authorUserId], references: [id], onDelete: Cascade)
+  subjectUser User?              @relation("ReviewSubjectUser", fields: [subjectUserId], references: [id], onDelete: Cascade)
 
   @@unique([projectId, authorId])
+  @@unique([projectId, authorUserId])
   @@map("reviews")
 }
 

@@ -52,7 +52,15 @@ export default async function BidComparisonPage({ searchParams }: { searchParams
       orderBy: { submittedAt: "desc" },
     });
 
-    project = await db.project.findUnique({ where: { id: projectId }, select: { title: true, titleAr: true, budgetMin: true, budgetMax: true } });
+    project = await db.project.findUnique({
+      where: { id: projectId },
+      select: { title: true, titleAr: true, budgetMin: true, budgetMax: true, status: true },
+    });
+
+    // If already awarded/completed, close compare page and go back.
+    if (project && ["AWARDED", "COMPLETED", "IN_PROGRESS"].includes(project.status)) {
+      return redirect({ href: "/dashboard/projects", locale });
+    }
 
     if (project) {
       const rankingLogs = await db.auditLog.findMany({
@@ -105,6 +113,10 @@ export default async function BidComparisonPage({ searchParams }: { searchParams
       });
     }
   } catch (error) {
+    if (error && typeof error === "object" && "digest" in error) {
+      const digest = String((error as { digest?: string }).digest || "");
+      if (digest.includes("NEXT_REDIRECT")) throw error;
+    }
     console.error('[BidComparisonPage] DB query failed:', error);
   }
 

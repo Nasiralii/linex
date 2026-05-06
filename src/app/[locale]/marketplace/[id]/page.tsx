@@ -15,6 +15,7 @@ import { parseProjectMeta } from "@/lib/project-meta";
 import { rankBidWithPolicy, extractStoredBidRankingSnapshot, isStoredBidRankingSnapshotFresh } from "@/lib/bid-ranking-policy";
 import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
 import { BidSubmitButton, BidSubmitSuccessAlert } from "@/components/bid-submit-feedback";
+import { ShortlistSubmitButton } from "@/components/shortlist-submit-button";
 import { ExtendDeadlineSubmit } from "./extend-deadline-submit";
 import { QAPanel } from "./qa-panel";
 
@@ -144,7 +145,7 @@ async function submitBidAction(formData: FormData) {
           title: "New bid received", titleAr: "تم استلام عرض جديد",
           message: `New bid of ${amount} SAR on ${project.title}`,
           messageAr: `عرض جديد بقيمة ${amount} ريال على ${project.titleAr || project.title}`,
-          link: `/dashboard`,
+          link: `/marketplace/${projectId}`,
         },
       });
 
@@ -201,66 +202,108 @@ async function purchaseKrasatAction(formData: FormData) {
 async function submitReviewAction(formData: FormData) {
   "use server";
   const user = await getCurrentUser();
-  if (!user || user.role !== "OWNER") return;
+  if (!user || !["OWNER", "CONTRACTOR", "ENGINEER"].includes(user.role)) return;
 
   const projectId = formData.get("projectId") as string;
   const rating = parseInt(formData.get("rating") as string);
   const comment = formData.get("comment") as string;
 
   try {
-    const ownerProfile = await db.ownerProfile.findUnique({ where: { userId: user.id } });
-    if (!ownerProfile) return;
-
-    const project = await db.project.findUnique({ where: { id: projectId }, select: { status: true } });
+    const project = await db.project.findUnique({
+      where: { id: projectId },
+      select: {
+        status: true,
+        owner: { select: { userId: true, id: true } },
+        award: {
+          select: {
+            contractorId: true,
+            engineerId: true,
+            bid: {
+              select: {
+                contractor: { select: { userId: true } },
+                engineer: { select: { userId: true } },
+              },
+            },
+          },
+        },
+      },
+    });
     if (!project || !["COMPLETED", "AWARDED"].includes(project.status)) return;
 
-    const award = await db.award.findUnique({ where: { projectId }, select: { contractorId: true, engineerId: true } });
-    // Current review model supports contractor subjects only.
-    if (award?.engineerId && !award.contractorId) return;
-    if (!award?.contractorId) return;
+    const awardedUserId = project.award?.bid?.contractor?.userId || project.award?.bid?.engineer?.userId || null;
+    const isOwnerReviewer = user.role === "OWNER" && project.owner?.userId === user.id;
+    const isAwardedReviewer = ["CONTRACTOR", "ENGINEER"].includes(user.role) && !!awardedUserId && user.id === awardedUserId;
+    if (!isOwnerReviewer && !isAwardedReviewer) return;
 
-    const existing = await db.review.findUnique({ where: { projectId_authorId: { projectId, authorId: ownerProfile.id } } });
+    const subjectUserId = isOwnerReviewer ? awardedUserId : project.owner?.userId;
+    if (!subjectUserId) return;
+
+    const existing = await db.review.findFirst({
+      where: { projectId, authorUserId: user.id },
+      select: { id: true },
+    });
     if (existing) return;
 
+    const ownerProfile = await db.ownerProfile.findUnique({ where: { userId: user.id }, select: { id: true } });
     await db.review.create({
       data: {
-        projectId, authorId: ownerProfile.id, subjectId: award.contractorId,
+        projectId,
+        authorId: isOwnerReviewer ? ownerProfile?.id || null : null,
+        subjectId: isOwnerReviewer ? (project.award?.contractorId || null) : null,
+        authorUserId: user.id,
+        subjectUserId,
         rating: Math.min(5, Math.max(1, rating)), comment,
       },
     });
 
-    // Update contractor average rating
-    const reviews = await db.review.findMany({ where: { subjectId: award.contractorId } });
-    const avg = reviews.reduce((s: number, r: any) => s + r.rating, 0) / reviews.length;
-    await db.contractorProfile.update({
-      where: { id: award.contractorId },
-      data: { ratingAverage: avg, reviewCount: reviews.length },
-    });
-
-    // Notify rated contractor about the new review.
-    const ratedContractor = await db.contractorProfile.findUnique({
-      where: { id: award.contractorId },
-      select: { userId: true },
-    });
-    if (ratedContractor?.userId) {
-      await db.notification.create({
-        data: {
-          userId: ratedContractor.userId,
-          type: "REVIEW_SUBMITTED",
-          title: "You received a new project rating",
-          titleAr: "تلقيت تقييماً جديداً على مشروعك",
-          message: `The project owner submitted a ${Math.min(5, Math.max(1, rating))}/5 rating for your completed project.`,
-          messageAr: `قام مالك المشروع بإرسال تقييم ${Math.min(5, Math.max(1, rating))}/5 لمشروعك المكتمل.`,
-          link: `/marketplace/${projectId}`,
+    if (project.award?.contractorId && subjectUserId === awardedUserId) {
+      // Update contractor average rating
+      const reviews = await db.review.findMany({
+        where: {
+          OR: [
+            { subjectId: project.award.contractorId },
+            { subjectUserId },
+          ],
         },
+        select: { rating: true },
+      });
+      const avg = reviews.reduce((s: number, r: any) => s + r.rating, 0) / Math.max(1, reviews.length);
+      await db.contractorProfile.update({
+        where: { id: project.award.contractorId },
+        data: { ratingAverage: avg, reviewCount: reviews.length },
       });
     }
 
-    // Gap 5: Re-evaluate contractor badges after new review
-    const contractor = await db.contractorProfile.findUnique({ where: { id: award.contractorId }, select: { userId: true } });
-    if (contractor) {
+    if (project.award?.engineerId && subjectUserId === awardedUserId) {
+      // Update engineer average rating
+      const reviews = await db.review.findMany({
+        where: { subjectUserId },
+        select: { rating: true },
+      });
+      const avg = reviews.reduce((s: number, r: any) => s + r.rating, 0) / Math.max(1, reviews.length);
+      await db.engineerProfile.update({
+        where: { id: project.award.engineerId },
+        data: { ratingAverage: avg, reviewCount: reviews.length },
+      });
+    }
+
+    // Notify rated user about the new review.
+    await db.notification.create({
+      data: {
+        userId: subjectUserId,
+        type: "REVIEW_SUBMITTED",
+        title: "You received a new project rating",
+        titleAr: "تلقيت تقييماً جديداً على مشروعك",
+        message: `${isOwnerReviewer ? "The project owner" : "The awarded party"} submitted a ${Math.min(5, Math.max(1, rating))}/5 rating.`,
+        messageAr: `${isOwnerReviewer ? "قام مالك المشروع" : "قام الطرف المنفذ"} بإرسال تقييم ${Math.min(5, Math.max(1, rating))}/5.`,
+        link: `/marketplace/${projectId}`,
+      },
+    });
+
+    // Gap 5: Re-evaluate badges for reviewed user when applicable
+    if (subjectUserId) {
       const { evaluateUserBadges } = await import("@/lib/badges");
-      evaluateUserBadges(contractor.userId).catch(() => {});
+      evaluateUserBadges(subjectUserId).catch(() => {});
     }
   } catch (error) {
     console.error('[submitReviewAction] DB query failed:', error);
@@ -504,7 +547,8 @@ export default async function ProjectDetailPage({
   let messages: any[] = [];
   let hasReviewed = false;
   let canReview = false;
-  let reviewUnsupportedForEngineer = false;
+  let reviewTargetName = "";
+  let reviewTargetRoleLabel = "";
   let bidBlockReason: "APPROVAL" | "SPECIALTY" | "CLOSED" | null = null;
   const bidderBadgesMap: Record<string, string[]> = {};
   const bidRankingMap: Record<string, any> = {};
@@ -529,7 +573,7 @@ export default async function ProjectDetailPage({
         category: true,
         location: true,
         attachments: { select: { id: true, fileName: true, fileUrl: true } },
-        owner: { select: { id: true, fullName: true, companyName: true, userId: true } },
+        owner: { select: { id: true, fullName: true, fullNameAr: true, companyName: true, userId: true } },
       },
     });
   } catch (error) {
@@ -598,8 +642,8 @@ export default async function ProjectDetailPage({
           engineerId: true,
           bid: {
             select: {
-              contractor: { select: { userId: true, companyName: true } },
-              engineer: { select: { userId: true, fullName: true } },
+              contractor: { select: { userId: true, companyName: true, companyNameAr: true } },
+              engineer: { select: { userId: true, fullName: true, fullNameAr: true } },
             },
           },
         },
@@ -609,7 +653,10 @@ export default async function ProjectDetailPage({
       }),
       db.review.findMany({
         where: { projectId: id },
-        include: { author: { select: { fullName: true } } },
+        include: {
+          author: { select: { fullName: true } },
+          authorUser: { select: { email: true } },
+        },
       }).catch((error) => {
         console.error('[ProjectDetailPage] reviews query failed:', error);
         return [] as any[];
@@ -679,16 +726,30 @@ export default async function ProjectDetailPage({
       take: 50,
     });
 
-    // Gap 5: Check if review already submitted
-    if (isOwner && ["COMPLETED", "AWARDED"].includes(project.status) && project.award) {
-      const ownerProfile = await db.ownerProfile.findUnique({ where: { userId: user.id } });
-      if (ownerProfile) {
-        const existingReview = await db.review.findUnique({
-          where: { projectId_authorId: { projectId: id, authorId: ownerProfile.id } },
+    // Gap 5: Check if review already submitted (owner ↔ awarded party)
+    if (["COMPLETED", "AWARDED"].includes(project.status) && project.award) {
+      const awardedUserId = project.award?.bid?.contractor?.userId || project.award?.bid?.engineer?.userId || null;
+      const isAwardedParty = !!awardedUserId && user.id === awardedUserId && (isContractor || isEngineer);
+      const ownerUserId = project.owner?.userId || null;
+
+      const reviewTargetUserId = isOwner ? awardedUserId : isAwardedParty ? ownerUserId : null;
+      if (reviewTargetUserId) {
+        const existingReview = await db.review.findFirst({
+          where: { projectId: id, authorUserId: user.id },
+          select: { id: true },
         });
         hasReviewed = !!existingReview;
-        canReview = !hasReviewed && !!project.award.contractorId;
-        reviewUnsupportedForEngineer = !hasReviewed && !!project.award.engineerId && !project.award.contractorId;
+        canReview = !hasReviewed;
+
+        if (isOwner) {
+          reviewTargetName = project.award?.bid?.contractor
+            ? (isRtl ? (project.award.bid.contractor.companyNameAr || project.award.bid.contractor.companyName || "—") : (project.award.bid.contractor.companyName || "—"))
+            : (isRtl ? (project.award?.bid?.engineer?.fullNameAr || project.award?.bid?.engineer?.fullName || "—") : (project.award?.bid?.engineer?.fullName || "—"));
+          reviewTargetRoleLabel = project.award?.bid?.contractor ? (isRtl ? "المقاول" : "Contractor") : (isRtl ? "المهندس" : "Engineer");
+        } else {
+          reviewTargetName = isRtl ? (project.owner?.fullNameAr || project.owner?.fullName || "—") : (project.owner?.fullName || "—");
+          reviewTargetRoleLabel = isRtl ? "المالك" : "Owner";
+        }
       }
     }
 
@@ -887,19 +948,22 @@ export default async function ProjectDetailPage({
   const legacyMetaPropertyType = (() => {
     try {
       const rawMeta = JSON.parse(project.scopeSummary || "{}");
-      return typeof rawMeta?.propertyType === "string" ? rawMeta.propertyType : "";
+      if (typeof rawMeta?.propertyType === "string") return rawMeta.propertyType;
+      if (typeof rawMeta?.property_type === "string") return rawMeta.property_type;
+      if (typeof rawMeta?.property === "string") return rawMeta.property;
+      return "";
     } catch {
       return "";
     }
   })();
-  const rawPropertyType = project.propertyType || legacyMetaPropertyType || "";
-  const propertyTypeLabel = rawPropertyType
+  const normalizedPropertyType = (project.propertyType || legacyMetaPropertyType || "").trim().toLowerCase();
+  const propertyTypeLabel = normalizedPropertyType
     ? ({
         residential: isRtl ? "سكني" : "Residential",
         commercial: isRtl ? "تجاري" : "Commercial",
         industrial: isRtl ? "صناعي" : "Industrial",
         government: isRtl ? "حكومي" : "Government",
-      } as Record<string, string>)[rawPropertyType] || rawPropertyType.replace(/_/g, " ")
+      } as Record<string, string>)[normalizedPropertyType] || normalizedPropertyType.replace(/_/g, " ")
     : "—";
 
   return (
@@ -1085,7 +1149,9 @@ export default async function ProjectDetailPage({
                           <Star key={s} style={{ width: "16px", height: "16px", fill: s <= review.rating ? "var(--accent)" : "none", color: s <= review.rating ? "var(--accent)" : "var(--border)" }} />
                         ))}
                       </div>
-                      <span style={{ fontSize: "0.8125rem", color: "var(--text-muted)" }}>{review.author?.fullName}</span>
+                      <span style={{ fontSize: "0.8125rem", color: "var(--text-muted)" }}>
+                        {review.author?.fullName || review.authorUser?.email || (isRtl ? "مستخدم" : "User")}
+                      </span>
                       <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{new Date(review.createdAt).toLocaleDateString()}</span>
                     </div>
                     {review.comment && <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", lineHeight: 1.6 }}>{review.comment}</p>}
@@ -1261,21 +1327,24 @@ export default async function ProjectDetailPage({
                         <div style={{ fontSize: "1.125rem", fontWeight: 800, color: "var(--primary)" }}>{bid.amount?.toLocaleString()} {tCommon("sar")}</div>
                         {bid.estimatedDuration && <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{bid.estimatedDuration} {isRtl ? "يوم" : "days"}</div>}
                         {isOwner && ["PUBLISHED", "BIDDING"].includes(project.status) && bid.status !== "AWARDED" && (
-                          <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem", justifyContent: "flex-end" }}>
+                          <div style={{ display: "flex", gap: "0.5rem", rowGap: "0.5rem", marginTop: "0.5rem", justifyContent: "flex-end", flexWrap: "wrap", minWidth: 0 }}>
                             {project.bids.length > 1 && bid.status !== "SHORTLISTED" && (
-                              <form action={async () => { "use server"; await shortlistBidAction(bid.id); }}>
-                                <button type="submit" className="btn-secondary" style={{ fontSize: "0.75rem", padding: "0.375rem 0.75rem" }}>
-                                  {isRtl ? "قائمة مختصرة" : "Shortlist"}
-                                </button>
+                              <form action={async () => { "use server"; await shortlistBidAction(bid.id); }} style={{ flex: "1 1 120px", minWidth: 0 }}>
+                                <ShortlistSubmitButton
+                                  label={isRtl ? "قائمة مختصرة" : "Shortlist"}
+                                  pendingLabel={isRtl ? "جارٍ الإدراج..." : "Shortlisting..."}
+                                  className="btn-secondary"
+                                  style={{ fontSize: "0.75rem", padding: "0.375rem 0.75rem", width: "100%" }}
+                                />
                               </form>
                             )}
-                            <form action={async () => { "use server"; await awardProjectAction(project.id, bid.id); }}>
+                            <form action={async () => { "use server"; await awardProjectAction(project.id, bid.id); }} style={{ flex: "1 1 120px", minWidth: 0 }}>
                               <ConfirmSubmitButton
                                 label={isRtl ? "ترسية هذا العرض" : "Award This Bid"}
                                 pendingLabel={isRtl ? "جاري الترسية..." : "Awarding..."}
                                 confirmMessage={isRtl ? "هل أنت متأكد من ترسية هذا العرض؟ سيتم رفض بقية العروض تلقائياً." : "Are you sure you want to award this bid? All other bids will be rejected automatically."}
                                 className="btn-primary"
-                                style={{ fontSize: "0.75rem", padding: "0.375rem 0.75rem" }}
+                                style={{ fontSize: "0.75rem", padding: "0.375rem 0.75rem", width: "100%" }}
                               />
                             </form>
                           </div>
@@ -1284,7 +1353,7 @@ export default async function ProjectDetailPage({
                     </div>
                   ))}
                 </div>
-                {isOwner && project.bids.length >= 2 && (
+                {isOwner && project.bids.length >= 2 && ["PUBLISHED", "BIDDING"].includes(project.status) && (
                   <div style={{ marginTop: "1rem", textAlign: "center" }}>
                     <Link href={`/dashboard/bids/compare?projectId=${project.id}`} className="btn-secondary" style={{ fontSize: "0.8125rem", padding: "0.5rem 1.25rem" }}>
                       {isRtl ? "مقارنة العروض" : "Compare Bids"}
@@ -1294,21 +1363,14 @@ export default async function ProjectDetailPage({
               </div>
             )}
 
-            {/* Gap 5: Review Form (Owner, completed project) */}
-            {reviewUnsupportedForEngineer && (
-              <div className="card" style={{ padding: "1rem", marginTop: "1.5rem", marginBottom: "1.5rem", border: "1px solid var(--warning)", background: "var(--surface-2)" }}>
-                <div style={{ fontSize: "0.8125rem", color: "var(--text-secondary)" }}>
-                  {isRtl
-                    ? "تم إغلاق المشروع مع مهندس. التقييم للمهندس غير متاح حالياً في هذا الإصدار."
-                    : "This project was completed with an engineer. Engineer rating is not available in the current review model."}
-                </div>
-              </div>
-            )}
+            {/* Gap 5: Review Form (Owner ↔ Awarded Party, completed project) */}
             {canReview && (
               <div className="card" style={{ padding: "1.5rem", marginTop: "1.5rem", marginBottom: "1.5rem", border: "2px solid var(--accent)" }}>
                 <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                   <Star style={{ width: "18px", height: "18px", color: "var(--accent)" }} />
-                  {isRtl ? "قيّم المقاول" : "Rate the Contractor"}
+                  {isRtl
+                    ? `قيّم ${reviewTargetRoleLabel || "الطرف الآخر"}${reviewTargetName ? `: ${reviewTargetName}` : ""}`
+                    : `Rate ${reviewTargetRoleLabel || "the other party"}${reviewTargetName ? `: ${reviewTargetName}` : ""}`}
                 </h3>
                 <form action={submitReviewAction}>
                   <input type="hidden" name="projectId" value={project.id} />
@@ -1334,6 +1396,13 @@ export default async function ProjectDetailPage({
                     <Star style={{ width: "16px", height: "16px" }} /> {isRtl ? "إرسال التقييم" : "Submit Review"}
                   </button>
                 </form>
+              </div>
+            )}
+            {hasReviewed && (
+              <div className="card" style={{ padding: "1rem", marginTop: "1rem", marginBottom: "1.5rem", border: "1px solid var(--success)", background: "var(--success-light)" }}>
+                <div style={{ fontSize: "0.8125rem", color: "var(--success)" }}>
+                  {isRtl ? "تم إرسال تقييمك مسبقاً لهذا المشروع." : "Your rating for this project was already submitted."}
+                </div>
               </div>
             )}
           </div>

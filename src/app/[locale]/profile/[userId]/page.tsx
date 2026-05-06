@@ -35,6 +35,8 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
 
   let profileUser: any = null;
   let userBadges: any[] = [];
+  let ownerRatingAverage = 0;
+  let ownerRatingCount = 0;
   try {
     profileUser = await db.user.findUnique({
       where: { id: userId },
@@ -47,6 +49,16 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
 
     if (profileUser) {
       userBadges = await getUserBadges(userId);
+      if (profileUser.role === "OWNER") {
+        const ownerReviews = await db.review.findMany({
+          where: { subjectUserId: userId },
+          select: { rating: true },
+        });
+        ownerRatingCount = ownerReviews.length;
+        ownerRatingAverage = ownerRatingCount > 0
+          ? ownerReviews.reduce((sum: number, review: { rating: number }) => sum + review.rating, 0) / ownerRatingCount
+          : 0;
+      }
     }
   } catch (error) {
     console.error('[PublicProfilePage] DB query failed:', error);
@@ -62,8 +74,8 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
   const bio = (profile as any)?.description || (profile as any)?.bio || "";
   const projectPreferences = (profile as any)?.projectPreferences || "";
   const years = (profile as any)?.yearsInBusiness || (profile as any)?.yearsExperience || 0;
-  const rating = (profile as any)?.ratingAverage || 0;
-  const reviews = (profile as any)?.reviewCount || 0;
+  const rating = role === "OWNER" ? ownerRatingAverage : ((profile as any)?.ratingAverage || 0);
+  const reviews = role === "OWNER" ? ownerRatingCount : ((profile as any)?.reviewCount || 0);
   const verified = (profile as any)?.verificationStatus === "VERIFIED";
   const spec = (profile as any)?.specialization || "";
   const teamSize = (profile as any)?.teamSize || 0;

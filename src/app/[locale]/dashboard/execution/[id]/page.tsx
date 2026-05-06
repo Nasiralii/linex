@@ -8,7 +8,7 @@ import { FileList } from "@/components/execution/file-list";
 import { WorkspaceChat } from "@/components/execution/workspace-chat";
 import { parseProjectMeta } from "@/lib/project-meta";
 // import { MilestoneTracker } from "@/components/execution/milestone-tracker";
-import { markCompleteAction, submitProgressUpdate } from "./actions";
+import { markCompleteAction, submitExecutionReviewAction, submitProgressUpdate } from "./actions";
 
 function dedupeWorkspaceMessages(messages: any[]) {
   const deduped: any[] = [];
@@ -83,6 +83,7 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
             comment: true,
             createdAt: true,
             author: { select: { fullName: true } },
+            authorUser: { select: { email: true } },
           },
         },
         bids: {
@@ -152,6 +153,15 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
   }
   const awardedPartyName = project.award.bid?.contractor?.companyName || project.award.bid?.engineer?.fullName || "";
   const awardedPartyUserId = project.award.bid?.contractor?.userId || project.award.bid?.engineer?.userId || null;
+  const canSeeAllBids = isOwner || user.role === "ADMIN";
+  const visibleBids = canSeeAllBids
+    ? project.bids
+    : project.bids.filter(
+        (bid: any) =>
+          (bid.contractor?.userId && bid.contractor.userId === awardedPartyUserId) ||
+          (bid.engineer?.userId && bid.engineer.userId === awardedPartyUserId) ||
+          bid.status === "AWARDED"
+      );
   const projectMeta = parseProjectMeta(project.scopeSummary);
   const displayCategory = project.category?.name
     ? (isRtl ? (project.category.nameAr || project.category.name) : project.category.name)
@@ -196,6 +206,29 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
     REJECTED: { bg: "#fee2e2", color: "#b91c1c" },
     WITHDRAWN: { bg: "#f3f4f6", color: "#6b7280" },
   };
+  let hasReviewed = false;
+  let canReview = false;
+  let reviewTargetName = "";
+  let reviewTargetRoleLabel = "";
+  if (["COMPLETED", "AWARDED"].includes(project.status) && project.award) {
+    const isAwardedParty = isAwardedContractor || isAwardedEngineer;
+    const reviewTargetUserId = isOwner ? awardedPartyUserId : isAwardedParty ? project.owner?.userId : null;
+    if (reviewTargetUserId) {
+      const existingReview = await db.review.findFirst({
+        where: { projectId: id, authorUserId: user.id },
+        select: { id: true },
+      });
+      hasReviewed = !!existingReview;
+      canReview = !hasReviewed;
+      if (isOwner) {
+        reviewTargetName = awardedPartyName;
+        reviewTargetRoleLabel = project.award.bid?.contractor?.userId ? (isRtl ? "المقاول" : "Contractor") : (isRtl ? "المهندس" : "Engineer");
+      } else {
+        reviewTargetName = project.owner?.fullName || "";
+        reviewTargetRoleLabel = isRtl ? "المالك" : "Owner";
+      }
+    }
+  }
 
   return (
     <div style={{ background: "var(--bg)", minHeight: "calc(100vh - 64px)" }}>
@@ -343,6 +376,32 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
                 ? project.requiredTrades.map((t: any) => (isRtl ? (t.tradeNameAr || t.tradeName) : t.tradeName)).join(", ")
                 : "—"}
             </div>
+
+            <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>{isRtl ? "جهات الاتصال" : "Contact Persons"}</div>
+            <div style={{ fontSize: "0.84rem", color: "var(--text)" }}>
+              {projectMeta.contacts?.length > 0 ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
+                  {projectMeta.contacts.map((contact: any, idx: number) => (
+                    <div key={`${contact.name || "contact"}-${idx}`} style={{ padding: "0.5rem 0.65rem", border: "1px solid rgba(15,23,42,0.08)", borderRadius: "10px", background: "#f8fafc" }}>
+                      <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--text)" }}>
+                        {contact.name || (isRtl ? `جهة اتصال ${idx + 1}` : `Contact ${idx + 1}`)}
+                      </div>
+                      <div style={{ marginTop: "0.2rem", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+                        <span dir="ltr">{contact.phone || "—"}</span>
+                        {contact.email ? (
+                          <>
+                            {" • "}
+                            <span dir="ltr">{contact.email}</span>
+                          </>
+                        ) : null}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                "—"
+              )}
+            </div>
           </div>
         </div>
         {project.reviews?.length > 0 && (
@@ -353,7 +412,7 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
                 <div key={review.id} style={{ padding: "0.8rem", borderRadius: "12px", border: "1px solid rgba(15,23,42,0.06)", background: "#f8fafc" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
                     <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--text)" }}>
-                      {review.author?.fullName || (isRtl ? "مستخدم" : "User")}
+                      {review.author?.fullName || review.authorUser?.email || (isRtl ? "مستخدم" : "User")}
                     </div>
                     <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
                       {"★".repeat(Math.max(1, Math.min(5, review.rating || 0)))} ({review.rating}/5) • {new Date(review.createdAt).toLocaleDateString()}
@@ -369,11 +428,11 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
             </div>
           </div>
         )}
-        {project.bids?.length > 0 && (
+        {visibleBids?.length > 0 && (
           <div style={{ ...cardBase, marginBottom: "1rem" }}>
-            <h3 style={sectionTitleStyle}>{isRtl ? `العروض المقدمة (${project.bids.length})` : `Submitted Bids (${project.bids.length})`}</h3>
+            <h3 style={sectionTitleStyle}>{isRtl ? `العروض المقدمة (${visibleBids.length})` : `Submitted Bids (${visibleBids.length})`}</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              {project.bids.map((bid: any) => {
+              {visibleBids.map((bid: any) => {
                 const bidder = bid.contractor || bid.engineer;
                 const bidderName = bid.contractor
                   ? (isRtl ? (bid.contractor.companyNameAr || bid.contractor.companyName) : bid.contractor.companyName)
@@ -417,6 +476,49 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
                 );
               })}
             </div>
+          </div>
+        )}
+        {(canReview || hasReviewed) && (
+          <div style={{ ...cardBase, marginBottom: "1rem", border: canReview ? "2px solid var(--accent)" : "1px solid var(--success)" }}>
+            {canReview ? (
+              <>
+                <h3 style={sectionTitleStyle}>
+                  {isRtl
+                    ? `قيّم ${reviewTargetRoleLabel || "الطرف الآخر"}${reviewTargetName ? `: ${reviewTargetName}` : ""}`
+                    : `Rate ${reviewTargetRoleLabel || "the other party"}${reviewTargetName ? `: ${reviewTargetName}` : ""}`}
+                </h3>
+                <form action={submitExecutionReviewAction}>
+                  <input type="hidden" name="projectId" value={id} />
+                  <div style={{ marginBottom: "1rem" }}>
+                    <label style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--text)", marginBottom: "0.35rem", display: "block" }}>
+                      {isRtl ? "التقييم" : "Rating"} *
+                    </label>
+                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                      {[1, 2, 3, 4, 5].map((v) => (
+                        <label key={v} style={{ cursor: "pointer" }}>
+                          <input type="radio" name="rating" value={v} required style={{ display: "none" }} />
+                          <Star style={{ width: "24px", height: "24px", color: "var(--accent)" }} />
+                          <span style={{ display: "block", textAlign: "center", fontSize: "0.7rem", color: "var(--text-muted)" }}>{v}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ marginBottom: "0.75rem" }}>
+                    <label style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--text)", marginBottom: "0.35rem", display: "block" }}>
+                      {isRtl ? "تعليق" : "Comment"}
+                    </label>
+                    <textarea name="comment" style={{ minHeight: "76px", resize: "vertical" }} placeholder={isRtl ? "شاركنا تجربتك..." : "Share your experience..."} />
+                  </div>
+                  <button type="submit" className="btn-primary" style={{ padding: "0.65rem 1.2rem", fontSize: "0.8125rem" }}>
+                    <Star style={{ width: "14px", height: "14px" }} /> {isRtl ? "إرسال التقييم" : "Submit Review"}
+                  </button>
+                </form>
+              </>
+            ) : (
+              <div style={{ fontSize: "0.8125rem", color: "var(--success)" }}>
+                {isRtl ? "تم إرسال تقييمك لهذا المشروع." : "Your rating for this project was submitted."}
+              </div>
+            )}
           </div>
         )}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: "1rem" }}>

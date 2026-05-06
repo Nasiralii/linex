@@ -153,3 +153,109 @@ export async function submitProgressUpdate(formData: FormData) {
   }
   revalidatePath(`/dashboard/execution/${projectId}`);
 }
+
+export async function submitExecutionReviewAction(formData: FormData) {
+  const user = await getCurrentUser();
+  if (!user || !["OWNER", "CONTRACTOR", "ENGINEER"].includes(user.role)) return;
+
+  const projectId = formData.get("projectId") as string;
+  const rating = parseInt(formData.get("rating") as string);
+  const comment = (formData.get("comment") as string) || "";
+
+  try {
+    const project = await db.project.findUnique({
+      where: { id: projectId },
+      select: {
+        status: true,
+        owner: { select: { userId: true, id: true } },
+        award: {
+          select: {
+            contractorId: true,
+            engineerId: true,
+            bid: {
+              select: {
+                contractor: { select: { userId: true } },
+                engineer: { select: { userId: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!project || !["COMPLETED", "AWARDED"].includes(project.status) || !project.award) return;
+
+    const awardedUserId = project.award.bid?.contractor?.userId || project.award.bid?.engineer?.userId || null;
+    const isOwnerReviewer = user.role === "OWNER" && project.owner?.userId === user.id;
+    const isAwardedReviewer = ["CONTRACTOR", "ENGINEER"].includes(user.role) && !!awardedUserId && user.id === awardedUserId;
+    if (!isOwnerReviewer && !isAwardedReviewer) return;
+
+    const subjectUserId = isOwnerReviewer ? awardedUserId : project.owner?.userId;
+    if (!subjectUserId) return;
+
+    const existing = await db.review.findFirst({
+      where: { projectId, authorUserId: user.id },
+      select: { id: true },
+    });
+    if (existing) return;
+
+    const ownerProfile = await db.ownerProfile.findUnique({ where: { userId: user.id }, select: { id: true } });
+    const safeRating = Math.min(5, Math.max(1, Number.isFinite(rating) ? rating : 0));
+    if (!safeRating) return;
+
+    await db.review.create({
+      data: {
+        projectId,
+        authorId: isOwnerReviewer ? ownerProfile?.id || null : null,
+        subjectId: isOwnerReviewer ? (project.award.contractorId || null) : null,
+        authorUserId: user.id,
+        subjectUserId,
+        rating: safeRating,
+        comment: comment.trim() || null,
+      },
+    });
+
+    if (project.award.contractorId && subjectUserId === awardedUserId) {
+      const reviews = await db.review.findMany({
+        where: {
+          OR: [{ subjectId: project.award.contractorId }, { subjectUserId }],
+        },
+        select: { rating: true },
+      });
+      const avg = reviews.reduce((sum, item) => sum + item.rating, 0) / Math.max(1, reviews.length);
+      await db.contractorProfile.update({
+        where: { id: project.award.contractorId },
+        data: { ratingAverage: avg, reviewCount: reviews.length },
+      });
+    }
+
+    if (project.award.engineerId && subjectUserId === awardedUserId) {
+      const reviews = await db.review.findMany({
+        where: { subjectUserId },
+        select: { rating: true },
+      });
+      const avg = reviews.reduce((sum, item) => sum + item.rating, 0) / Math.max(1, reviews.length);
+      await db.engineerProfile.update({
+        where: { id: project.award.engineerId },
+        data: { ratingAverage: avg, reviewCount: reviews.length },
+      });
+    }
+
+    await db.notification.create({
+      data: {
+        userId: subjectUserId,
+        type: "REVIEW_SUBMITTED",
+        title: "You received a new project rating",
+        titleAr: "تلقيت تقييماً جديداً على مشروعك",
+        message: `${isOwnerReviewer ? "The project owner" : "The awarded party"} submitted a ${safeRating}/5 rating.`,
+        messageAr: `${isOwnerReviewer ? "قام مالك المشروع" : "قام الطرف المنفذ"} بإرسال تقييم ${safeRating}/5.`,
+        link: `/dashboard/execution/${projectId}`,
+      },
+    });
+  } catch (error) {
+    console.error("[submitExecutionReviewAction] DB query failed:", error);
+  }
+
+  revalidatePath(`/dashboard/execution/${projectId}`);
+  revalidatePath(`/marketplace/${projectId}`);
+}

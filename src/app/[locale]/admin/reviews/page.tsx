@@ -47,6 +47,8 @@ export default async function AdminReviewsPage() {
       include: {
         author: { select: { fullName: true } },
         subject: { select: { companyName: true } },
+        authorUser: { select: { email: true } },
+        subjectUser: { select: { email: true } },
         project: { select: { title: true } },
       },
       take: 50,
@@ -85,7 +87,7 @@ export default async function AdminReviewsPage() {
                         ))}
                       </div>
                       <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                        {r.author?.fullName} → {r.subject?.companyName}
+                        {(r.author?.fullName || r.authorUser?.email || "User")} → {(r.subject?.companyName || r.subjectUser?.email || "User")}
                       </span>
                       {!r.isVisible && <span className="chip chip-error" style={{ fontSize: "0.6875rem" }}>{isRtl ? "مخفي" : "Hidden"}</span>}
                     </div>
