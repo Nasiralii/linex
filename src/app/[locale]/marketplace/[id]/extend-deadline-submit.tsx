@@ -3,22 +3,23 @@
 import { useFormStatus } from "react-dom";
 import { Loader2 } from "lucide-react";
 
-export function ExtendDeadlineSubmit({ isRtl }: { isRtl: boolean }) {
+export function ExtendDeadlineSubmit({ isRtl, disabled = false }: { isRtl: boolean; disabled?: boolean }) {
   const { pending } = useFormStatus();
+  const isDisabled = pending || disabled;
 
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={isDisabled}
       style={{
         padding: "0.375rem 0.75rem",
         fontSize: "0.75rem",
         borderRadius: "var(--radius-md)",
         border: "1px solid var(--primary)",
-        background: "var(--primary-light)",
-        color: "var(--primary)",
-        cursor: pending ? "not-allowed" : "pointer",
-        opacity: pending ? 0.8 : 1,
+        background: isDisabled ? "var(--surface-2)" : "var(--primary-light)",
+        color: isDisabled ? "var(--text-muted)" : "var(--primary)",
+        cursor: isDisabled ? "not-allowed" : "pointer",
+        opacity: isDisabled ? 0.75 : 1,
         fontFamily: "inherit",
         fontWeight: 600,
         whiteSpace: "nowrap",

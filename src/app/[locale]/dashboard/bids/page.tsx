@@ -18,6 +18,7 @@ export default async function MyBidsPage({
   const isRtl = locale === "ar";
   const params = await searchParams;
   const statusFilter = params.status || "ALL";
+  const normalizedStatusFilter = statusFilter === "COMPLETED" ? "AWARDED" : statusFilter;
 
   let profileId: string | null = null;
   let bids: any[] = [];
@@ -33,7 +34,7 @@ export default async function MyBidsPage({
 
     if (profileId) {
       const bidWhere: any = user.role === "CONTRACTOR" ? { contractorId: profileId } : { engineerId: profileId };
-      if (statusFilter !== "ALL") bidWhere.status = statusFilter;
+      if (normalizedStatusFilter !== "ALL") bidWhere.status = normalizedStatusFilter;
       bids = await db.bid.findMany({
         where: bidWhere,
         orderBy: { createdAt: "desc" },
@@ -68,12 +69,12 @@ export default async function MyBidsPage({
   const statusLabels: Record<string, { en: string; ar: string }> = {
     SUBMITTED: { en: "Submitted", ar: "مُقدم" },
     SHORTLISTED: { en: "Shortlisted", ar: "قائمة مختصرة" },
-    AWARDED: { en: "Awarded!", ar: "فائز!" },
+    AWARDED: { en: "Completed", ar: "مكتمل" },
     REJECTED: { en: "Rejected", ar: "مرفوض" },
     WITHDRAWN: { en: "Withdrawn", ar: "مسحوب" },
     DRAFT: { en: "Draft", ar: "مسودة" },
   };
-  const filteredBids = statusFilter === "ALL" ? bids : bids.filter((b: any) => b.status === statusFilter);
+  const filteredBids = normalizedStatusFilter === "ALL" ? bids : bids.filter((b: any) => b.status === normalizedStatusFilter);
 
   // G21: Count total bids per project for anonymous ranking
   const projectBidCounts: Record<string, number> = {};
@@ -99,8 +100,8 @@ export default async function MyBidsPage({
             {isRtl ? "عروضي" : "My Bids"}
           </h1>
           <p style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)" }}>
-            {statusFilter === "AWARDED"
-              ? (isRtl ? `${filteredBids.length} عرض فائز` : `${filteredBids.length} won bids`)
+            {normalizedStatusFilter === "AWARDED"
+              ? (isRtl ? `${filteredBids.length} عرض مكتمل` : `${filteredBids.length} completed bids`)
               : (isRtl ? `${filteredBids.length} عرض مقدم` : `${filteredBids.length} bids submitted`)}
           </p>
         </div>
@@ -113,7 +114,7 @@ export default async function MyBidsPage({
             { key: "ALL", label: isRtl ? "الكل" : "All", count: bids.length, color: "var(--text)" },
             { key: "SUBMITTED", label: isRtl ? "مُقدمة" : "Submitted", count: bids.filter(b => b.status === "SUBMITTED").length, color: "var(--info)" },
             { key: "SHORTLISTED", label: isRtl ? "قائمة مختصرة" : "Shortlisted", count: bids.filter(b => b.status === "SHORTLISTED").length, color: "var(--accent)" },
-            { key: "AWARDED", label: isRtl ? "فائزة" : "Won", count: bids.filter(b => b.status === "AWARDED").length, color: "var(--primary)" },
+            { key: "COMPLETED", label: isRtl ? "مكتملة" : "Completed", count: bids.filter(b => b.status === "AWARDED").length, color: "var(--primary)" },
             { key: "REJECTED", label: isRtl ? "مرفوضة" : "Rejected", count: bids.filter(b => b.status === "REJECTED").length, color: "var(--error)" },
           ].map((s, i) => (
             <Link
@@ -124,8 +125,8 @@ export default async function MyBidsPage({
                 padding: "1rem",
                 textAlign: "center",
                 textDecoration: "none",
-                border: statusFilter === s.key ? `1px solid ${s.color}` : "1px solid var(--border-light)",
-                background: statusFilter === s.key ? "var(--surface-2)" : "var(--surface)",
+                border: (statusFilter === s.key || (s.key === "COMPLETED" && normalizedStatusFilter === "AWARDED")) ? `1px solid ${s.color}` : "1px solid var(--border-light)",
+                background: (statusFilter === s.key || (s.key === "COMPLETED" && normalizedStatusFilter === "AWARDED")) ? "var(--surface-2)" : "var(--surface)",
               }}
             >
               <div style={{ fontSize: "1.5rem", fontWeight: 800, color: s.color }}>{s.count}</div>
@@ -186,11 +187,13 @@ export default async function MyBidsPage({
                       {rankingMap[bid.id]?.confidence && <span>• {isRtl ? `الثقة: ${rankingMap[bid.id].confidence}` : `Confidence: ${rankingMap[bid.id].confidence}`}</span>}
                       {rankingMap[bid.id]?.usedFallbacks?.length > 0 && <span>• {isRtl ? `بدائل التقييم: ${rankingMap[bid.id].usedFallbacks.length}` : `Ranking fallbacks: ${rankingMap[bid.id].usedFallbacks.length}`}</span>}
                     </div>
-                    <div style={{ marginTop: "0.5rem" }}>
-                      <Link href={`/marketplace/${bid.projectId}`} style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", fontSize: "0.75rem", fontWeight: 700, color: "var(--primary)", textDecoration: "none" }}>
-                        {isRtl ? "عرض المشروع" : "View Project"}
-                      </Link>
-                    </div>
+                    {bid.status !== "AWARDED" && (
+                      <div style={{ marginTop: "0.5rem" }}>
+                        <Link href={`/marketplace/${bid.projectId}`} style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", fontSize: "0.75rem", fontWeight: 700, color: "var(--primary)", textDecoration: "none" }}>
+                          {isRtl ? "عرض المشروع" : "View Project"}
+                        </Link>
+                      </div>
+                    )}
                   </div>
                   <div style={{ textAlign: "end" }}>
                     <div style={{ fontSize: "1.125rem", fontWeight: 800, color: "var(--primary)", marginBottom: "0.25rem" }}>
@@ -203,7 +206,7 @@ export default async function MyBidsPage({
                         <div style={{ marginTop: "0.5rem" }}>
                           <Link href={`/dashboard/execution/${bid.projectId}`} style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", fontSize: "0.75rem", fontWeight: 700, color: "#B87333", textDecoration: "none" }}>
                             <Hammer style={{ width: "14px", height: "14px" }} />
-                            {isRtl ? "عرض المشروع المرسّى" : "Open Awarded Project"}
+                            {isRtl ? "عرض المشروع المكتمل" : "Open Completed Project"}
                           </Link>
                         </div>
                       )}

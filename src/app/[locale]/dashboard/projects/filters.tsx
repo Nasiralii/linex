@@ -7,7 +7,7 @@ const FILTERS = [
   { key: "DRAFT", ar: "المسودات", en: "Drafts" },
   { key: "PENDING_REVIEW", ar: "قيد المراجعة", en: "Under Review" },
   { key: "BIDDING", ar: "مفتوح للعروض", en: "Bidding" },
-  { key: "AWARDED", ar: "مُرسى", en: "Awarded" },
+  // { key: "AWARDED", ar: "مُرسى", en: "Awarded" }, // Disabled: award now maps to completed flow.
   { key: "IN_PROGRESS", ar: "قيد التنفيذ", en: "In Progress" },
   { key: "COMPLETED", ar: "مكتمل", en: "Completed" },
   { key: "EXPIRED", ar: "منتهية", en: "Expired" },

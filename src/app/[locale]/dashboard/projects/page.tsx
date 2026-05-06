@@ -28,6 +28,7 @@ export default async function MyProjectsPage({
   const isRtl = locale === "ar";
   const params = await searchParams;
   const filterStatus = params.status || "ALL";
+  const normalizedFilterStatus = filterStatus === "AWARDED" ? "COMPLETED" : filterStatus;
   const showSubmittedNotice = params.submitted === "1";
   const showDraftSavedNotice = params.saved === "draft";
   const onlyWithBids = params.hasBids === "1";
@@ -42,19 +43,22 @@ export default async function MyProjectsPage({
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
       const where: any = { ownerId: ownerProfile.id };
-      if (filterStatus === "EXPIRED") {
+      if (normalizedFilterStatus === "EXPIRED") {
         where.status = { in: ["PUBLISHED", "BIDDING"] };
         where.OR = [
           { deadline: { lt: todayStart } },
           { AND: [{ deadline: null }, { biddingWindowEnd: { lt: todayStart } }] },
         ];
-      } else if (filterStatus !== "ALL") {
-        where.status = filterStatus;
+      } else if (normalizedFilterStatus === "COMPLETED") {
+        // Backward-compatible: treat legacy AWARDED projects as completed.
+        where.status = { in: ["COMPLETED", "AWARDED"] };
+      } else if (normalizedFilterStatus !== "ALL") {
+        where.status = normalizedFilterStatus;
       }
       if (onlyWithBids) {
         where.bids = { some: {} };
-        if (filterStatus !== "EXPIRED") {
-          where.status = { not: "AWARDED" };
+        if (normalizedFilterStatus !== "EXPIRED") {
+          where.status = { notIn: ["AWARDED", "COMPLETED"] };
         }
       }
       totalProjects = await db.project.count({ where });
@@ -72,7 +76,7 @@ export default async function MyProjectsPage({
   const totalPages = Math.max(1, Math.ceil(totalProjects / PAGE_SIZE));
   const pageHref = (target: number) => {
     const qp = new URLSearchParams();
-    if (filterStatus !== "ALL") qp.set("status", filterStatus);
+    if (normalizedFilterStatus !== "ALL") qp.set("status", normalizedFilterStatus);
     if (onlyWithBids) qp.set("hasBids", "1");
     if (showSubmittedNotice) qp.set("submitted", "1");
     if (showDraftSavedNotice) qp.set("saved", "draft");
@@ -112,7 +116,7 @@ export default async function MyProjectsPage({
         )}
 
         {/* Filter Tabs */}
-        <ProjectFilters activeStatus={filterStatus} locale={locale} />
+        <ProjectFilters activeStatus={normalizedFilterStatus} locale={locale} />
 
         {/* Project List */}
         {projects.length === 0 ? (
@@ -124,7 +128,8 @@ export default async function MyProjectsPage({
             {projects.map((p) => {
               const title = isRtl ? (p.titleAr || p.title) : p.title;
               const type = TYPE_LABELS[p.projectType] || TYPE_LABELS.CONSTRUCTION_ONLY;
-              const showExec = p.status === "AWARDED" || p.status === "IN_PROGRESS";
+              const displayStatus = p.status === "AWARDED" ? "COMPLETED" : p.status;
+              const showExec = displayStatus === "IN_PROGRESS" || displayStatus === "COMPLETED";
               const meta = parseProjectMeta(p.scopeSummary);
               return (
                 <div key={p.id} className="card" style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
@@ -132,7 +137,7 @@ export default async function MyProjectsPage({
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <h3 style={{ fontSize: "1.0625rem", fontWeight: 700, color: "var(--text)", margin: 0, marginBottom: "0.375rem" }}>{title}</h3>
                       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center", fontSize: "0.8125rem", color: "var(--text-muted)" }}>
-                        <ProjectStatusChip status={p.status} locale={locale} />
+                        <ProjectStatusChip status={displayStatus} locale={locale} />
                         <span style={{ background: "var(--surface-2)", padding: "0.125rem 0.5rem", borderRadius: "var(--radius-full)" }}>
                           {isRtl ? type.ar : type.en}
                         </span>

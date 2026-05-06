@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { FolderOpen, CheckCircle, ArrowLeft, Users, Shield, Star } from "lucide-react";
 import { FileList } from "@/components/execution/file-list";
 import { WorkspaceChat } from "@/components/execution/workspace-chat";
+import { parseProjectMeta } from "@/lib/project-meta";
 // import { MilestoneTracker } from "@/components/execution/milestone-tracker";
 import { markCompleteAction, submitProgressUpdate } from "./actions";
 
@@ -70,7 +71,32 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
     project = await db.project.findUnique({
       where: { id },
       include: {
-        owner: { select: { userId: true, fullName: true } },
+        category: { select: { name: true, nameAr: true } },
+        location: { select: { name: true, nameAr: true } },
+        requiredTrades: { select: { tradeName: true, tradeNameAr: true } },
+        owner: { select: { userId: true, fullName: true, companyName: true } },
+        reviews: {
+          orderBy: { createdAt: "desc" },
+          select: {
+            id: true,
+            rating: true,
+            comment: true,
+            createdAt: true,
+            author: { select: { fullName: true } },
+          },
+        },
+        bids: {
+          orderBy: { submittedAt: "desc" },
+          select: {
+            id: true,
+            amount: true,
+            estimatedDuration: true,
+            proposalText: true,
+            status: true,
+            contractor: { select: { companyName: true, companyNameAr: true, userId: true } },
+            engineer: { select: { fullName: true, fullNameAr: true, userId: true } },
+          },
+        },
         award: {
           select: {
             contractorId: true,
@@ -126,6 +152,13 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
   }
   const awardedPartyName = project.award.bid?.contractor?.companyName || project.award.bid?.engineer?.fullName || "";
   const awardedPartyUserId = project.award.bid?.contractor?.userId || project.award.bid?.engineer?.userId || null;
+  const projectMeta = parseProjectMeta(project.scopeSummary);
+  const displayCategory = project.category?.name
+    ? (isRtl ? (project.category.nameAr || project.category.name) : project.category.name)
+    : (project.projectType?.replace(/_/g, " ") || "—");
+  const displayLocation = project.location?.name
+    ? (isRtl ? (project.location.nameAr || project.location.name) : project.location.name)
+    : [projectMeta.city, projectMeta.neighborhood, projectMeta.addressName].filter(Boolean).join(" • ") || "—";
 
   // Milestone tracking intentionally disabled for now.
   // const milestones = [
@@ -142,30 +175,51 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
     id: a.id, fileName: a.fileName, fileUrl: a.fileUrl, fileSize: a.fileSize,
     createdAt: a.createdAt.toISOString(), uploaderName: isOwner ? (isRtl ? "المالك" : "Owner") : awardedPartyName,
   }));
+  const cardBase: React.CSSProperties = {
+    padding: "1.25rem",
+    borderRadius: "16px",
+    border: "1px solid rgba(15, 23, 42, 0.08)",
+    background: "linear-gradient(180deg, #ffffff, #fbfdff)",
+    boxShadow: "0 8px 24px rgba(15, 23, 42, 0.06)",
+  };
+  const sectionTitleStyle: React.CSSProperties = {
+    fontSize: "1.02rem",
+    fontWeight: 800,
+    color: "var(--text)",
+    marginBottom: "0.85rem",
+    letterSpacing: "-0.01em",
+  };
+  const bidStatusTone: Record<string, { bg: string; color: string }> = {
+    AWARDED: { bg: "#dcfce7", color: "#166534" },
+    SHORTLISTED: { bg: "#dbeafe", color: "#1d4ed8" },
+    SUBMITTED: { bg: "#f3f4f6", color: "#374151" },
+    REJECTED: { bg: "#fee2e2", color: "#b91c1c" },
+    WITHDRAWN: { bg: "#f3f4f6", color: "#6b7280" },
+  };
 
   return (
     <div style={{ background: "var(--bg)", minHeight: "calc(100vh - 64px)" }}>
-      <div style={{ background: "linear-gradient(135deg, #1C5963, #2A7B88)", padding: "2rem 0" }}>
+      <div style={{ background: "linear-gradient(120deg, #123d45 0%, #1f6a77 50%, #2A7B88 100%)", padding: "2.25rem 0 2rem 0" }}>
         <div className="container-app">
           <Link href="/dashboard" style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.8125rem", textDecoration: "none", display: "flex", alignItems: "center", gap: "0.25rem" }}>
             <ArrowLeft style={{ width: "14px", height: "14px" }} /> {isRtl ? "العودة للوحة التحكم" : "Back to Dashboard"}
           </Link>
-          <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "white", marginTop: "0.5rem" }}>{isRtl ? "منطقة التنفيذ" : "Execution Workspace"}</h1>
-          <p style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)" }}>{isRtl ? (project.titleAr || project.title) : project.title}</p>
+          <h1 style={{ fontSize: "1.65rem", fontWeight: 900, color: "white", marginTop: "0.5rem", letterSpacing: "-0.01em" }}>{isRtl ? "منطقة التنفيذ" : "Execution Workspace"}</h1>
+          <p style={{ fontSize: "0.92rem", color: "rgba(255,255,255,0.78)", maxWidth: "900px" }}>{isRtl ? (project.titleAr || project.title) : project.title}</p>
         </div>
       </div>
       <div className="container-app" style={{ padding: "2rem 1.5rem" }}>
         {/* Stats */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem", marginBottom: "2rem" }}>
-          <div className="card" style={{ padding: "1.25rem", textAlign: "center" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "0.85rem", marginBottom: "1.25rem" }}>
+          <div style={{ ...cardBase, textAlign: "center" }}>
             <div style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--primary)" }}>{project.award.awardedAmount?.toLocaleString()}</div>
             <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{isRtl ? "قيمة العقد (ر.س)" : "Contract Value (SAR)"}</div>
           </div>
-          <div className="card" style={{ padding: "1.25rem", textAlign: "center" }}>
+          <div style={{ ...cardBase, textAlign: "center" }}>
             <div style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--accent)" }}>{project.status.replace(/_/g, " ")}</div>
             <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{isRtl ? "حالة المشروع" : "Project Status"}</div>
           </div>
-          <div className="card" style={{ padding: "1.25rem", textAlign: "center" }}>
+          <div style={{ ...cardBase, textAlign: "center" }}>
             <div style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--info)" }}><Users style={{ width: "24px", height: "24px", display: "inline" }} /></div>
             <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
               {isOwner ? (
@@ -191,7 +245,7 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
             </div>
           </div>
         </div>
-        <div className="card" style={{ padding: "1.25rem", marginBottom: "1.5rem", border: "1px solid rgba(37,99,235,0.2)", background: "#eff6ff" }}>
+        <div style={{ ...cardBase, marginBottom: "1rem", border: "1px solid rgba(37,99,235,0.18)", background: "linear-gradient(180deg, #eff6ff, #f6f9ff)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", alignItems: "flex-start", flexWrap: "wrap" }}>
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.35rem" }}>
@@ -228,9 +282,146 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
             )}
           </div>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+        <div style={{ ...cardBase, marginBottom: "1rem" }}>
+          <h3 style={sectionTitleStyle}>{isRtl ? "ملخص سريع" : "Quick Snapshot"}</h3>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "0.6rem" }}>
+            {[
+              { k: isRtl ? "الحالة" : "Status", v: project.status.replace(/_/g, " ") },
+              { k: isRtl ? "النوع" : "Type", v: project.projectType?.replace(/_/g, " ") || "—" },
+              { k: isRtl ? "تاريخ النشر" : "Published", v: project.publishedAt ? new Date(project.publishedAt).toLocaleDateString() : "—" },
+              ...((isOwner || user.role === "ADMIN")
+                ? [{ k: isRtl ? "الميزانية" : "Budget", v: `${project.budgetMin?.toLocaleString() || "—"} - ${project.budgetMax?.toLocaleString() || "—"} ${project.currency || "SAR"}` }]
+                : []),
+            ].map((item, idx) => (
+              <div key={idx} style={{ borderRadius: "12px", background: "var(--surface-2)", padding: "0.65rem 0.75rem" }}>
+                <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginBottom: "0.2rem" }}>{item.k}</div>
+                <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--text)" }}>{item.v}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{ ...cardBase, marginBottom: "1rem" }}>
+          <h3 style={sectionTitleStyle}>{isRtl ? "تفاصيل المشروع" : "Project Details"}</h3>
+          <div style={{ display: "grid", gridTemplateColumns: "minmax(140px, 220px) 1fr", gap: "0.75rem 1rem", alignItems: "start" }}>
+            <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>{isRtl ? "المواصفات" : "Specifications"}</div>
+            <div style={{ fontSize: "0.84rem", color: "var(--text)", lineHeight: 1.7 }}>
+              {isRtl
+                ? (project.scopeSummaryAr || projectMeta.specifications || "—")
+                : (projectMeta.specifications || "—")}
+            </div>
+
+            <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>{isRtl ? "تاريخ البدء" : "Start Date"}</div>
+            <div style={{ fontSize: "0.84rem", color: "var(--text)" }}>
+              {project.requiredStartDate ? new Date(project.requiredStartDate).toLocaleDateString(isRtl ? "ar-SA" : "en-SA") : "—"}
+            </div>
+
+            <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>{isRtl ? "تاريخ الانتهاء" : "End Date"}</div>
+            <div style={{ fontSize: "0.84rem", color: "var(--text)" }}>
+              {project.deadline ? new Date(project.deadline).toLocaleDateString(isRtl ? "ar-SA" : "en-SA") : "—"}
+            </div>
+
+            <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>{isRtl ? "ملف المالك" : "Owner Profile"}</div>
+            <div style={{ fontSize: "0.84rem", color: "var(--text)" }}>
+              <Link href={`/profile/${project.owner.userId}`} style={{ color: "var(--primary)", textDecoration: "none", fontWeight: 700 }}>
+                {project.owner.fullName || project.owner.companyName || (isRtl ? "المالك" : "Owner")}
+              </Link>
+            </div>
+
+            <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>{isRtl ? "التصنيف" : "Category"}</div>
+            <div style={{ fontSize: "0.84rem", color: "var(--text)" }}>
+              {displayCategory}
+            </div>
+
+            <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>{isRtl ? "الموقع" : "Location"}</div>
+            <div style={{ fontSize: "0.84rem", color: "var(--text)" }}>
+              {displayLocation}
+            </div>
+
+            <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>{isRtl ? "التخصصات" : "Trades"}</div>
+            <div style={{ fontSize: "0.84rem", color: "var(--text)" }}>
+              {project.requiredTrades?.length > 0
+                ? project.requiredTrades.map((t: any) => (isRtl ? (t.tradeNameAr || t.tradeName) : t.tradeName)).join(", ")
+                : "—"}
+            </div>
+          </div>
+        </div>
+        {project.reviews?.length > 0 && (
+          <div style={{ ...cardBase, marginBottom: "1rem" }}>
+            <h3 style={sectionTitleStyle}>{isRtl ? "التقييمات" : "Reviews"}</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              {project.reviews.map((review: any) => (
+                <div key={review.id} style={{ padding: "0.8rem", borderRadius: "12px", border: "1px solid rgba(15,23,42,0.06)", background: "#f8fafc" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
+                    <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--text)" }}>
+                      {review.author?.fullName || (isRtl ? "مستخدم" : "User")}
+                    </div>
+                    <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+                      {"★".repeat(Math.max(1, Math.min(5, review.rating || 0)))} ({review.rating}/5) • {new Date(review.createdAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                  {review.comment && (
+                    <div style={{ marginTop: "0.35rem", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+                      {review.comment}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {project.bids?.length > 0 && (
+          <div style={{ ...cardBase, marginBottom: "1rem" }}>
+            <h3 style={sectionTitleStyle}>{isRtl ? `العروض المقدمة (${project.bids.length})` : `Submitted Bids (${project.bids.length})`}</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              {project.bids.map((bid: any) => {
+                const bidder = bid.contractor || bid.engineer;
+                const bidderName = bid.contractor
+                  ? (isRtl ? (bid.contractor.companyNameAr || bid.contractor.companyName) : bid.contractor.companyName)
+                  : (isRtl ? (bid.engineer?.fullNameAr || bid.engineer?.fullName) : bid.engineer?.fullName);
+                return (
+                  <div key={bid.id} style={{ padding: "0.85rem", borderRadius: "12px", border: "1px solid rgba(15,23,42,0.07)", background: "linear-gradient(180deg, #ffffff, #f8fafc)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
+                      <div style={{ fontSize: "0.8125rem", color: "var(--text)" }}>
+                        {bidder?.userId ? (
+                          <Link href={`/profile/${bidder.userId}`} style={{ color: "var(--primary)", textDecoration: "none", fontWeight: 700 }}>
+                            {bidderName || (isRtl ? "غير متوفر" : "N/A")}
+                          </Link>
+                        ) : (
+                          <span style={{ fontWeight: 700 }}>{bidderName || (isRtl ? "غير متوفر" : "N/A")}</span>
+                        )}
+                        <span
+                          style={{
+                            marginInlineStart: "0.5rem",
+                            padding: "0.12rem 0.45rem",
+                            borderRadius: "999px",
+                            fontSize: "0.67rem",
+                            fontWeight: 700,
+                            background: (bidStatusTone[bid.status] || { bg: "#f3f4f6" }).bg,
+                            color: (bidStatusTone[bid.status] || { color: "#374151" }).color,
+                          }}
+                        >
+                          {bid.status}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: "0.8125rem", fontWeight: 800, color: "var(--primary)" }}>
+                        {bid.amount?.toLocaleString()} SAR
+                        {bid.estimatedDuration ? ` • ${bid.estimatedDuration} ${isRtl ? "يوم" : "days"}` : ""}
+                      </div>
+                    </div>
+                    {bid.proposalText && (
+                      <div style={{ marginTop: "0.35rem", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+                        {bid.proposalText}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: "1rem" }}>
           {/* <MilestoneTracker milestones={milestones} isRtl={isRtl} /> */}
-          <div className="card" style={{ padding: "1.5rem" }}>
+          <div style={{ ...cardBase, padding: "1.35rem" }}>
             <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <FolderOpen style={{ width: "18px", height: "18px", color: "var(--primary)" }} /> {isRtl ? "ملفات المشروع" : "Project Files"}
             </h3>
@@ -248,7 +439,7 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
                 <button type="submit" className="btn-secondary" style={{ padding: "0.5rem 1rem", fontSize: "0.8125rem" }}>{isRtl ? "إرسال" : "Send"}</button>
               </form>
             </div> */}
-            <div className="card" style={{ padding: "1.25rem", display: "flex", alignItems: "center" }}>
+            <div style={{ ...cardBase, display: "flex", alignItems: "center" }}>
               <form action={markCompleteAction}>
                 <input type="hidden" name="projectId" value={id} />
                 <button type="submit" className="btn-primary" style={{ padding: "0.75rem 1.5rem", fontSize: "0.875rem" }}>
@@ -259,7 +450,7 @@ export default async function ExecutionWorkspacePage({ params }: { params: Promi
           </div>
         )}
         {project.status === "COMPLETED" && (
-          <div className="card" style={{ padding: "1.5rem", marginTop: "1.5rem", border: "2px solid var(--primary)", textAlign: "center" }}>
+          <div style={{ ...cardBase, padding: "1.5rem", marginTop: "1rem", border: "1px solid rgba(42,123,136,0.35)", background: "linear-gradient(180deg, #ecfeff, #f7fffe)", textAlign: "center" }}>
             <CheckCircle style={{ width: "32px", height: "32px", color: "var(--primary)", margin: "0 auto 0.5rem" }} />
             <h3 style={{ fontSize: "1.125rem", fontWeight: 700, color: "var(--primary)" }}>{isRtl ? "تم إتمام المشروع بنجاح! 🎉" : "Project Completed! 🎉"}</h3>
             {project.completedAt && <p style={{ fontSize: "0.8125rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>{new Date(project.completedAt).toLocaleDateString()}</p>}

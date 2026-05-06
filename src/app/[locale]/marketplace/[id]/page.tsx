@@ -14,6 +14,7 @@ import { Wallet } from "lucide-react";
 import { parseProjectMeta } from "@/lib/project-meta";
 import { rankBidWithPolicy, extractStoredBidRankingSnapshot, isStoredBidRankingSnapshotFresh } from "@/lib/bid-ranking-policy";
 import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
+import { BidSubmitButton, BidSubmitSuccessAlert } from "@/components/bid-submit-feedback";
 import { ExtendDeadlineSubmit } from "./extend-deadline-submit";
 import { QAPanel } from "./qa-panel";
 
@@ -64,6 +65,7 @@ async function submitBidAction(formData: FormData) {
   if (!user || (user.role !== "CONTRACTOR" && user.role !== "ENGINEER")) return;
 
   const projectId = formData.get("projectId") as string;
+  let submitSucceeded = false;
   try {
     let profileId: string | null = null;
     let bidderField: "contractorId" | "engineerId" = "contractorId";
@@ -148,11 +150,16 @@ async function submitBidAction(formData: FormData) {
 
       await refreshProjectBidRankings(projectId);
     }
+
+    submitSucceeded = true;
   } catch (error) {
     console.error('[submitBidAction] DB query failed:', error);
   }
 
   revalidatePath(`/marketplace/${projectId}`);
+  if (submitSucceeded) {
+    nextRedirect(`/marketplace/${projectId}?bidSubmitted=1`);
+  }
 }
 
 // Gap 2: Krasat purchase action (100 SAR)
@@ -204,7 +211,12 @@ async function submitReviewAction(formData: FormData) {
     const ownerProfile = await db.ownerProfile.findUnique({ where: { userId: user.id } });
     if (!ownerProfile) return;
 
-    const award = await db.award.findUnique({ where: { projectId }, select: { contractorId: true } });
+    const project = await db.project.findUnique({ where: { id: projectId }, select: { status: true } });
+    if (!project || !["COMPLETED", "AWARDED"].includes(project.status)) return;
+
+    const award = await db.award.findUnique({ where: { projectId }, select: { contractorId: true, engineerId: true } });
+    // Current review model supports contractor subjects only.
+    if (award?.engineerId && !award.contractorId) return;
     if (!award?.contractorId) return;
 
     const existing = await db.review.findUnique({ where: { projectId_authorId: { projectId, authorId: ownerProfile.id } } });
@@ -224,6 +236,25 @@ async function submitReviewAction(formData: FormData) {
       where: { id: award.contractorId },
       data: { ratingAverage: avg, reviewCount: reviews.length },
     });
+
+    // Notify rated contractor about the new review.
+    const ratedContractor = await db.contractorProfile.findUnique({
+      where: { id: award.contractorId },
+      select: { userId: true },
+    });
+    if (ratedContractor?.userId) {
+      await db.notification.create({
+        data: {
+          userId: ratedContractor.userId,
+          type: "REVIEW_SUBMITTED",
+          title: "You received a new project rating",
+          titleAr: "تلقيت تقييماً جديداً على مشروعك",
+          message: `The project owner submitted a ${Math.min(5, Math.max(1, rating))}/5 rating for your completed project.`,
+          messageAr: `قام مالك المشروع بإرسال تقييم ${Math.min(5, Math.max(1, rating))}/5 لمشروعك المكتمل.`,
+          link: `/marketplace/${projectId}`,
+        },
+      });
+    }
 
     // Gap 5: Re-evaluate contractor badges after new review
     const contractor = await db.contractorProfile.findUnique({ where: { id: award.contractorId }, select: { userId: true } });
@@ -454,7 +485,7 @@ export default async function ProjectDetailPage({
   searchParams,
 }: {
   params: Promise<{ id: string; locale: string }>;
-  searchParams: Promise<{ chatWith?: string }>;
+  searchParams: Promise<{ chatWith?: string; bidSubmitted?: string }>;
 }) {
   const { id } = await params;
   const query = await searchParams;
@@ -473,6 +504,7 @@ export default async function ProjectDetailPage({
   let messages: any[] = [];
   let hasReviewed = false;
   let canReview = false;
+  let reviewUnsupportedForEngineer = false;
   let bidBlockReason: "APPROVAL" | "SPECIALTY" | "CLOSED" | null = null;
   const bidderBadgesMap: Record<string, string[]> = {};
   const bidRankingMap: Record<string, any> = {};
@@ -648,14 +680,15 @@ export default async function ProjectDetailPage({
     });
 
     // Gap 5: Check if review already submitted
-    if (isOwner && project.status === "COMPLETED" && project.award) {
+    if (isOwner && ["COMPLETED", "AWARDED"].includes(project.status) && project.award) {
       const ownerProfile = await db.ownerProfile.findUnique({ where: { userId: user.id } });
       if (ownerProfile) {
         const existingReview = await db.review.findUnique({
           where: { projectId_authorId: { projectId: id, authorId: ownerProfile.id } },
         });
         hasReviewed = !!existingReview;
-        canReview = !hasReviewed;
+        canReview = !hasReviewed && !!project.award.contractorId;
+        reviewUnsupportedForEngineer = !hasReviewed && !!project.award.engineerId && !project.award.contractorId;
       }
     }
 
@@ -740,7 +773,7 @@ export default async function ProjectDetailPage({
       walletBalance = await getWalletBalance(user.id);
     }
 
-    if (isOwner && project.status === "AWARDED") {
+    if (isOwner && ["AWARDED", "COMPLETED"].includes(project.status)) {
       const [existingSupervisionRequest, existingContract] = await Promise.all([
         db.supervisionRequest.findFirst({
           where: { projectId: id, requestedBy: user.id },
@@ -1104,40 +1137,6 @@ export default async function ProjectDetailPage({
               </div>
             )}
 
-            {/* Gap 5: Review Form (Owner, completed project) */}
-            {canReview && (
-              <div className="card" style={{ padding: "1.5rem", marginBottom: "1.5rem", border: "2px solid var(--accent)" }}>
-                <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <Star style={{ width: "18px", height: "18px", color: "var(--accent)" }} />
-                  {isRtl ? "قيّم المقاول" : "Rate the Contractor"}
-                </h3>
-                <form action={submitReviewAction}>
-                  <input type="hidden" name="projectId" value={project.id} />
-                  <div style={{ marginBottom: "1rem" }}>
-                    <label style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--text)", marginBottom: "0.5rem", display: "block" }}>
-                      {isRtl ? "التقييم" : "Rating"} *
-                    </label>
-                    <div style={{ display: "flex", gap: "0.5rem" }}>
-                      {[1,2,3,4,5].map(v => (
-                        <label key={v} style={{ cursor: "pointer" }}>
-                          <input type="radio" name="rating" value={v} required style={{ display: "none" }} />
-                          <Star style={{ width: "28px", height: "28px", color: "var(--accent)" }} />
-                          <span style={{ display: "block", textAlign: "center", fontSize: "0.75rem", color: "var(--text-muted)" }}>{v}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                  <div style={{ marginBottom: "1rem" }}>
-                    <label>{isRtl ? "تعليق" : "Comment"}</label>
-                    <textarea name="comment" style={{ minHeight: "80px", resize: "vertical" }} placeholder={isRtl ? "شاركنا تجربتك..." : "Share your experience..."} />
-                  </div>
-                  <button type="submit" className="btn-primary" style={{ padding: "0.75rem 1.5rem", fontSize: "0.875rem" }}>
-                    <Star style={{ width: "16px", height: "16px" }} /> {isRtl ? "إرسال التقييم" : "Submit Review"}
-                  </button>
-                </form>
-              </div>
-            )}
-
             {/* ============================================ */}
             {/* Gap 4: Q&A Messaging UI */}
             {/* ============================================ */}
@@ -1294,6 +1293,49 @@ export default async function ProjectDetailPage({
                 )}
               </div>
             )}
+
+            {/* Gap 5: Review Form (Owner, completed project) */}
+            {reviewUnsupportedForEngineer && (
+              <div className="card" style={{ padding: "1rem", marginTop: "1.5rem", marginBottom: "1.5rem", border: "1px solid var(--warning)", background: "var(--surface-2)" }}>
+                <div style={{ fontSize: "0.8125rem", color: "var(--text-secondary)" }}>
+                  {isRtl
+                    ? "تم إغلاق المشروع مع مهندس. التقييم للمهندس غير متاح حالياً في هذا الإصدار."
+                    : "This project was completed with an engineer. Engineer rating is not available in the current review model."}
+                </div>
+              </div>
+            )}
+            {canReview && (
+              <div className="card" style={{ padding: "1.5rem", marginTop: "1.5rem", marginBottom: "1.5rem", border: "2px solid var(--accent)" }}>
+                <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <Star style={{ width: "18px", height: "18px", color: "var(--accent)" }} />
+                  {isRtl ? "قيّم المقاول" : "Rate the Contractor"}
+                </h3>
+                <form action={submitReviewAction}>
+                  <input type="hidden" name="projectId" value={project.id} />
+                  <div style={{ marginBottom: "1rem" }}>
+                    <label style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--text)", marginBottom: "0.5rem", display: "block" }}>
+                      {isRtl ? "التقييم" : "Rating"} *
+                    </label>
+                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                      {[1,2,3,4,5].map(v => (
+                        <label key={v} style={{ cursor: "pointer" }}>
+                          <input type="radio" name="rating" value={v} required style={{ display: "none" }} />
+                          <Star style={{ width: "28px", height: "28px", color: "var(--accent)" }} />
+                          <span style={{ display: "block", textAlign: "center", fontSize: "0.75rem", color: "var(--text-muted)" }}>{v}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ marginBottom: "1rem" }}>
+                    <label>{isRtl ? "تعليق" : "Comment"}</label>
+                    <textarea name="comment" style={{ minHeight: "80px", resize: "vertical" }} placeholder={isRtl ? "شاركنا تجربتك..." : "Share your experience..."} />
+                  </div>
+                  <button type="submit" className="btn-primary" style={{ padding: "0.75rem 1.5rem", fontSize: "0.875rem" }}>
+                    <Star style={{ width: "16px", height: "16px" }} /> {isRtl ? "إرسال التقييم" : "Submit Review"}
+                  </button>
+                </form>
+              </div>
+            )}
           </div>
 
           {/* Sidebar */}
@@ -1379,10 +1421,15 @@ export default async function ProjectDetailPage({
                       {isRtl ? "يمكنك إرفاق ملفات داعمة للعرض مثل PDF أو الصور." : "You can attach supporting bid files such as PDFs or images."}
                     </div>
                   </div>
-                  <button type="submit" className="btn-primary" style={{ width: "100%", padding: "0.75rem" }}>
-                    <Send style={{ width: "16px", height: "16px" }} /> {tBid("submit")}
-                  </button>
+                  <BidSubmitButton
+                    label={tBid("submit")}
+                    pendingLabel={isRtl ? "جاري إرسال العرض..." : "Submitting bid..."}
+                  />
                 </form>
+                <BidSubmitSuccessAlert
+                  enabled={query.bidSubmitted === "1"}
+                  message={isRtl ? "تم تقديم العرض بنجاح" : "Bid successfully submitted"}
+                />
               </div>
             )}
 
@@ -1402,6 +1449,7 @@ export default async function ProjectDetailPage({
 
             {/* Gap 6: Bidding Deadline Banner */}
             {(project.deadline || project.biddingWindowEnd) && (() => {
+              const biddingControlsDisabled = !["PUBLISHED", "BIDDING"].includes(project.status);
               const msPerDay = 1000 * 60 * 60 * 24;
               const todayStart = new Date();
               todayStart.setHours(0, 0, 0, 0);
@@ -1410,7 +1458,9 @@ export default async function ProjectDetailPage({
               endStart.setHours(0, 0, 0, 0);
               const daysLeft = Math.max(0, Math.floor((endStart.getTime() - todayStart.getTime()) / msPerDay));
               const expired = endStart.getTime() < todayStart.getTime();
-              const biddingWindowLabel = expired
+              const biddingWindowLabel = biddingControlsDisabled
+                ? (isRtl ? "تم إيقاف التقديم بعد الترسية" : "Bidding disabled after award")
+                : expired
                 ? (isRtl ? "انتهت فترة التقديم" : "Bidding Closed")
                 : daysLeft === 0
                   ? (isRtl ? "آخر يوم للتقديم" : "Last day to bid")
@@ -1420,13 +1470,13 @@ export default async function ProjectDetailPage({
               return (
                 <div className="card" style={{
                   padding: "1rem", marginBottom: "1rem",
-                  border: `2px solid ${expired ? "var(--error)" : daysLeft <= 5 ? "var(--accent)" : "var(--primary)"}`,
-                  background: expired ? "var(--error-light)" : daysLeft <= 5 ? "var(--accent-light)" : "var(--primary-light)",
+                  border: `2px solid ${biddingControlsDisabled ? "var(--border)" : expired ? "var(--error)" : daysLeft <= 5 ? "var(--accent)" : "var(--primary)"}`,
+                  background: biddingControlsDisabled ? "var(--surface-2)" : expired ? "var(--error-light)" : daysLeft <= 5 ? "var(--accent-light)" : "var(--primary-light)",
                 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <Timer style={{ width: "18px", height: "18px", color: expired ? "var(--error)" : daysLeft <= 5 ? "var(--accent)" : "var(--primary)" }} />
+                    <Timer style={{ width: "18px", height: "18px", color: biddingControlsDisabled ? "var(--text-muted)" : expired ? "var(--error)" : daysLeft <= 5 ? "var(--accent)" : "var(--primary)" }} />
                     <div>
-                      <div style={{ fontSize: "0.875rem", fontWeight: 700, color: expired ? "var(--error)" : "var(--text)" }}>
+                      <div style={{ fontSize: "0.875rem", fontWeight: 700, color: biddingControlsDisabled ? "var(--text-muted)" : expired ? "var(--error)" : "var(--text)" }}>
                         {biddingWindowLabel}
                       </div>
                       <div style={{ fontSize: "0.6875rem", color: "var(--text-muted)" }}>
@@ -1443,12 +1493,22 @@ export default async function ProjectDetailPage({
               <div className="card" style={{ padding: "1rem", marginBottom: "1rem" }}>
                 <form action={extendDeadlineAction} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                   <input type="hidden" name="projectId" value={project.id} />
-                  <select name="extraDays" defaultValue="14" style={{ flex: 1, padding: "0.375rem", fontSize: "0.8125rem", borderRadius: "var(--radius-md)", border: "1px solid var(--border)" }}>
+                  <select
+                    name="extraDays"
+                    defaultValue="14"
+                    disabled={!["PUBLISHED", "BIDDING"].includes(project.status)}
+                    style={{
+                      flex: 1, padding: "0.375rem", fontSize: "0.8125rem", borderRadius: "var(--radius-md)",
+                      border: "1px solid var(--border)",
+                      background: !["PUBLISHED", "BIDDING"].includes(project.status) ? "var(--surface-2)" : "var(--surface)",
+                      color: !["PUBLISHED", "BIDDING"].includes(project.status) ? "var(--text-muted)" : "var(--text)",
+                    }}
+                  >
                     <option value="7">{isRtl ? "7 أيام" : "7 days"}</option>
                     <option value="14">{isRtl ? "14 يوم" : "14 days"}</option>
                     <option value="30">{isRtl ? "30 يوم" : "30 days"}</option>
                   </select>
-                  <ExtendDeadlineSubmit isRtl={isRtl} />
+                  <ExtendDeadlineSubmit isRtl={isRtl} disabled={!["PUBLISHED", "BIDDING"].includes(project.status)} />
                 </form>
               </div>
             )}
@@ -1476,7 +1536,7 @@ export default async function ProjectDetailPage({
               </div>
             </div>
 
-            {isOwner && project.status === "AWARDED" && (
+            {isOwner && ["AWARDED", "COMPLETED"].includes(project.status) && (
               <div className="card" style={{ padding: "1.5rem", marginTop: "1rem", border: "2px solid var(--accent)" }}>
                 <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)", marginBottom: "1rem" }}>
                   {isRtl ? "خيارات إضافية بعد الترسية" : "Post-Award Upsell Options"}

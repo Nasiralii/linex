@@ -74,8 +74,11 @@ export async function awardProjectAction(projectId: string, bidId: string) {
       },
     });
 
-    // Update project status
-    await db.project.update({ where: { id: projectId }, data: { status: "AWARDED", awardedAt: new Date() } });
+    // Update project status: award now auto-completes the project
+    await db.project.update({
+      where: { id: projectId },
+      data: { status: "COMPLETED", awardedAt: new Date(), completedAt: new Date() },
+    });
 
     // Update winning bid
     await db.bid.update({ where: { id: bidId }, data: { status: "AWARDED" } });
